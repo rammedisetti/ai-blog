@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Blog Site</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Tailwind CDN (remove if you use Tailwind via npm/build) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HTMX CDN -->
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <link rel="icon" href="{% static 'youricon.png' %}">
+</head>
+<body class="min-h-screen flex flex-col bg-gray-50">
+
+    <!-- Header -->
+    <header class="w-full px-6 py-4 bg-white flex items-center justify-between shadow-sm">
+        <a href="/" class="flex items-center space-x-2">
+            <img src="{% static 'youricon.png' %}" alt="AI Blog Logo" class="h-8 w-8 rounded-full">
+            <span class="font-bold text-xl text-gray-800">AI Blog</span>
+        </a>
+        <nav class="flex items-center space-x-6">
+            <a href="/blog/" class="text-gray-700 hover:text-blue-600 font-medium">Blog</a>
+            <a href="/login/" class="text-gray-700 hover:text-blue-600 font-medium">Login</a>
+            <a href="/signup/" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium">Signup</a>
+        </nav>
+    </header>
+
+    <!-- Body -->
+    <main class="flex-1 flex flex-col items-center justify-center text-center">
+        <h1 class="mt-16 text-4xl font-extrabold text-gray-800 mb-4">Welcome to the AI Blog Site</h1>
+        <p class="mb-8 text-lg text-gray-600">Discover articles, debates, news, how-tos, and podcasts about AI.</p>
+        <!-- Email signup form using HTMX -->
+        <form 
+            hx-post="{% url 'newsletter_signup' %}" 
+            hx-target="#signup-message"
+            hx-swap="outerHTML"
+            class="flex flex-col sm:flex-row items-center gap-3 w-full max-w-md mx-auto"
+        >
+            <input 
+                type="email" 
+                name="email" 
+                required 
+                placeholder="Enter your email to join" 
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+            <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
+                Join Now
+            </button>
+        </form>
+        <div id="signup-message" class="mt-4"></div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white mt-12 py-8 px-6 shadow-inner">
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-6">
+            <div class="flex space-x-4 text-sm text-gray-500">
+                <a href="/terms/" class="hover:text-blue-600">Terms of Use</a>
+                <span>|</span>
+                <a href="/privacy/" class="hover:text-blue-600">Privacy Policy</a>
+                <span>|</span>
+                <a href="/cancellation/" class="hover:text-blue-600">Cancellation</a>
+                <span>|</span>
+                <a href="/contact/" class="hover:text-blue-600">Contact</a>
+            </div>
+            <div class="text-xs text-gray-400">&copy; {{ year|default:"2025" }} AI Blog Site. All rights reserved.</div>
+        </div>
+    </footer>
+
+</body>
+</html>
