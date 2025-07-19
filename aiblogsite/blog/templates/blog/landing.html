@@ -21,8 +21,8 @@
         </a>
         <nav class="flex items-center space-x-6">
             <a href="/blog/" class="text-gray-700 hover:text-blue-600 font-medium">Blog</a>
-            <a href="/login/" class="text-gray-700 hover:text-blue-600 font-medium">Login</a>
-            <a href="/accounts/signup/" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium">Signup</a>
+            <a href="{% url 'accounts:login' %}" class="text-gray-700 hover:text-blue-600 font-medium">Login</a>
+            <a href="{% url 'accounts:signup' %}" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium">Signup</a>
         </nav>
     </header>
 

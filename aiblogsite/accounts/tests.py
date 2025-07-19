@@ -58,3 +58,34 @@ class SignupTests(TestCase):
             },
         )
         self.assertContains(response, "This password is too short", status_code=200)
+
+
+class LoginTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            "loginuser",
+            "login@example.com",
+            "StrongPass123",
+        )
+
+    def test_login_with_username(self):
+        response = self.client.post(
+            reverse("accounts:login"),
+            {"username": "loginuser", "password": "StrongPass123"},
+        )
+        self.assertRedirects(response, reverse("home"))
+
+    def test_login_with_email(self):
+        response = self.client.post(
+            reverse("accounts:login"),
+            {"username": "login@example.com", "password": "StrongPass123"},
+        )
+        self.assertRedirects(response, reverse("home"))
+
+    def test_invalid_credentials(self):
+        response = self.client.post(
+            reverse("accounts:login"),
+            {"username": "bad", "password": "wrong"},
+        )
+        self.assertContains(response, "Please enter a correct", status_code=200)
