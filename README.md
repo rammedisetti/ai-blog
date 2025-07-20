@@ -9,6 +9,22 @@ articles. The page reuses the landing page header and footer for consistency and
 includes a hero section, search bar, category chips, article cards, sidebar,
 pagination and a newsletter sign-up.
 
+## Template Structure
+
+All main blog pages extend `blog/base.html` which contains the shared header,
+footer and scripts. When creating new templates in the `blog` app, start with:
+
+```django
+{% extends "blog/base.html" %}
+{% block title %}Page title{% endblock %}
+{% block content %}
+    <!-- Page content here -->
+{% endblock %}
+```
+
+Optional CSS or JavaScript can be injected using the `extra_css` and
+`extra_js` blocks.
+
 ## Signup Feature
 
 The project now includes a minimal signup page where users can create an account
