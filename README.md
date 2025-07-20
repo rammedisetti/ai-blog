@@ -2,6 +2,13 @@
 
 A simple Django-based blog project.
 
+## Blog Page
+
+The site now includes a responsive blog index at `/blog/` showcasing example
+articles. The page reuses the landing page header and footer for consistency and
+includes a hero section, search bar, category chips, article cards, sidebar,
+pagination and a newsletter sign-up.
+
 ## Signup Feature
 
 The project now includes a minimal signup page where users can create an account

@@ -7,3 +7,11 @@ def home(request):
 
     context = {"year": datetime.now().year}
     return render(request, "blog/landing.html", context)
+
+
+def blog_home(request):
+    """Render the blog index page."""
+    from datetime import datetime
+
+    context = {"year": datetime.now().year}
+    return render(request, "blog/blog_home.html", context)

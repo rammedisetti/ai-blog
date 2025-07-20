@@ -1,0 +1,227 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Insights - Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+</head>
+<body class="min-h-screen flex flex-col bg-white text-gray-800">
+    <!-- Header -->
+    <header class="border-b">
+        <div class="max-w-7xl mx-auto px-6 flex items-center justify-between py-4">
+            <a href="/" class="text-xl font-semibold">AI Insights</a>
+            <button id="nav-toggle" class="md:hidden">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
+            <nav id="nav-menu" class="hidden md:flex items-center space-x-6">
+                <a href="/" class="hover:text-blue-600">Home</a>
+                <a href="/blog/" class="text-blue-600 font-semibold border-b-2 border-blue-600">Blog</a>
+                <a href="/about/" class="hover:text-blue-600">About</a>
+                <a href="/contact/" class="hover:text-blue-600">Contact</a>
+                <a href="{% url 'accounts:auth_split' %}" class="hover:text-blue-600">Authenticate</a>
+                <a href="{% url 'accounts:login' %}" class="px-4 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-50">Login</a>
+                <a href="{% url 'accounts:signup' %}" class="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Sign Up</a>
+            </nav>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+            <nav class="flex flex-col space-y-2">
+                <a href="/" class="hover:text-blue-600">Home</a>
+                <a href="/blog/" class="text-blue-600 font-semibold">Blog</a>
+                <a href="/about/" class="hover:text-blue-600">About</a>
+                <a href="/contact/" class="hover:text-blue-600">Contact</a>
+                <a href="{% url 'accounts:login' %}" class="hover:text-blue-600">Login</a>
+                <a href="{% url 'accounts:signup' %}" class="hover:text-blue-600">Sign Up</a>
+                <a href="{% url 'accounts:auth_split' %}" class="hover:text-blue-600">Authenticate</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero / Intro -->
+    <section class="px-6 py-12 text-center max-w-3xl mx-auto">
+        <h1 class="text-4xl sm:text-5xl font-extrabold mb-4">AI Technology <span class="text-blue-600">Blog</span></h1>
+        <p class="text-lg text-gray-600 mb-8">Explore the latest insights, debates, and how-to guides in artificial intelligence.</p>
+        <div class="flex flex-col sm:flex-row justify-center gap-3">
+            <div class="relative w-full sm:max-w-md">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z"/></svg>
+                </span>
+                <input type="text" placeholder="Search articles..." class="w-full pl-10 pr-4 py-3 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            </div>
+        </div>
+        <div class="flex flex-wrap justify-center gap-2 mt-6">
+            <button class="px-4 py-2 rounded-full bg-blue-600 text-white flex items-center gap-1">All</button>
+            <button class="px-4 py-2 rounded-full bg-gray-200 text-gray-700 flex items-center gap-1 hover:bg-blue-600 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5V4h14v16z"/></svg>News</button>
+            <button class="px-4 py-2 rounded-full bg-gray-200 text-gray-700 flex items-center gap-1 hover:bg-blue-600 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v8a2 2 0 01-2 2h-2M7 8H5a2 2 0 00-2 2v8a2 2 0 002 2h2m10-8H7"/></svg>Debate</button>
+            <button class="px-4 py-2 rounded-full bg-gray-200 text-gray-700 flex items-center gap-1 hover:bg-blue-600 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7 20h10"/></svg>How-To</button>
+            <button class="px-4 py-2 rounded-full bg-gray-200 text-gray-700 flex items-center gap-1 hover:bg-blue-600 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m-1 4h1V9h1m4-2v6h5l-1 10H6L5 13h5V7a5 5 0 1110 0z"/></svg>Tech Insights</button>
+        </div>
+    </section>
+
+    <!-- Blog Grid -->
+    <main class="flex-1 max-w-7xl mx-auto px-6 md:flex md:gap-8">
+        <div class="flex-1 grid gap-8 sm:grid-cols-2">
+            <!-- Card 1 -->
+            <article class="bg-white rounded-xl shadow hover:shadow-lg transition">
+                <img src="https://source.unsplash.com/collection/190727/800x450" alt="AI" class="rounded-t-xl aspect-video object-cover">
+                <div class="p-6">
+                    <div class="flex items-center text-sm text-gray-500 mb-3 space-x-2">
+                        <span>Jun 12, 2024</span>
+                        <img src="https://source.unsplash.com/40x40/?face" class="w-6 h-6 rounded-full" alt="author">
+                        <span>Jane Doe</span>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">Breakthroughs in Neural Networks</h3>
+                    <p class="text-gray-600 mb-4">Discover the most recent advances in deep learning and how they are shaping the future of AI applications.</p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-600">AI News</span>
+                        <span class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-600">Research</span>
+                    </div>
+                    <a href="#" class="text-blue-600 inline-flex items-center">Read More<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></a>
+                </div>
+            </article>
+            <!-- Card 2 -->
+            <article class="bg-white rounded-xl shadow hover:shadow-lg transition">
+                <img src="https://source.unsplash.com/collection/190727/801x451" alt="AI" class="rounded-t-xl aspect-video object-cover">
+                <div class="p-6">
+                    <div class="flex items-center text-sm text-gray-500 mb-3 space-x-2">
+                        <span>May 29, 2024</span>
+                        <img src="https://source.unsplash.com/40x40/?portrait" class="w-6 h-6 rounded-full" alt="author">
+                        <span>John Smith</span>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">AI Ethics: A Heated Debate</h3>
+                    <p class="text-gray-600 mb-4">Experts weigh in on the ethical challenges posed by artificial intelligence and autonomous systems.</p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-600">Debate</span>
+                        <span class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-600">Ethics</span>
+                    </div>
+                    <a href="#" class="text-blue-600 inline-flex items-center">Read More<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></a>
+                </div>
+            </article>
+            <!-- Card 3 -->
+            <article class="bg-white rounded-xl shadow hover:shadow-lg transition">
+                <img src="https://source.unsplash.com/collection/190727/802x452" alt="AI" class="rounded-t-xl aspect-video object-cover">
+                <div class="p-6">
+                    <div class="flex items-center text-sm text-gray-500 mb-3 space-x-2">
+                        <span>May 10, 2024</span>
+                        <img src="https://source.unsplash.com/40x40/?man" class="w-6 h-6 rounded-full" alt="author">
+                        <span>Alicia Keys</span>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">Step-by-Step Guide to Building Chatbots</h3>
+                    <p class="text-gray-600 mb-4">Learn how to create intelligent chatbots with modern frameworks and natural language processing APIs.</p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-600">How-To</span>
+                        <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-600">Guide</span>
+                    </div>
+                    <a href="#" class="text-blue-600 inline-flex items-center">Read More<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></a>
+                </div>
+            </article>
+            <!-- Card 4 -->
+            <article class="bg-white rounded-xl shadow hover:shadow-lg transition">
+                <img src="https://source.unsplash.com/collection/190727/803x453" alt="AI" class="rounded-t-xl aspect-video object-cover">
+                <div class="p-6">
+                    <div class="flex items-center text-sm text-gray-500 mb-3 space-x-2">
+                        <span>Apr 22, 2024</span>
+                        <img src="https://source.unsplash.com/40x40/?girl" class="w-6 h-6 rounded-full" alt="author">
+                        <span>Michael Lee</span>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2">Exploring Quantum Computing for AI</h3>
+                    <p class="text-gray-600 mb-4">A look at how quantum computing will accelerate AI research and the challenges ahead.</p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-600">Tech Insights</span>
+                        <span class="px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-600">Future</span>
+                    </div>
+                    <a href="#" class="text-blue-600 inline-flex items-center">Read More<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></a>
+                </div>
+            </article>
+        </div>
+        <!-- Sidebar -->
+        <aside class="hidden md:block w-72 space-y-8">
+            <div class="bg-gray-50 p-4 rounded-xl shadow">
+                <div class="flex items-center space-x-3">
+                    <img src="https://source.unsplash.com/60x60/?robot" class="rounded-full" alt="Team">
+                    <div>
+                        <h4 class="font-semibold">AI Insights Team</h4>
+                        <p class="text-sm text-gray-600">Passionate writers exploring AI trends and tips.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-xl shadow">
+                <h4 class="font-semibold mb-3">Popular Posts</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#" class="text-blue-600 hover:underline">Neural Network Trends in 2024</a></li>
+                    <li><a href="#" class="text-blue-600 hover:underline">Top Debate Topics for AI Ethics</a></li>
+                    <li><a href="#" class="text-blue-600 hover:underline">10 Tools for Efficient AI Workflow</a></li>
+                </ul>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-xl shadow">
+                <h4 class="font-semibold mb-3">Categories</h4>
+                <ul class="text-sm space-y-1">
+                    <li class="flex justify-between"><a href="#" class="text-blue-600 hover:underline">News</a><span>12</span></li>
+                    <li class="flex justify-between"><a href="#" class="text-blue-600 hover:underline">Debate</a><span>7</span></li>
+                    <li class="flex justify-between"><a href="#" class="text-blue-600 hover:underline">How-To</a><span>15</span></li>
+                    <li class="flex justify-between"><a href="#" class="text-blue-600 hover:underline">Tech Insights</a><span>9</span></li>
+                </ul>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Pagination -->
+    <div class="flex justify-center mt-12 space-x-2">
+        <button class="px-3 py-1 rounded-full bg-gray-200 hover:bg-blue-600 hover:text-white">&lt;</button>
+        <button class="px-3 py-1 rounded-full bg-blue-600 text-white">1</button>
+        <button class="px-3 py-1 rounded-full bg-gray-200 hover:bg-blue-600 hover:text-white">2</button>
+        <button class="px-3 py-1 rounded-full bg-gray-200 hover:bg-blue-600 hover:text-white">&gt;</button>
+    </div>
+
+    <!-- Newsletter CTA -->
+    <section class="mt-16 py-16 text-center text-white" style="background: linear-gradient(90deg,#5171FF 0%,#A366FF 100%);">
+        <h2 class="text-3xl font-bold mb-4">Never Miss an AI Update</h2>
+        <p class="mb-8">Get the latest articles delivered straight to your inbox</p>
+        <form class="w-full max-w-md mx-auto flex flex-col sm:flex-row gap-3">
+            <input type="email" placeholder="Enter your email" class="flex-1 px-4 py-3 rounded-full text-gray-900 focus:outline-none" required>
+            <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700">Subscribe</button>
+        </form>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#101522] text-gray-300 pt-12 pb-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 grid gap-8 md:grid-cols-3">
+            <div>
+                <p class="text-sm">Your trusted source for AI technology insights, debates, and practical guides. Stay informed about the future of artificial intelligence.</p>
+                <div class="flex space-x-4 mt-4">
+                    <a href="#" aria-label="Twitter">
+                        <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg>
+                    </a>
+                    <a href="#" aria-label="LinkedIn">
+                        <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zM4 4a2 2 0 110 4 2 2 0 010-4z"/></svg>
+                    </a>
+                </div>
+            </div>
+            <div class="text-sm flex flex-col space-y-2">
+                <a href="/terms/" class="hover:text-white">Terms of Use</a>
+                <a href="/privacy/" class="hover:text-white">Privacy Policy</a>
+                <a href="/cancellation/" class="hover:text-white">Cancellation</a>
+                <a href="/contact/" class="hover:text-white">Contact</a>
+            </div>
+            <div>
+                <form class="flex flex-col sm:flex-row gap-3" hx-post="#" hx-target="#footer-message" hx-swap="outerHTML">
+                    <input type="email" placeholder="Email" required class="flex-1 px-4 py-2 rounded-lg text-gray-900 focus:outline-none">
+                    <button type="submit" class="px-4 py-2 bg-blue-600 rounded-lg text-white hover:bg-blue-700">Join</button>
+                </form>
+                <div id="footer-message" class="mt-2 text-sm"></div>
+            </div>
+        </div>
+        <div class="text-center text-xs text-gray-500 mt-10">&copy; {{ year|default:'2024' }} AI Insights. All rights reserved.</div>
+    </footer>
+
+    <script>
+    const navToggle = document.getElementById('nav-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    navToggle && navToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+    </script>
+</body>
+</html>
