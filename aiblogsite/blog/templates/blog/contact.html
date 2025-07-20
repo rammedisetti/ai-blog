@@ -19,7 +19,7 @@
             <nav id="nav-menu" class="hidden md:flex items-center space-x-6">
                 <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Home</a>
                 <a href="{% url 'blog_home' %}" class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
-                <a href="/about/" class="hover:text-blue-600">About</a>
+                <a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">About</a>
                 <a href="{% url 'contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Contact</a>
                 <a href="{% url 'accounts:auth_split' %}" class="hover:text-blue-600">Authenticate</a>
                 <a href="{% url 'accounts:login' %}" class="px-4 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-50">Login</a>
@@ -30,7 +30,7 @@
             <nav class="flex flex-col space-y-2">
                 <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Home</a>
                 <a href="{% url 'blog_home' %}" class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
-                <a href="/about/" class="hover:text-blue-600">About</a>
+                <a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">About</a>
                 <a href="{% url 'contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Contact</a>
                 <a href="{% url 'accounts:login' %}" class="hover:text-blue-600">Login</a>
                 <a href="{% url 'accounts:signup' %}" class="hover:text-blue-600">Sign Up</a>
