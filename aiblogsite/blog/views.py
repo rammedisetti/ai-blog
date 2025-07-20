@@ -18,6 +18,14 @@ def blog_home(request):
     return render(request, "blog/blog_home.html", context)
 
 
+def about(request):
+    """Render the About page."""
+    from datetime import datetime
+
+    context = {"year": datetime.now().year}
+    return render(request, "blog/about.html", context)
+
+
 def contact(request):
     """Display and process the contact form."""
     from datetime import datetime

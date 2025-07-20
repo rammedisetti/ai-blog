@@ -1,0 +1,200 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - AI Insights</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+</head>
+<body class="min-h-screen flex flex-col bg-[#F8F9FB] text-gray-800">
+    <!-- Header -->
+    <header class="border-b bg-white">
+        <div class="max-w-7xl mx-auto px-6 flex items-center justify-between py-4">
+            <a href="/" class="text-xl font-semibold">AI Insights</a>
+            <button id="nav-toggle" class="md:hidden">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
+            <nav id="nav-menu" class="hidden md:flex items-center space-x-6">
+                <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Home</a>
+                <a href="{% url 'blog_home' %}" class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
+                <a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">About</a>
+                <a href="{% url 'contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Contact</a>
+                <a href="{% url 'accounts:auth_split' %}" class="hover:text-blue-600">Authenticate</a>
+                <a href="{% url 'accounts:login' %}" class="px-4 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-50">Login</a>
+                <a href="{% url 'accounts:signup' %}" class="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Sign Up</a>
+            </nav>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+            <nav class="flex flex-col space-y-2">
+                <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Home</a>
+                <a href="{% url 'blog_home' %}" class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
+                <a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">About</a>
+                <a href="{% url 'contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Contact</a>
+                <a href="{% url 'accounts:login' %}" class="hover:text-blue-600">Login</a>
+                <a href="{% url 'accounts:signup' %}" class="hover:text-blue-600">Sign Up</a>
+                <a href="{% url 'accounts:auth_split' %}" class="hover:text-blue-600">Authenticate</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="text-center px-6 py-16 bg-white">
+        <span class="text-sm font-medium bg-blue-600 text-white px-3 py-1 rounded-full mb-4 inline-block">AI Technology Insights</span>
+        <h1 class="text-4xl sm:text-5xl font-extrabold mb-4">About <span class="text-[#5171FF]">AI Insights</span></h1>
+        <p class="text-gray-500 max-w-2xl mx-auto">Empowering tech enthusiasts with trustworthy AI insights, guides, and debates. We’re here to make artificial intelligence accessible and understandable for everyone.</p>
+    </section>
+
+    <!-- Intro Paragraph -->
+    <section class="px-6 py-12 text-center">
+        <p class="max-w-2xl mx-auto text-gray-600">Founded in 2024, AI Insights was created to help demystify artificial intelligence. Our editorial mission is to deliver reliable news, thoughtful analysis, and practical tutorials so you can confidently navigate the world of AI.</p>
+    </section>
+
+    <!-- Story Mission Values -->
+    <section class="px-6 py-12 bg-white">
+        <div class="max-w-6xl mx-auto grid gap-8 md:grid-cols-3">
+            <div class="p-6 bg-white rounded-xl shadow text-center">
+                <div class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 mx-auto mb-4">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12c2.21 0 4-.895 4-2s-1.79-2-4-2-4 .895-4 2 1.79 2 4 2z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14c-3.866 0-7-1.343-7-3v4c0 1.657 3.134 3 7 3s7-1.343 7-3v-4c0 1.657-3.134 3-7 3z"/></svg>
+                </div>
+                <h3 class="font-semibold mb-2">Our Story</h3>
+                <p class="text-sm text-gray-600">Born from a passion for technology, AI Insights began as a small newsletter before evolving into a trusted source for everything AI.</p>
+            </div>
+            <div class="p-6 bg-white rounded-xl shadow text-center">
+                <div class="flex items-center justify-center h-12 w-12 rounded-full bg-purple-100 mx-auto mb-4">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <h3 class="font-semibold mb-2">Our Mission</h3>
+                <p class="text-sm text-gray-600">To empower readers with clear explanations and expert insights so they can harness AI responsibly and effectively.</p>
+            </div>
+            <div class="p-6 bg-white rounded-xl shadow text-center">
+                <div class="flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mx-auto mb-4">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7 20h10"/></svg>
+                </div>
+                <h3 class="font-semibold mb-2">Our Values</h3>
+                <p class="text-sm text-gray-600">Integrity, curiosity, and inclusivity guide every article we publish and every conversation we start.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="px-6 py-16 text-center bg-[#F8F9FB]">
+        <h2 class="text-3xl font-bold mb-3">Meet Our Team</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto mb-12">A diverse group of innovative experts, thinkers, and industry experts. Passionate about making AI safe & accessible for all.</p>
+        <div class="max-w-6xl mx-auto grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="bg-white rounded-xl shadow p-6">
+                <img src="https://placehold.co/80x80" alt="Member" class="w-20 h-20 rounded-full mx-auto mb-4">
+                <h3 class="font-semibold">Alex Johnson</h3>
+                <p class="text-sm text-gray-500">Editor-in-Chief</p>
+                <p class="text-sm text-gray-600 mt-2">Tech journalist with a decade of experience covering AI breakthroughs.</p>
+            </div>
+            <div class="bg-white rounded-xl shadow p-6">
+                <img src="https://placehold.co/80x80" alt="Member" class="w-20 h-20 rounded-full mx-auto mb-4">
+                <h3 class="font-semibold">Maria Chen</h3>
+                <p class="text-sm text-gray-500">Lead Researcher</p>
+                <p class="text-sm text-gray-600 mt-2">AI researcher focused on ethical machine learning and data privacy.</p>
+            </div>
+            <div class="bg-white rounded-xl shadow p-6">
+                <img src="https://placehold.co/80x80" alt="Member" class="w-20 h-20 rounded-full mx-auto mb-4">
+                <h3 class="font-semibold">David Patel</h3>
+                <p class="text-sm text-gray-500">Community Manager</p>
+                <p class="text-sm text-gray-600 mt-2">Builder of inclusive communities and facilitator of great discussions.</p>
+            </div>
+            <div class="bg-white rounded-xl shadow p-6">
+                <img src="https://placehold.co/80x80" alt="Member" class="w-20 h-20 rounded-full mx-auto mb-4">
+                <h3 class="font-semibold">Sofia Reyes</h3>
+                <p class="text-sm text-gray-500">Content Strategist</p>
+                <p class="text-sm text-gray-600 mt-2">Passionate about translating complex topics into engaging stories.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Section -->
+    <section class="px-6 py-16 bg-white">
+        <h2 class="text-3xl font-bold text-center mb-3">Why Choose AI Insights</h2>
+        <p class="text-gray-600 text-center max-w-2xl mx-auto mb-12">What sets us apart: get the curated world’s latest AI trends, expert insights, and trustworthy info.</p>
+        <div class="max-w-6xl mx-auto grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="p-6 bg-white rounded-xl shadow text-center">
+                <div class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 mx-auto mb-4">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5V4H2v16h5m10 0v-6m0 6l-3-3m0 0l-3 3m3-3v-4"/></svg>
+                </div>
+                <h3 class="font-semibold mb-2">Expert Contributors</h3>
+                <p class="text-sm text-gray-600">Insights from leading AI researchers, practitioners, and journalists.</p>
+            </div>
+            <div class="p-6 bg-white rounded-xl shadow text-center">
+                <div class="flex items-center justify-center h-12 w-12 rounded-full bg-purple-100 mx-auto mb-4">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m-1 4h1V9h1m4-2v6h5l-1 10H6L5 13h5V7a5 5 0 1110 0z"/></svg>
+                </div>
+                <h3 class="font-semibold mb-2">Latest AI Trends</h3>
+                <p class="text-sm text-gray-600">Coverage of cutting-edge breakthroughs and practical impacts.</p>
+            </div>
+            <div class="p-6 bg-white rounded-xl shadow text-center">
+                <div class="flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mx-auto mb-4">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h1.28a2 2 0 011.789 1.106L9.217 7.447a2 2 0 01-.196 2.177l-1.585 1.585a11.037 11.037 0 005.585 5.585l1.585-1.585a2 2 0 012.177-.196l3.341 1.148A2 2 0 0121 17.72V19a2 2 0 01-2 2h-.125C9.279 21 3 14.721 3 6.125V5z"/></svg>
+                </div>
+                <h3 class="font-semibold mb-2">Community-Driven</h3>
+                <p class="text-sm text-gray-600">Open platform for questions, feedback, and discussion.</p>
+            </div>
+            <div class="p-6 bg-white rounded-xl shadow text-center">
+                <div class="flex items-center justify-center h-12 w-12 rounded-full bg-orange-100 mx-auto mb-4">
+                    <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <h3 class="font-semibold mb-2">Trusted Content</h3>
+                <p class="text-sm text-gray-600">Independent analysis, clear citations, and privacy-first policies.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter CTA -->
+    <section class="py-16 text-center text-white" style="background: linear-gradient(90deg,#5171FF 0%,#A366FF 100%);">
+        <h2 class="text-3xl font-bold mb-4">Join Our Community Today!</h2>
+        <p class="mb-8">Stay ahead in AI with expert insights, practical guides, and engaging discussions—delivered to your inbox.</p>
+        <form hx-post="#" hx-target="#newsletter-message" hx-swap="outerHTML" class="w-full max-w-md mx-auto flex flex-col sm:flex-row gap-3">
+            <input type="email" name="email" required placeholder="Enter your email" class="flex-1 px-4 py-3 rounded-lg text-gray-900" />
+            <button type="submit" class="px-6 py-3 bg-blue-600 rounded-lg text-white hover:bg-blue-700">Subscribe</button>
+        </form>
+        <div id="newsletter-message" class="mt-4"></div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#101522] text-gray-300 pt-12 pb-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 grid gap-8 md:grid-cols-3">
+            <div>
+                <p class="text-sm">Your trusted source for AI technology insights, debates, and practical guides. Stay informed about the future of artificial intelligence.</p>
+                <div class="flex space-x-4 mt-4">
+                    <a href="#" aria-label="Twitter">
+                        <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg>
+                    </a>
+                    <a href="#" aria-label="LinkedIn">
+                        <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zM4 4a2 2 0 110 4 2 2 0 010-4z"/></svg>
+                    </a>
+                </div>
+            </div>
+            <div class="text-sm flex flex-col space-y-2">
+                <a href="/blog/" class="hover:text-white">Blog</a>
+                <a href="/terms/" class="hover:text-white">Terms of Use</a>
+                <a href="/privacy/" class="hover:text-white">Privacy Policy</a>
+                <a href="/cancellation/" class="hover:text-white">Cancellation</a>
+                <a href="/contact/" class="hover:text-white">Contact</a>
+            </div>
+            <div>
+                <form hx-post="#" hx-target="#footer-message" hx-swap="outerHTML" class="flex flex-col sm:flex-row gap-3">
+                    <input type="email" placeholder="Email" required class="flex-1 px-4 py-2 rounded-lg text-gray-900 focus:outline-none">
+                    <button type="submit" class="px-4 py-2 bg-blue-600 rounded-lg text-white hover:bg-blue-700">Join</button>
+                </form>
+                <div id="footer-message" class="mt-2 text-sm"></div>
+            </div>
+        </div>
+        <div class="text-center text-xs text-gray-500 mt-10">&copy; {{ year|default:'2024' }} AI Insights. All rights reserved.</div>
+    </footer>
+
+    <script>
+    const navToggle = document.getElementById('nav-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    navToggle && navToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+    </script>
+</body>
+</html>
