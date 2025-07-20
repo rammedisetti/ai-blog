@@ -24,6 +24,7 @@
                 <a href="/blog/" class="hover:text-blue-600">Blog</a>
                 <a href="/about/" class="hover:text-blue-600">About</a>
                 <a href="/contact/" class="hover:text-blue-600">Contact</a>
+                <a href="{% url 'accounts:auth_split' %}" class="hover:text-blue-600">Authenticate</a>
                 <a href="{% url 'accounts:login' %}" class="px-4 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-50">Login</a>
                 <a href="{% url 'accounts:signup' %}" class="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Sign Up</a>
             </nav>
@@ -36,6 +37,7 @@
                 <a href="/contact/" class="hover:text-blue-600">Contact</a>
                 <a href="{% url 'accounts:login' %}" class="hover:text-blue-600">Login</a>
                 <a href="{% url 'accounts:signup' %}" class="hover:text-blue-600">Sign Up</a>
+                <a href="{% url 'accounts:auth_split' %}" class="hover:text-blue-600">Authenticate</a>
             </nav>
         </div>
     </header>

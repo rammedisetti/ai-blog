@@ -36,3 +36,15 @@ def login_view(request):
         form = LoginForm()
 
     return render(request, "accounts/login.html", {"form": form})
+
+
+def auth_split(request):
+    """Render split-screen auth page with signup and login forms."""
+    signup_form = SignupForm()
+    login_form = LoginForm()
+    return render(
+        request,
+        "accounts/auth_split.html",
+        {"signup_form": signup_form, "login_form": login_form},
+    )
+
