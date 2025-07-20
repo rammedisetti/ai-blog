@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from .forms import ContactForm
 
 
 def home(request):
@@ -15,3 +16,24 @@ def blog_home(request):
 
     context = {"year": datetime.now().year}
     return render(request, "blog/blog_home.html", context)
+
+
+def contact(request):
+    """Display and process the contact form."""
+    from datetime import datetime
+
+    if request.method == "POST":
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            form.save()
+            context = {
+                "form": ContactForm(),
+                "success": True,
+                "year": datetime.now().year,
+            }
+            return render(request, "blog/contact.html", context)
+    else:
+        form = ContactForm()
+
+    context = {"form": form, "year": datetime.now().year}
+    return render(request, "blog/contact.html", context)
