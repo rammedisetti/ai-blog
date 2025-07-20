@@ -17,8 +17,8 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
             <nav id="nav-menu" class="hidden md:flex items-center space-x-6">
-                <a href="/" class="hover:text-blue-600">Home</a>
-                <a href="/blog/" class="text-blue-600 font-semibold border-b-2 border-blue-600">Blog</a>
+                <a href="/" class="{% if request.path == '/' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Home</a>
+                <a href="/blog/" class="{% if request.path == '/blog/' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
                 <a href="/about/" class="hover:text-blue-600">About</a>
                 <a href="/contact/" class="hover:text-blue-600">Contact</a>
                 <a href="{% url 'accounts:auth_split' %}" class="hover:text-blue-600">Authenticate</a>
@@ -28,8 +28,8 @@
         </div>
         <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
             <nav class="flex flex-col space-y-2">
-                <a href="/" class="hover:text-blue-600">Home</a>
-                <a href="/blog/" class="text-blue-600 font-semibold">Blog</a>
+                <a href="/" class="{% if request.path == '/' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Home</a>
+                <a href="/blog/" class="{% if request.path == '/blog/' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
                 <a href="/about/" class="hover:text-blue-600">About</a>
                 <a href="/contact/" class="hover:text-blue-600">Contact</a>
                 <a href="{% url 'accounts:login' %}" class="hover:text-blue-600">Login</a>
@@ -200,6 +200,7 @@
                 </div>
             </div>
             <div class="text-sm flex flex-col space-y-2">
+                <a href="/blog/" class="hover:text-white">Blog</a>
                 <a href="/terms/" class="hover:text-white">Terms of Use</a>
                 <a href="/privacy/" class="hover:text-white">Privacy Policy</a>
                 <a href="/cancellation/" class="hover:text-white">Cancellation</a>
