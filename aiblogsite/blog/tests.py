@@ -24,6 +24,16 @@ class ContactTests(TestCase):
         self.assertTrue(ContactMessage.objects.filter(email='tester@example.com').exists())
 
 
+class PrivacyTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_get_privacy_page(self):
+        response = self.client.get(reverse('privacy'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Privacy Policy')
+
+
 class TermsTests(TestCase):
     def setUp(self):
         self.client = Client()

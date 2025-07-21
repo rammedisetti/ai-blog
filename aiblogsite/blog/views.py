@@ -47,6 +47,14 @@ def contact(request):
     return render(request, "blog/contact.html", context)
 
 
+def privacy(request):
+    """Render the Privacy Policy page."""
+    from datetime import datetime
+
+    context = {"year": datetime.now().year}
+    return render(request, "blog/privacy.html", context)
+
+
 def terms(request):
     """Render the Terms and Conditions page."""
     from datetime import datetime
