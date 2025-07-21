@@ -45,3 +45,11 @@ def contact(request):
 
     context = {"form": form, "year": datetime.now().year}
     return render(request, "blog/contact.html", context)
+
+
+def terms(request):
+    """Render the Terms and Conditions page."""
+    from datetime import datetime
+
+    context = {"year": datetime.now().year}
+    return render(request, "blog/terms.html", context)
