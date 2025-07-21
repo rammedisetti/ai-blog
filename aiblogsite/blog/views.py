@@ -61,3 +61,11 @@ def terms(request):
 
     context = {"year": datetime.now().year}
     return render(request, "blog/terms.html", context)
+
+
+def cancellation(request):
+    """Render the Cancellation & Refund Policy page."""
+    from datetime import datetime
+
+    context = {"year": datetime.now().year}
+    return render(request, "blog/cancellation.html", context)

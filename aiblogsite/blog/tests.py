@@ -41,3 +41,12 @@ class TermsTests(TestCase):
     def test_get_terms_page(self):
         response = self.client.get(reverse('terms'))
         self.assertEqual(response.status_code, 200)
+
+
+class CancellationTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_get_cancellation_page(self):
+        response = self.client.get(reverse('cancellation'))
+        self.assertEqual(response.status_code, 200)

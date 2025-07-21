@@ -1,0 +1,115 @@
+{% extends "blog/base.html" %}
+{% block title %}Cancellation & Refund Policy - AI Insights{% endblock %}
+{% block body_class %}min-h-screen flex flex-col bg-[#F8F9FB] text-gray-800{% endblock %}
+
+{% block content %}
+<section class="text-center px-6 py-16 bg-white">
+    <span class="text-sm font-medium bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full mb-4 inline-block">Policy Center</span>
+    <h1 class="text-4xl sm:text-5xl font-extrabold mb-4">
+        Cancellation &amp; <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#5171FF] to-[#A366FF]">Refund Policy</span>
+    </h1>
+    <p class="text-gray-500 max-w-2xl mx-auto">Learn about eligibility, process, and timelines for our refund and cancellation process.</p>
+</section>
+
+<section class="flex-1 px-6 py-12">
+    <div class="bg-white rounded-2xl shadow max-w-3xl mx-auto p-8 space-y-10">
+        <div class="space-y-3">
+            <div class="flex items-center space-x-3">
+                <div class="h-8 w-8 rounded-full flex items-center justify-center bg-blue-100">
+                    <svg class="w-5 h-5 text-[#5171FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12" stroke-linecap="round" stroke-width="2"/><line x1="12" y1="8" x2="12" y2="8" stroke-linecap="round" stroke-width="2"/></svg>
+                </div>
+                <h2 class="font-semibold text-lg">Eligibility for Cancellation</h2>
+            </div>
+            <ul class="list-disc pl-10 text-sm text-gray-600 space-y-1">
+                <li>Request within 7 days of purchase</li>
+                <li>Account in good standing</li>
+                <li>No prior refund issued for the subscription</li>
+            </ul>
+        </div>
+
+        <div class="space-y-3">
+            <div class="flex items-center space-x-3">
+                <div class="h-8 w-8 rounded-full flex items-center justify-center bg-purple-100">
+                    <svg class="w-5 h-5 text-[#A366FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <h2 class="font-semibold text-lg">Process for Requesting Cancellation</h2>
+            </div>
+            <ol class="list-decimal pl-10 text-sm text-gray-600 space-y-1">
+                <li>Contact our support team with your order details.</li>
+                <li>Complete the cancellation form we provide.</li>
+                <li>Receive confirmation of your request.</li>
+            </ol>
+        </div>
+
+        <div class="space-y-3">
+            <div class="flex items-center space-x-3">
+                <div class="h-8 w-8 rounded-full flex items-center justify-center bg-green-100">
+                    <svg class="w-5 h-5 text-[#19C37D]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H9a2 2 0 00-2 2v2m10 0v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9m10 0H7"/></svg>
+                </div>
+                <h2 class="font-semibold text-lg">Refund Terms & Processing</h2>
+            </div>
+            <p class="text-sm text-gray-600">Approved cancellations will be refunded in full. Refunds are processed within 7 days of confirmation.</p>
+            <div class="flex flex-wrap gap-2">
+                <span class="px-3 py-1 bg-[#ECFDF5] text-[#19C37D] rounded-full text-xs">Refund within 7 days</span>
+                <span class="px-3 py-1 bg-[#F1F5FF] text-[#5171FF] rounded-full text-xs">Refunded to original payment method</span>
+            </div>
+        </div>
+
+        <div class="space-y-3">
+            <div class="flex items-center space-x-3">
+                <div class="h-8 w-8 rounded-full flex items-center justify-center bg-orange-100">
+                    <svg class="w-5 h-5 text-[#FFB547]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <h2 class="font-semibold text-lg">Non-Refundable Situations</h2>
+            </div>
+            <ul class="list-disc pl-10 text-sm text-gray-600 space-y-1">
+                <li>Requests after 7 days of purchase</li>
+                <li>Accounts with violations of our terms</li>
+                <li>Bulk license purchases</li>
+            </ul>
+            <div class="flex items-start bg-[#FFF7ED] border border-orange-200 p-4 rounded text-sm text-gray-700 space-x-2">
+                <svg class="w-5 h-5 text-[#FFB547] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <p>Please review your subscription details carefully before purchasing.</p>
+            </div>
+        </div>
+
+        <div class="space-y-3">
+            <div class="flex items-center space-x-3">
+                <div class="h-8 w-8 rounded-full flex items-center justify-center bg-blue-100">
+                    <svg class="w-5 h-5 text-[#5171FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2v-5H3v5a2 2 0 002 2z"/></svg>
+                </div>
+                <h2 class="font-semibold text-lg">Timeline for Refunds</h2>
+            </div>
+            <div class="space-y-2">
+                <div class="flex justify-between items-center bg-gray-50 px-4 py-2 rounded text-sm text-gray-600">
+                    <span>Credit/Debit Card</span>
+                    <span>5-7 business days</span>
+                </div>
+                <div class="flex justify-between items-center bg-gray-50 px-4 py-2 rounded text-sm text-gray-600">
+                    <span>PayPal</span>
+                    <span>3-5 business days</span>
+                </div>
+                <div class="flex justify-between items-center bg-gray-50 px-4 py-2 rounded text-sm text-gray-600">
+                    <span>Bank Transfer</span>
+                    <span>7-10 business days</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-3">
+            <div class="flex items-center space-x-3">
+                <div class="h-8 w-8 rounded-full flex items-center justify-center bg-blue-100">
+                    <svg class="w-5 h-5 text-[#5171FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8V7a2 2 0 00-2-2H5a2 2 0 00-2 2v1m0 0v8a2 2 0 002 2h14a2 2 0 002-2V8m-2 5h.01M12 17h.01M7 9h10"/></svg>
+                </div>
+                <h2 class="font-semibold text-lg">Contact for Support</h2>
+            </div>
+            <p class="text-sm text-gray-600">Need help? Reach out to our support team.</p>
+            <div class="flex space-x-3">
+                <a href="mailto:support@aiinsights.com" class="px-3 py-1 bg-[#19C37D] text-white rounded">Support Email</a>
+                <a href="/contact/" class="px-3 py-1 bg-[#5171FF] text-white rounded">Contact Support</a>
+            </div>
+        </div>
+        <div class="text-xs text-gray-500 text-right">Last updated: 2024</div>
+    </div>
+</section>
+{% endblock %}
