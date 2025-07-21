@@ -21,6 +21,7 @@
                 <a href="{% url 'blog_home' %}" class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
                 <a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">About</a>
                 <a href="{% url 'contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Contact</a>
+                <a href="{% url 'terms' %}" class="{% if request.resolver_match.url_name == 'terms' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Terms</a>
                 <a href="{% url 'accounts:auth_split' %}" class="hover:text-blue-600">Authenticate</a>
                 <a href="{% url 'accounts:login' %}" class="px-4 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-50">Login</a>
                 <a href="{% url 'accounts:signup' %}" class="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Sign Up</a>
@@ -32,6 +33,7 @@
                 <a href="{% url 'blog_home' %}" class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
                 <a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">About</a>
                 <a href="{% url 'contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Contact</a>
+                <a href="{% url 'terms' %}" class="{% if request.resolver_match.url_name == 'terms' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Terms</a>
                 <a href="{% url 'accounts:login' %}" class="hover:text-blue-600">Login</a>
                 <a href="{% url 'accounts:signup' %}" class="hover:text-blue-600">Sign Up</a>
                 <a href="{% url 'accounts:auth_split' %}" class="hover:text-blue-600">Authenticate</a>
@@ -56,7 +58,7 @@
             </div>
             <div class="text-sm flex flex-col space-y-2">
                 <a href="/blog/" class="hover:text-white">Blog</a>
-                <a href="/terms/" class="hover:text-white">Terms of Use</a>
+                <a href="/terms/" class="hover:text-white">Terms of Service</a>
                 <a href="{% url 'privacy' %}" class="hover:text-white">Privacy Policy</a>
                 <a href="/cancellation/" class="hover:text-white">Cancellation</a>
                 <a href="/contact/" class="hover:text-white">Contact</a>

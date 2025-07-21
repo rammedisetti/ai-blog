@@ -32,3 +32,12 @@ class PrivacyTests(TestCase):
         response = self.client.get(reverse('privacy'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Privacy Policy')
+
+
+class TermsTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_get_terms_page(self):
+        response = self.client.get(reverse('terms'))
+        self.assertEqual(response.status_code, 200)

@@ -53,3 +53,11 @@ def privacy(request):
 
     context = {"year": datetime.now().year}
     return render(request, "blog/privacy.html", context)
+
+
+def terms(request):
+    """Render the Terms and Conditions page."""
+    from datetime import datetime
+
+    context = {"year": datetime.now().year}
+    return render(request, "blog/terms.html", context)
