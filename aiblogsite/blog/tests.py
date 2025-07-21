@@ -22,3 +22,12 @@ class ContactTests(TestCase):
         response = self.client.post(reverse('contact'), data)
         self.assertEqual(response.status_code, 200)
         self.assertTrue(ContactMessage.objects.filter(email='tester@example.com').exists())
+
+
+class TermsTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_get_terms_page(self):
+        response = self.client.get(reverse('terms'))
+        self.assertEqual(response.status_code, 200)
