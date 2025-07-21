@@ -18,6 +18,17 @@ def blog_home(request):
     return render(request, "blog/blog_home.html", context)
 
 
+def article_detail(request, slug):
+    """Render a single article detail page."""
+    from datetime import datetime
+    if slug != "the-future-of-ai-in-software-development":
+        from django.http import Http404
+        raise Http404()
+
+    context = {"year": datetime.now().year}
+    return render(request, "blog/article_detail.html", context)
+
+
 def about(request):
     """Render the About page."""
     from datetime import datetime
