@@ -1,0 +1,95 @@
+{% extends "blog/base.html" %}
+{% load static %}
+
+{% block title %}Contact Us - AI Insights{% endblock %}
+{% block body_class %}min-h-screen flex flex-col bg-[#F8F9FB] text-gray-800{% endblock %}
+
+{% block content %}
+
+    <!-- Hero Section -->
+    <section class="text-center px-6 py-16 bg-white">
+        <h1 class="text-4xl sm:text-5xl font-extrabold mb-4">Contact <span class="text-[#5171FF]">Us</span></h1>
+        <p class="text-gray-500 max-w-2xl mx-auto">We’re here to help. Reach out for support, feedback, or business inquiries.</p>
+    </section>
+
+    <main class="flex-1 max-w-5xl mx-auto px-6 py-12 grid gap-8 md:grid-cols-2">
+        <!-- Contact Form -->
+        <div class="bg-white rounded-xl shadow p-6">
+            <h2 class="text-xl font-bold mb-4">Send us a message</h2>
+            {% if success %}
+                <div class="bg-green-100 text-green-700 p-4 mb-4 rounded">Thank you for contacting us! We'll be in touch soon.</div>
+            {% endif %}
+            {% if form.errors %}
+                <div class="bg-red-100 text-red-600 p-4 mb-4 rounded">Please correct the errors below.</div>
+            {% endif %}
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                <input type="text" name="name" value="{{ form.name.value|default_if_none:'' }}" placeholder="Your full name" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                {% for error in form.name.errors %}<p class="text-red-600 text-sm">{{ error }}</p>{% endfor %}
+
+                <input type="email" name="email" value="{{ form.email.value|default_if_none:'' }}" placeholder="your.email@example.com" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                {% for error in form.email.errors %}<p class="text-red-600 text-sm">{{ error }}</p>{% endfor %}
+
+                <select name="subject" class="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                    <option value="" disabled {% if not form.subject.value %}selected{% endif %}>Select a subject</option>
+                    {% for code,label in form.fields.subject.choices %}
+                        <option value="{{ code }}" {% if form.subject.value == code %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                {% for error in form.subject.errors %}<p class="text-red-600 text-sm">{{ error }}</p>{% endfor %}
+
+                <textarea name="message" rows="5" placeholder="Tell us how we can help you..." class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400">{{ form.message.value|default_if_none:'' }}</textarea>
+                {% for error in form.message.errors %}<p class="text-red-600 text-sm">{{ error }}</p>{% endfor %}
+
+                <label class="flex items-start text-sm">
+                    <input type="checkbox" name="agree" class="mt-1 text-blue-600 rounded" {% if form.agree.value %}checked{% endif %} required>
+                    <span class="ml-2">I agree to the <a href="/privacy/" class="text-blue-600 underline">Privacy Policy</a> and <a href="/terms/" class="text-blue-600 underline">Terms of Service</a></span>
+                </label>
+                {% for error in form.agree.errors %}<p class="text-red-600 text-sm">{{ error }}</p>{% endfor %}
+
+                <button type="submit" class="w-full py-3 bg-[#5171FF] text-white font-bold rounded-lg hover:bg-[#347CFF]">Send Message</button>
+            </form>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="bg-white rounded-xl shadow p-6">
+            <h2 class="text-xl font-bold mb-4">Get in Touch</h2>
+            <div class="space-y-4 text-sm">
+                <div class="flex items-start space-x-3">
+                    <svg class="w-6 h-6 text-[#5171FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12h.01M12 16h.01M8 12h.01M12 8h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
+                    <div>
+                        <p>support@aiinsights.com</p>
+                        <p>business@aiinsights.com</p>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <svg class="w-6 h-6 text-[#A366FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 12.414a2 2 0 00-2.828 0L6.343 16.657M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <p>123 AI Street, San Francisco, CA 91015</p>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <svg class="w-6 h-6 text-[#19C37D]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h1.28a2 2 0 011.789 1.106L9.217 7.447a2 2 0 01-.196 2.177l-1.585 1.585a11.037 11.037 0 005.585 5.585l1.585-1.585a2 2 0 012.177-.196l3.341 1.148A2 2 0 0121 17.72V19a2 2 0 01-2 2h-.125C9.279 21 3 14.721 3 6.125V5z"/></svg>
+                    <p>(925) 123-4567</p>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <svg class="w-6 h-6 text-[#FFB547]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <p>We typically respond within 24 hours.</p>
+                </div>
+            </div>
+            <div class="flex space-x-4 mt-6">
+                <a href="#" aria-label="Twitter" class="text-gray-400 hover:text-blue-600">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg>
+                </a>
+                <a href="#" aria-label="LinkedIn" class="text-gray-400 hover:text-blue-600">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zM4 4a2 2 0 110 4 2 2 0 010-4z"/></svg>
+                </a>
+                <a href="#" aria-label="Facebook" class="text-gray-400 hover:text-blue-600">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+                </a>
+                <a href="#" aria-label="Instagram" class="text-gray-400 hover:text-blue-600">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M7 2C4.243 2 2 4.243 2 7v10c0 2.757 2.243 5 5 5h10c2.757 0 5-2.243 5-5V7c0-2.757-2.243-5-5-5H7zm10 2a3 3 0 013 3v10a3 3 0 01-3 3H7a3 3 0 01-3-3V7a3 3 0 013-3h10zm-5 3a5 5 0 100 10 5 5 0 000-10zm6.5-.5a1.5 1.5 0 11-3.001.001A1.5 1.5 0 0118.5 6.5z"/></svg>
+                </a>
+            </div>
+        </div>
+    </main>
+
+{% endblock %}
