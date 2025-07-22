@@ -19,16 +19,16 @@
             <nav id="nav-menu" class="hidden md:flex items-center space-x-6">
                 <a href="{% url 'home' %}" aria-label="Home" class="{% if request.resolver_match.url_name == 'home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Home</a>
                 <a href="{% url 'blog_home' %}" aria-label="Blog" class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
-                <a href="{% url 'accounts:login' %}" aria-label="Login" class="px-4 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-50">Login</a>
-                <a href="{% url 'accounts:signup' %}" aria-label="Sign Up" class="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Sign Up</a>
+                <a href="{% url 'accounts:auth_split' %}?form=login" aria-label="Login" class="px-4 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-50">Login</a>
+                <a href="{% url 'accounts:auth_split' %}?form=signup" aria-label="Sign Up" class="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Sign Up</a>
             </nav>
         </div>
         <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
             <nav class="flex flex-col space-y-2">
                 <a href="{% url 'home' %}" aria-label="Home" class="{% if request.resolver_match.url_name == 'home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Home</a>
                 <a href="{% url 'blog_home' %}" aria-label="Blog" class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
-                <a href="{% url 'accounts:login' %}" aria-label="Login" class="hover:text-blue-600">Login</a>
-                <a href="{% url 'accounts:signup' %}" aria-label="Sign Up" class="hover:text-blue-600">Sign Up</a>
+                <a href="{% url 'accounts:auth_split' %}?form=login" aria-label="Login" class="hover:text-blue-600">Login</a>
+                <a href="{% url 'accounts:auth_split' %}?form=signup" aria-label="Sign Up" class="hover:text-blue-600">Sign Up</a>
             </nav>
         </div>
     </header>

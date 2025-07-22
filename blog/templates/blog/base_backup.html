@@ -23,8 +23,8 @@
                 <a href="{% url 'contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Contact</a>
                 <a href="{% url 'terms' %}" class="{% if request.resolver_match.url_name == 'terms' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Terms</a>
                 <a href="{% url 'accounts:auth_split' %}" class="hover:text-blue-600">Authenticate</a>
-                <a href="{% url 'accounts:login' %}" class="px-4 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-50">Login</a>
-                <a href="{% url 'accounts:signup' %}" class="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Sign Up</a>
+                <a href="{% url 'accounts:auth_split' %}?form=login" class="px-4 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-50">Login</a>
+                <a href="{% url 'accounts:auth_split' %}?form=signup" class="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Sign Up</a>
             </nav>
         </div>
         <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
@@ -34,8 +34,8 @@
                 <a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">About</a>
                 <a href="{% url 'contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Contact</a>
                 <a href="{% url 'terms' %}" class="{% if request.resolver_match.url_name == 'terms' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Terms</a>
-                <a href="{% url 'accounts:login' %}" class="hover:text-blue-600">Login</a>
-                <a href="{% url 'accounts:signup' %}" class="hover:text-blue-600">Sign Up</a>
+                <a href="{% url 'accounts:auth_split' %}?form=login" class="hover:text-blue-600">Login</a>
+                <a href="{% url 'accounts:auth_split' %}?form=signup" class="hover:text-blue-600">Sign Up</a>
                 <a href="{% url 'accounts:auth_split' %}" class="hover:text-blue-600">Authenticate</a>
             </nav>
         </div>
