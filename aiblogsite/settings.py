@@ -43,6 +43,9 @@ INSTALLED_APPS = [
     'blog',
 ]
 
+# Use custom user model from the accounts app
+AUTH_USER_MODEL = 'accounts.User'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
