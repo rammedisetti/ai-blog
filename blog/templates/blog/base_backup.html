@@ -12,23 +12,31 @@
 <body class="{% block body_class %}min-h-screen flex flex-col bg-white text-gray-800{% endblock %}">
     <header class="border-b bg-white">
         <div class="max-w-7xl mx-auto px-6 flex items-center justify-between py-4">
-            <a href="/" class="text-xl font-semibold" aria-label="HowAiworks Home">HowAiworks</a>
+            <a href="/" class="text-xl font-semibold">HowAiworks</a>
             <button id="nav-toggle" class="md:hidden">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
             <nav id="nav-menu" class="hidden md:flex items-center space-x-6">
-                <a href="{% url 'home' %}" aria-label="Home" class="{% if request.resolver_match.url_name == 'home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Home</a>
-                <a href="{% url 'blog_home' %}" aria-label="Blog" class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
-                <a href="{% url 'accounts:auth_split' %}?form=login" aria-label="Login" class="px-4 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-50">Login</a>
-                <a href="{% url 'accounts:auth_split' %}?form=signup" aria-label="Sign Up" class="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Sign Up</a>
+                <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Home</a>
+                <a href="{% url 'blog_home' %}" class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
+                <a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">About</a>
+                <a href="{% url 'contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Contact</a>
+                <a href="{% url 'terms' %}" class="{% if request.resolver_match.url_name == 'terms' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Terms</a>
+                <a href="{% url 'accounts:auth_split' %}" class="hover:text-blue-600">Authenticate</a>
+                <a href="{% url 'accounts:auth_split' %}?form=login" class="px-4 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-50">Login</a>
+                <a href="{% url 'accounts:auth_split' %}?form=signup" class="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Sign Up</a>
             </nav>
         </div>
         <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
             <nav class="flex flex-col space-y-2">
-                <a href="{% url 'home' %}" aria-label="Home" class="{% if request.resolver_match.url_name == 'home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Home</a>
-                <a href="{% url 'blog_home' %}" aria-label="Blog" class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
-                <a href="{% url 'accounts:auth_split' %}?form=login" aria-label="Login" class="hover:text-blue-600">Login</a>
-                <a href="{% url 'accounts:auth_split' %}?form=signup" aria-label="Sign Up" class="hover:text-blue-600">Sign Up</a>
+                <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Home</a>
+                <a href="{% url 'blog_home' %}" class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
+                <a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">About</a>
+                <a href="{% url 'contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Contact</a>
+                <a href="{% url 'terms' %}" class="{% if request.resolver_match.url_name == 'terms' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Terms</a>
+                <a href="{% url 'accounts:auth_split' %}?form=login" class="hover:text-blue-600">Login</a>
+                <a href="{% url 'accounts:auth_split' %}?form=signup" class="hover:text-blue-600">Sign Up</a>
+                <a href="{% url 'accounts:auth_split' %}" class="hover:text-blue-600">Authenticate</a>
             </nav>
         </div>
     </header>
@@ -49,11 +57,11 @@
                 </div>
             </div>
             <div class="text-sm flex flex-col space-y-2">
-                <a href="{% url 'terms' %}" aria-label="Terms of Service" class="hover:text-white">Terms of Service</a>
-                <a href="{% url 'privacy' %}" aria-label="Privacy Policy" class="hover:text-white">Privacy Policy</a>
-                <a href="{% url 'cancellation' %}" aria-label="Cancellation and Refund Policy" class="hover:text-white">Cancellation &amp; Refund Policy</a>
-                <a href="{% url 'contact' %}" aria-label="Contact" class="hover:text-white">Contact</a>
-                <a href="{% url 'about' %}" aria-label="About" class="hover:text-white">About</a>
+                <a href="/blog/" class="hover:text-white">Blog</a>
+                <a href="/terms/" class="hover:text-white">Terms of Service</a>
+                <a href="{% url 'privacy' %}" class="hover:text-white">Privacy Policy</a>
+                <a href="/cancellation/" class="hover:text-white">Cancellation &amp; Refund Policy</a>
+                <a href="/contact/" class="hover:text-white">Contact</a>
             </div>
             <div>
                 <form hx-post="#" hx-target="#footer-message" hx-swap="outerHTML" class="flex flex-col sm:flex-row gap-3">

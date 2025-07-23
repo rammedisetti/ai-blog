@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Insights Authentication</title>
+    <title>HowAiworks Authentication</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/feather-icons"></script>
@@ -16,13 +16,14 @@
             <div class="mx-auto flex items-center justify-center w-16 h-16 rounded-lg bg-gradient-to-br from-[#786EFF] to-[#5F68FF] mb-6">
                 <i data-feather="layers" class="text-white w-8 h-8"></i>
             </div>
-            <h1 class="text-3xl font-bold text-center mb-2">Join AI Insights</h1>
+            <h1 class="text-3xl font-bold text-center mb-2">Join HowAiworks</h1>
             <p class="text-center text-gray-600 mb-6">Get exclusive access to AI technology insights and news. No credit card required.</p>
             <div class="flex justify-center mb-6">
-                <button id="signupTab" class="px-4 py-2 font-semibold border-b-2 border-[#347CFF] text-[#347CFF]">Sign Up</button>
-                <button id="loginTab" class="px-4 py-2 font-semibold border-b-2 border-transparent text-gray-500">Log In</button>
+                <button id="signupTab" class="px-4 py-2 font-semibold border-b-2 {% if active_form == 'signup' %}border-[#347CFF] text-[#347CFF]{% else %}border-transparent text-gray-500{% endif %}">Sign Up</button>
+                <button id="loginTab" class="px-4 py-2 font-semibold border-b-2 {% if active_form == 'login' %}border-[#347CFF] text-[#347CFF]{% else %}border-transparent text-gray-500{% endif %}">Log In</button>
             </div>
-            <form id="signupForm" class="space-y-4" method="post" action="{% url 'accounts:signup' %}">
+
+            <form id="signupForm" class="space-y-4 {% if active_form != 'signup' %}hidden{% endif %}" method="post" action="{% url 'accounts:signup' %}">
                 {% csrf_token %}
                 <input type="text" name="username" placeholder="John Doe" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#347CFF]">
                 <input type="email" name="email" placeholder="john@example.com" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#347CFF]">
@@ -45,9 +46,10 @@
                 </label>
                 <button type="submit" class="w-full py-3 text-white font-semibold rounded bg-gradient-to-r from-[#5171FF] to-[#A366FF] hover:shadow-md">Create Account</button>
             </form>
-            <form id="loginForm" class="space-y-4 hidden" method="post" action="{% url 'accounts:login' %}">
+
+            <form id="loginForm" class="space-y-4 {% if active_form != 'login' %}hidden{% endif %}" method="post" action="{% url 'accounts:login' %}">
                 {% csrf_token %}
-                <input type="text" name="username" placeholder="Email or Username" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#347CFF]">
+                <input type="text" name="username" placeholder="Username or Email" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#347CFF]">
                 <div class="relative">
                     <input id="loginPassword" type="password" name="password" placeholder="Password" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#347CFF]">
                     <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer" onclick="togglePassword('loginPassword', this)">
@@ -63,7 +65,7 @@
     <div class="w-full md:w-1/2 text-white flex flex-col justify-center p-10" style="background: linear-gradient(135deg, #5171FF 0%, #A366FF 100%);">
         <div class="max-w-lg mx-auto space-y-6">
             <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-7 7-7-7"/></svg>
-            <p class="text-2xl italic">“AI Insights has transformed how our team stays updated on AI technologies. The weekly newsletter is now an essential part of our research process.”</p>
+            <p class="text-2xl italic">“HowAiworks has transformed how our team stays updated on AI technologies. The weekly newsletter is now an essential part of our research process.”</p>
             <div class="flex items-center space-x-3">
                 <img src="https://avatars.githubusercontent.com/u/9919?s=40" alt="avatar" class="w-10 h-10 rounded-full">
                 <div>
@@ -97,28 +99,42 @@
             el.innerHTML = feather.icons['eye'].toSvg();
         }
     }
+
     const signupTab = document.getElementById('signupTab');
     const loginTab = document.getElementById('loginTab');
     const signupForm = document.getElementById('signupForm');
     const loginForm = document.getElementById('loginForm');
     const switchToLogin = document.getElementById('switchToLogin');
-    signupTab.addEventListener('click', () => {
-        signupTab.classList.add('text-[#347CFF]', 'border-[#347CFF]');
-        loginTab.classList.remove('text-[#347CFF]', 'border-[#347CFF]');
-        signupForm.classList.remove('hidden');
-        loginForm.classList.add('hidden');
-    });
-    loginTab.addEventListener('click', () => {
-        loginTab.classList.add('text-[#347CFF]', 'border-[#347CFF]');
-        signupTab.classList.remove('text-[#347CFF]', 'border-[#347CFF]');
-        signupForm.classList.add('hidden');
-        loginForm.classList.remove('hidden');
-    });
+
+    function activateTab(tab) {
+        if (tab === 'signup') {
+            signupTab.classList.add('text-[#347CFF]', 'border-[#347CFF]');
+            signupTab.classList.remove('text-gray-500', 'border-transparent');
+            loginTab.classList.add('text-gray-500', 'border-transparent');
+            loginTab.classList.remove('text-[#347CFF]', 'border-[#347CFF]');
+            signupForm.classList.remove('hidden');
+            loginForm.classList.add('hidden');
+        } else {
+            loginTab.classList.add('text-[#347CFF]', 'border-[#347CFF]');
+            loginTab.classList.remove('text-gray-500', 'border-transparent');
+            signupTab.classList.add('text-gray-500', 'border-transparent');
+            signupTab.classList.remove('text-[#347CFF]', 'border-[#347CFF]');
+            signupForm.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+        }
+        feather.replace();
+    }
+
+    signupTab.addEventListener('click', () => activateTab('signup'));
+    loginTab.addEventListener('click', () => activateTab('login'));
+
     switchToLogin.addEventListener('click', function(e) {
         e.preventDefault();
-        loginTab.click();
+        activateTab('login');
     });
-    feather.replace();
+
+    const defaultTab = '{{ active_form|default:"signup" }}';
+    activateTab(defaultTab);
     </script>
 </body>
 </html>
