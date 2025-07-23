@@ -22,43 +22,39 @@
                 <button id="signupTab" class="px-4 py-2 font-semibold border-b-2 {% if active_form == 'signup' %}border-[#347CFF] text-[#347CFF]{% else %}border-transparent text-gray-500{% endif %}">Sign Up</button>
                 <button id="loginTab" class="px-4 py-2 font-semibold border-b-2 {% if active_form == 'login' %}border-[#347CFF] text-[#347CFF]{% else %}border-transparent text-gray-500{% endif %}">Log In</button>
             </div>
+
             <form id="signupForm" class="space-y-4 {% if active_form != 'signup' %}hidden{% endif %}" method="post" action="{% url 'accounts:signup' %}">
                 {% csrf_token %}
-                {{ signup_form.non_field_errors }}
-                <div>
-                    {{ signup_form.username.label_tag }}
-                    {{ signup_form.username }}
-                    {{ signup_form.username.errors }}
+                <input type="text" name="username" placeholder="John Doe" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#347CFF]">
+                <input type="email" name="email" placeholder="john@example.com" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#347CFF]">
+                <div class="relative">
+                    <input id="signupPassword" type="password" name="password1" placeholder="Password" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#347CFF]">
+                    <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer" onclick="togglePassword('signupPassword', this)">
+                        <i data-feather="eye"></i>
+                    </span>
                 </div>
-                <div>
-                    {{ signup_form.email.label_tag }}
-                    {{ signup_form.email }}
-                    {{ signup_form.email.errors }}
+                <div class="relative">
+                    <input id="signupPassword2" type="password" name="password2" placeholder="Confirm Password" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#347CFF]">
+                    <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer" onclick="togglePassword('signupPassword2', this)">
+                        <i data-feather="eye"></i>
+                    </span>
                 </div>
-                <div>
-                    {{ signup_form.password1.label_tag }}
-                    {{ signup_form.password1 }}
-                    {{ signup_form.password1.errors }}
-                </div>
-                <div>
-                    {{ signup_form.password2.label_tag }}
-                    {{ signup_form.password2 }}
-                    {{ signup_form.password2.errors }}
-                </div>
+                <p class="text-xs text-gray-500">Must be at least 8 characters</p>
+                <label class="flex items-center text-sm text-gray-600">
+                    <input type="checkbox" required class="mr-2 h-4 w-4 text-[#347CFF]">
+                    I agree to the <a href="#" class="text-[#347CFF] underline ml-1">Terms of Service</a> and <a href="#" class="text-[#347CFF] underline">Privacy Policy</a>
+                </label>
                 <button type="submit" class="w-full py-3 text-white font-semibold rounded bg-gradient-to-r from-[#5171FF] to-[#A366FF] hover:shadow-md">Create Account</button>
             </form>
+
             <form id="loginForm" class="space-y-4 {% if active_form != 'login' %}hidden{% endif %}" method="post" action="{% url 'accounts:login' %}">
                 {% csrf_token %}
-                {{ login_form.non_field_errors }}
-                <div>
-                    {{ login_form.username.label_tag }}
-                    {{ login_form.username }}
-                    {{ login_form.username.errors }}
-                </div>
-                <div>
-                    {{ login_form.password.label_tag }}
-                    {{ login_form.password }}
-                    {{ login_form.password.errors }}
+                <input type="text" name="username" placeholder="Username or Email" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#347CFF]">
+                <div class="relative">
+                    <input id="loginPassword" type="password" name="password" placeholder="Password" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#347CFF]">
+                    <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer" onclick="togglePassword('loginPassword', this)">
+                        <i data-feather="eye"></i>
+                    </span>
                 </div>
                 <button type="submit" class="w-full py-3 text-white font-semibold rounded bg-gradient-to-r from-[#5171FF] to-[#A366FF] hover:shadow-md">Log In</button>
             </form>
@@ -103,34 +99,42 @@
             el.innerHTML = feather.icons['eye'].toSvg();
         }
     }
+
     const signupTab = document.getElementById('signupTab');
     const loginTab = document.getElementById('loginTab');
     const signupForm = document.getElementById('signupForm');
     const loginForm = document.getElementById('loginForm');
     const switchToLogin = document.getElementById('switchToLogin');
-    signupTab.addEventListener('click', () => {
-        signupTab.classList.add('text-[#347CFF]', 'border-[#347CFF]');
-        loginTab.classList.remove('text-[#347CFF]', 'border-[#347CFF]');
-        signupForm.classList.remove('hidden');
-        loginForm.classList.add('hidden');
-    });
-    loginTab.addEventListener('click', () => {
-        loginTab.classList.add('text-[#347CFF]', 'border-[#347CFF]');
-        signupTab.classList.remove('text-[#347CFF]', 'border-[#347CFF]');
-        signupForm.classList.add('hidden');
-        loginForm.classList.remove('hidden');
-    });
+
+    function activateTab(tab) {
+        if (tab === 'signup') {
+            signupTab.classList.add('text-[#347CFF]', 'border-[#347CFF]');
+            signupTab.classList.remove('text-gray-500', 'border-transparent');
+            loginTab.classList.add('text-gray-500', 'border-transparent');
+            loginTab.classList.remove('text-[#347CFF]', 'border-[#347CFF]');
+            signupForm.classList.remove('hidden');
+            loginForm.classList.add('hidden');
+        } else {
+            loginTab.classList.add('text-[#347CFF]', 'border-[#347CFF]');
+            loginTab.classList.remove('text-gray-500', 'border-transparent');
+            signupTab.classList.add('text-gray-500', 'border-transparent');
+            signupTab.classList.remove('text-[#347CFF]', 'border-[#347CFF]');
+            signupForm.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+        }
+        feather.replace();
+    }
+
+    signupTab.addEventListener('click', () => activateTab('signup'));
+    loginTab.addEventListener('click', () => activateTab('login'));
+
     switchToLogin.addEventListener('click', function(e) {
         e.preventDefault();
-        loginTab.click();
+        activateTab('login');
     });
+
     const defaultTab = '{{ active_form|default:"signup" }}';
-    if (defaultTab === 'login') {
-        loginTab.click();
-    } else {
-        signupTab.click();
-    }
-    feather.replace();
+    activateTab(defaultTab);
     </script>
 </body>
 </html>
