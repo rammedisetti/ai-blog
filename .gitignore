@@ -7,4 +7,5 @@
 __pycache__/
 
 #ignre specific files
-working-settings.py
+settings-local.py
+manage-local.py
