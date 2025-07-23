@@ -1,21 +1,23 @@
 {% extends "blog/base.html" %}
 {% load static %}
 
-{% block title %}The Future of AI in Software Development - HowAiworks{% endblock %}
+{% block title %}{{ post.seo_title|default:post.title }} - HowAiworks{% endblock %}
 
 {% block content %}
 <article class="max-w-3xl mx-auto px-6 py-12">
     <!-- Article Header -->
     <header class="mb-8 text-center">
-        <h1 class="text-4xl sm:text-5xl font-extrabold mb-4">The Future of AI in Software Development</h1>
+        <h1 class="text-4xl sm:text-5xl font-extrabold mb-4">{{ post.title }}</h1>
         <div class="flex flex-col sm:flex-row justify-center items-center gap-3 text-sm text-gray-500">
-            <img src="https://source.unsplash.com/40x40/?person" class="w-8 h-8 rounded-full" alt="Author">
-            <a href="#" class="hover:underline">Alex Johnson</a>
-            <span>Jun 20, 2024</span>
-            <span>6 min read</span>
+            {% if post.author.profile_picture_url %}
+            <img src="{{ post.author.profile_picture_url }}" class="w-8 h-8 rounded-full" alt="Author">
+            {% endif %}
+            <a href="#" class="hover:underline">{{ post.author.get_full_name|default:post.author.username }}</a>
+            <span>{{ post.published_at|date:"M d, Y" }}</span>
             <span class="flex flex-wrap gap-2">
-                <span class="px-2 py-1 rounded-full bg-blue-100 text-blue-600">AI News</span>
-                <span class="px-2 py-1 rounded-full bg-purple-100 text-purple-600">Programming</span>
+                {% for cat in post.categories.all %}
+                <span class="px-2 py-1 rounded-full bg-blue-100 text-blue-600">{{ cat.name }}</span>
+                {% endfor %}
             </span>
         </div>
         <div class="flex justify-center gap-4 mt-4 text-gray-500">
@@ -35,41 +37,30 @@
     </header>
 
     <!-- Featured Image -->
-    <img src="https://source.unsplash.com/1200x675/?technology,code" alt="AI Future" class="rounded-t-xl mb-8 w-full object-cover aspect-video">
+    {% if post.featured_image_url %}
+    <img src="{{ post.featured_image_url }}" alt="{{ post.title }}" class="rounded-t-xl mb-8 w-full object-cover aspect-video">
+    {% endif %}
 
     <!-- Article Body -->
     <div class="prose max-w-none">
-        <p>Artificial intelligence is rapidly transforming how developers build and maintain software. From assisting with code generation to automating testing, AI tools are reshaping workflows and enabling teams to ship high-quality products faster.</p>
-        <h2>Smarter Code Completion</h2>
-        <p>Modern IDEs now integrate machine learning models that analyze vast amounts of open-source code. These systems offer context-aware suggestions, helping developers write functions and classes with fewer keystrokes.</p>
-        <pre class="bg-[#22272E] text-gray-100 p-4 rounded-lg shadow overflow-auto"><code># Example of Python list comprehension
-squares = [x*x for x in range(10)]
-print(squares)
-</code></pre>
-        <p>As models continue to improve, they will understand code semantics more deeply, reducing the cognitive load on engineers.</p>
-        <blockquote class="border-l-4 border-blue-600 bg-[#F1F5FF] p-4 italic my-6">AI won't replace developers, but developers who use AI will replace those who don't.</blockquote>
-        <h2>Automated Testing</h2>
-        <p>Quality assurance is another area where AI provides immense value. Tools can now generate unit tests automatically and even detect potential bugs before code reaches production.</p>
-        <ul>
-            <li>Generate test cases based on code analysis</li>
-            <li>Predict areas most likely to break</li>
-            <li>Provide detailed reports for faster debugging</li>
-        </ul>
-        <p>The synergy between human creativity and AI-driven automation promises exciting advancements for the industry.</p>
+        {{ post.content|safe }}
     </div>
 
     <!-- Tags -->
     <div class="mt-8 flex flex-wrap gap-2">
-        <span class="px-3 py-1 rounded-full bg-green-100 text-green-600 text-sm">Software</span>
-        <span class="px-3 py-1 rounded-full bg-orange-100 text-orange-600 text-sm">Development</span>
+        {% for tag in post.tags.all %}
+        <span class="px-3 py-1 rounded-full bg-green-100 text-green-600 text-sm">{{ tag.name }}</span>
+        {% endfor %}
     </div>
 
     <!-- Author Box -->
     <div class="mt-12 p-6 bg-white rounded-xl shadow flex items-center space-x-4">
-        <img src="https://source.unsplash.com/80x80/?face" alt="Author" class="w-16 h-16 rounded-full">
+        {% if post.author.profile_picture_url %}
+        <img src="{{ post.author.profile_picture_url }}" alt="Author" class="w-16 h-16 rounded-full">
+        {% endif %}
         <div>
-            <h3 class="font-bold">Alex Johnson</h3>
-            <p class="text-sm text-gray-600">Tech journalist covering AI breakthroughs and software trends.</p>
+            <h3 class="font-bold">{{ post.author.get_full_name|default:post.author.username }}</h3>
+            <p class="text-sm text-gray-600">{{ post.author.bio }}</p>
             <div class="flex space-x-3 mt-2 text-gray-500">
                 <a href="#" aria-label="Twitter" class="hover:text-blue-600">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg>
@@ -85,30 +76,18 @@ print(squares)
     <section class="mt-16">
         <h2 class="text-2xl font-bold text-center mb-8">Related Articles</h2>
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {% for rpost in related_posts %}
             <article class="bg-white rounded-xl shadow hover:shadow-lg transition">
-                <img src="https://source.unsplash.com/400x250/?robot" alt="AI" class="rounded-t-xl w-full object-cover">
+                {% if rpost.featured_image_url %}
+                <img src="{{ rpost.featured_image_url }}" alt="{{ rpost.title }}" class="rounded-t-xl w-full object-cover">
+                {% endif %}
                 <div class="p-4">
-                    <h3 class="font-semibold text-lg mb-1 text-blue-600 hover:underline"><a href="#">Breakthroughs in Neural Networks</a></h3>
-                    <p class="text-sm text-gray-600 mb-2">Discover recent advances in deep learning and applications.</p>
-                    <div class="text-xs text-gray-500">Jane Doe &bull; Jun 12, 2024</div>
+                    <h3 class="font-semibold text-lg mb-1 text-blue-600 hover:underline"><a href="{% url 'article_detail' slug=rpost.slug %}">{{ rpost.title }}</a></h3>
+                    <p class="text-sm text-gray-600 mb-2">{{ rpost.excerpt }}</p>
+                    <div class="text-xs text-gray-500">{{ rpost.author.get_full_name|default:rpost.author.username }} &bull; {{ rpost.published_at|date:"M d, Y" }}</div>
                 </div>
             </article>
-            <article class="bg-white rounded-xl shadow hover:shadow-lg transition">
-                <img src="https://source.unsplash.com/401x251/?chip" alt="AI" class="rounded-t-xl w-full object-cover">
-                <div class="p-4">
-                    <h3 class="font-semibold text-lg mb-1 text-blue-600 hover:underline"><a href="#">Exploring Quantum Computing for AI</a></h3>
-                    <p class="text-sm text-gray-600 mb-2">How quantum technology could accelerate machine learning.</p>
-                    <div class="text-xs text-gray-500">Michael Lee &bull; Apr 22, 2024</div>
-                </div>
-            </article>
-            <article class="bg-white rounded-xl shadow hover:shadow-lg transition">
-                <img src="https://source.unsplash.com/402x252/?computer" alt="AI" class="rounded-t-xl w-full object-cover">
-                <div class="p-4">
-                    <h3 class="font-semibold text-lg mb-1 text-blue-600 hover:underline"><a href="#">Step-by-Step Guide to Building Chatbots</a></h3>
-                    <p class="text-sm text-gray-600 mb-2">Learn to create intelligent chatbots with modern frameworks.</p>
-                    <div class="text-xs text-gray-500">Alicia Keys &bull; May 10, 2024</div>
-                </div>
-            </article>
+            {% endfor %}
         </div>
     </section>
 

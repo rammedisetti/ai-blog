@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .forms import ContactForm
+from .models import Post, Category, Tag
 
 
 def home(request):
@@ -11,21 +12,36 @@ def home(request):
 
 
 def blog_home(request):
-    """Render the blog index page."""
+    """Render the blog index page with dynamic posts."""
     from datetime import datetime
 
-    context = {"year": datetime.now().year}
+    posts = (
+        Post.objects.filter(status="published")
+        .select_related("author")
+        .prefetch_related("categories", "tags")
+    )
+    categories = Category.objects.all()
+    context = {"year": datetime.now().year, "posts": posts, "categories": categories}
     return render(request, "blog/blog_home.html", context)
 
 
 def article_detail(request, slug):
-    """Render a single article detail page."""
+    """Render a single article detail page from the database."""
     from datetime import datetime
-    if slug != "the-future-of-ai-in-software-development":
-        from django.http import Http404
-        raise Http404()
+    from django.shortcuts import get_object_or_404
 
-    context = {"year": datetime.now().year}
+    post = get_object_or_404(
+        Post.objects.select_related("author").prefetch_related("categories", "tags"),
+        slug=slug,
+        status="published",
+    )
+
+    related_posts = (
+        Post.objects.filter(status="published", categories__in=post.categories.all())
+        .exclude(id=post.id)
+        .distinct()[:3]
+    )
+    context = {"year": datetime.now().year, "post": post, "related_posts": related_posts}
     return render(request, "blog/article_detail.html", context)
 
 
