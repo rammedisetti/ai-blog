@@ -26,8 +26,8 @@
             <form id="signupForm" class="space-y-4 {% if active_form != 'signup' %}hidden{% endif %}" method="post" action="{% url 'accounts:signup' %}">
                 {% csrf_token %}
                 {{ signup_form.non_field_errors }}
-                {{ signup_form.username|add_class:'w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#347CFF]'|attr:'placeholder:John Doe' }}
-                {{ signup_form.email|add_class:'w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#347CFF]'|attr:'placeholder:john@example.com' }}
+                {{ signup_form.username|add_class:'w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#347CFF]'|attr:'placeholder:John Doe'|attr:'id:signupUsername' }}
+                {{ signup_form.email|add_class:'w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#347CFF]'|attr:'placeholder:john@example.com'| attr:'id:signupEmail' }}
                 <div class="relative">
                     {{ signup_form.password1|add_class:'w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#347CFF]'|attr:'id:signupPassword'|attr:'placeholder:Password' }}
                     <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer" onclick="togglePassword('signupPassword', this)">
@@ -45,6 +45,14 @@
                     <input type="checkbox" required class="mr-2 h-4 w-4 text-[#347CFF]">
                     I agree to the <a href="#" class="text-[#347CFF] underline ml-1">Terms of Service</a> and <a href="#" class="text-[#347CFF] underline">Privacy Policy</a>
                 </label>
+                {% for field in signup_form %}
+                {% for error in field.errors %}
+                <div class="text-red-500 text-sm">{{ error }}</div>
+                {% endfor %}
+                {% endfor %}
+                {% for error in signup_form.non_field_errors %}
+                <div class="text-red-500 text-sm">{{ error }}</div>
+                {% endfor %}
                 <button type="submit" class="w-full py-3 text-white font-semibold rounded bg-gradient-to-r from-[#5171FF] to-[#A366FF] hover:shadow-md">Create Account</button>
                 <p class="text-center text-sm mt-6">Already have an account? <a href="#" id="switchToLogin" class="text-[#347CFF] underline">Log in</a></p>
             </form>
@@ -52,14 +60,21 @@
 
             <form id="loginForm" class="space-y-4 {% if active_form != 'login' %}hidden{% endif %}" method="post" action="{% url 'accounts:login' %}">
                 {% csrf_token %}
-                {{ login_form.non_field_errors }}
-                {{ login_form.username|add_class:'w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#347CFF]'|attr:'placeholder:Username or Email' }}
+                {{ login_form.username|add_class:'w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#347CFF]'|attr:'placeholder:Username or Email'|attr:'id:loginUsername' }}
                 <div class="relative">
                     {{ login_form.password|add_class:'w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#347CFF]'|attr:'id:loginPassword'|attr:'placeholder:Password' }}
                     <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer" onclick="togglePassword('loginPassword', this)">
                         <i data-feather="eye"></i>
                     </span>
                 </div>
+                {% for field in login_form %}
+                {% for error in field.errors %}
+                <div class="text-red-500 text-sm">{{ error }}</div>
+                {% endfor %}
+                {% endfor %}
+                {% for error in login_form.non_field_errors %}
+                <div class="text-red-500 text-sm">{{ error }}</div>
+                {% endfor %}
                 <button type="submit" class="w-full py-3 text-white font-semibold rounded bg-gradient-to-r from-[#5171FF] to-[#A366FF] hover:shadow-md">Log In</button>
                 <p class="text-center text-sm mt-6">Don't have an account? <a href="#" id="switchToLogin" class="text-[#347CFF] underline">Sign up</a></p>
             </form>
