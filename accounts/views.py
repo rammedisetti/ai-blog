@@ -1,6 +1,6 @@
 """Views for the accounts app."""
 
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
@@ -39,7 +39,9 @@ def login_view(request):
 
     if request.method == "POST":
         form = LoginForm(request, data=request.POST)
+        print(request.POST)
         if form.is_valid():
+            print("Form is valid")
             login(request, form.get_user())
             return redirect("home")
         return render(
@@ -69,3 +71,8 @@ def auth_split(request):
     }
     return render(request, "accounts/auth_split.html", context)
 
+@require_http_methods(["POST"])
+def logout_view(request):
+    """Log out the user and redirect to home."""
+    logout(request)
+    return redirect("login")
