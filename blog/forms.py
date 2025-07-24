@@ -17,6 +17,12 @@ class ContactForm(forms.ModelForm):
 class PostForm(forms.ModelForm):
     """Form for creating blog posts."""
 
+    tags_input = forms.CharField(
+        required=False,
+        label="Tags",
+        help_text="Comma separated",
+    )
+
     class Meta:
         model = Post
         fields = [
@@ -27,9 +33,8 @@ class PostForm(forms.ModelForm):
             "featured_image_url",
             "status",
             "categories",
-            "tags",
         ]
         widgets = {
-            "categories": forms.CheckboxSelectMultiple,
-            "tags": forms.CheckboxSelectMultiple,
+            "categories": forms.SelectMultiple,
         }
+
