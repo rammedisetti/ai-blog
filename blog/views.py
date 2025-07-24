@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .forms import ContactForm, PostForm
 from .models import Post, Category, Tag
+from django.utils.text import slugify
 
 
 def home(request):
@@ -99,13 +100,14 @@ def cancellation(request):
 
 
 def add_post(request):
-    """Create a new blog post."""
+    """Create a new blog post with HTMX actions."""
     from datetime import datetime
     from django.contrib.auth import get_user_model
     from django.utils import timezone
 
     if request.method == "POST":
         form = PostForm(request.POST)
+        action = request.POST.get("action")
         if form.is_valid():
             post = form.save(commit=False)
             if request.user.is_authenticated:
@@ -113,17 +115,35 @@ def add_post(request):
             else:
                 User = get_user_model()
                 post.author = User.objects.first()
-            if post.status == "published" and not post.published_at:
-                post.published_at = timezone.now()
-            post.save()
-            form.save_m2m()
+
+            tags_input = form.cleaned_data.get("tags_input", "")
+            if action == "publish":
+                post.status = "published"
+                if not post.published_at:
+                    post.published_at = timezone.now()
+            else:
+                post.status = "draft"
+
+            if action != "preview":
+                post.save()
+                form.save_m2m()
+                if tags_input:
+                    tag_names = [t.strip() for t in tags_input.split(",") if t.strip()]
+                    tags = []
+                    for name in tag_names:
+                        tag, _ = Tag.objects.get_or_create(
+                            slug=slugify(name), defaults={"name": name}
+                        )
+                        tags.append(tag)
+                    post.tags.set(tags)
+
+            if action == "preview":
+                post.created_at = timezone.now()
+                return render(request, "blog/post_preview.html", {"post": post})
+
             if request.htmx:
-                return render(
-                    request,
-                    "blog/add_post_success.html",
-                    {"post": post},
-                )
-            context = {"year": datetime.now().year}
+                return render(request, "blog/add_post_success.html", {"post": post})
+
             return redirect("blog_home")
     else:
         form = PostForm()

@@ -1,20 +1,43 @@
 {% load widget_tweaks %}
-<form hx-post="{% url 'add_post' %}" hx-target="#form-container" hx-swap="outerHTML" method="post" class="space-y-4">
+<form id="post-form" class="space-y-4" method="post">
     {% csrf_token %}
     {{ form.non_field_errors }}
-    {{ form.title|add_class:'w-full px-4 py-2 border border-gray-300 rounded' }}
-    {{ form.slug|add_class:'w-full px-4 py-2 border border-gray-300 rounded' }}
-    {{ form.excerpt|add_class:'w-full px-4 py-2 border border-gray-300 rounded' }}
-    {{ form.content|add_class:'w-full px-4 py-2 border border-gray-300 rounded' }}
-    {{ form.featured_image_url|add_class:'w-full px-4 py-2 border border-gray-300 rounded' }}
-    {{ form.status|add_class:'w-full px-4 py-2 border border-gray-300 rounded' }}
     <div>
-        <label class="block font-semibold mb-2">Categories</label>
-        {{ form.categories }}
+        <label for="id_title" class="block font-semibold mb-1">Post Title</label>
+        {{ form.title|add_class:'w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500'|attr:'placeholder:Enter your post title' }}
     </div>
     <div>
-        <label class="block font-semibold mb-2">Tags</label>
-        {{ form.tags }}
+        <label for="id_slug" class="block font-semibold mb-1">Slug</label>
+        {{ form.slug|add_class:'w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500'|attr:'placeholder:post-url-slug' }}
     </div>
-    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Save Post</button>
+    <div>
+        <label for="id_excerpt" class="block font-semibold mb-1">Excerpt</label>
+        {{ form.excerpt|add_class:'w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500'|attr:'placeholder:Brief description of your post...' }}
+    </div>
+    <div>
+        <label for="id_content" class="block font-semibold mb-1">Content</label>
+        {{ form.content|add_class:'w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500'|attr:'placeholder:Write your post content here...'|attr:'rows:10' }}
+    </div>
+    <div>
+        <label for="id_featured_image_url" class="block font-semibold mb-1">Featured Image URL</label>
+        {{ form.featured_image_url|add_class:'w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500'|attr:'placeholder:https://example.com/image.jpg' }}
+        <input type="file" name="image_upload" class="mt-2" />
+    </div>
+    <div>
+        <label for="id_status" class="block font-semibold mb-1">Status</label>
+        {{ form.status|add_class:'w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500' }}
+    </div>
+    <div>
+        <label class="block font-semibold mb-1">Categories</label>
+        {{ form.categories|add_class:'w-full border border-gray-300 rounded focus:ring-2 focus:ring-blue-500' }}
+    </div>
+    <div>
+        <label for="id_tags_input" class="block font-semibold mb-1">Tags</label>
+        {{ form.tags_input|add_class:'w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500'|attr:'placeholder:tag1, tag2' }}
+    </div>
+    <div class="flex gap-3 pt-2">
+        <button hx-post="{% url 'add_post' %}" hx-target="#form-container" hx-swap="outerHTML" hx-include="#post-form" name="action" value="draft" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" type="submit">Save Draft</button>
+        <button hx-post="{% url 'add_post' %}" hx-target="#preview-container" hx-swap="innerHTML" hx-include="#post-form" name="action" value="preview" class="px-4 py-2 bg-blue-200 text-blue-700 rounded hover:bg-blue-300" type="button">Preview</button>
+        <button hx-post="{% url 'add_post' %}" hx-target="#form-container" hx-swap="outerHTML" hx-include="#post-form" name="action" value="publish" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" type="submit">Publish Post</button>
+    </div>
 </form>
