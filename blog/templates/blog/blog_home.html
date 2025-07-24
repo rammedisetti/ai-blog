@@ -43,7 +43,7 @@
                         <span>{{ post.author.get_full_name|default:post.author.username }}</span>
                     </div>
                     <h3 class="font-semibold text-lg mb-2">{{ post.title }}</h3>
-                    <p class="text-gray-600 mb-4">{{ post.excerpt }}</p>
+                    <p class="text-gray-600 text-sm mb-4 line-clamp-3">{{ post.excerpt }}</p>
                     <div class="flex flex-wrap gap-2 mb-4">
                         {% for tag in post.tags.all %}
                         <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-600">{{ tag.name }}</span>
