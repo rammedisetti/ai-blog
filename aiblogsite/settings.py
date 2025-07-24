@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'accounts',
     'blog',
+    'django_htmx',
 ]
 
 # Use custom user model from the accounts app
@@ -54,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',
 ]
 
 ROOT_URLCONF = 'aiblogsite.urls'
