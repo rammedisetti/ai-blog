@@ -10,4 +10,5 @@ urlpatterns = [
     path('privacy/', views.privacy, name='privacy'),
     path('terms/', views.terms, name='terms'),
     path('cancellation/', views.cancellation, name='cancellation'),
+    path('add_post/', views.add_post, name='add_post'),
 ]
