@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .forms import ContactForm
+from .forms import ContactForm, PostForm
 from .models import Post, Category, Tag
 
 
@@ -96,3 +96,39 @@ def cancellation(request):
 
     context = {"year": datetime.now().year}
     return render(request, "blog/cancellation.html", context)
+
+
+def add_post(request):
+    """Create a new blog post."""
+    from datetime import datetime
+    from django.contrib.auth import get_user_model
+    from django.utils import timezone
+
+    if request.method == "POST":
+        form = PostForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            if request.user.is_authenticated:
+                post.author = request.user
+            else:
+                User = get_user_model()
+                post.author = User.objects.first()
+            if post.status == "published" and not post.published_at:
+                post.published_at = timezone.now()
+            post.save()
+            form.save_m2m()
+            if request.htmx:
+                return render(
+                    request,
+                    "blog/add_post_success.html",
+                    {"post": post},
+                )
+            context = {"year": datetime.now().year}
+            return redirect("blog_home")
+    else:
+        form = PostForm()
+
+    context = {"form": form, "year": datetime.now().year}
+    if request.htmx:
+        return render(request, "blog/_post_form.html", context)
+    return render(request, "blog/add_post.html", context)

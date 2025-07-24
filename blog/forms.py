@@ -1,5 +1,5 @@
 from django import forms
-from .models import ContactMessage
+from .models import ContactMessage, Post
 
 
 class ContactForm(forms.ModelForm):
@@ -11,4 +11,25 @@ class ContactForm(forms.ModelForm):
         }
         labels = {
             "agree": "I agree to the Privacy Policy and Terms of Service",
+        }
+
+
+class PostForm(forms.ModelForm):
+    """Form for creating blog posts."""
+
+    class Meta:
+        model = Post
+        fields = [
+            "title",
+            "slug",
+            "excerpt",
+            "content",
+            "featured_image_url",
+            "status",
+            "categories",
+            "tags",
+        ]
+        widgets = {
+            "categories": forms.CheckboxSelectMultiple,
+            "tags": forms.CheckboxSelectMultiple,
         }
