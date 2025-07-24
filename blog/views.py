@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect
 from .forms import ContactForm, PostForm
 from .models import Post, Category, Tag
 from django.utils.text import slugify
-
+from django.contrib.auth.decorators import login_required
+from datetime import datetime
+from django.utils import timezone
 
 def home(request):
     """Render landing page with current year."""
@@ -98,25 +100,21 @@ def cancellation(request):
     context = {"year": datetime.now().year}
     return render(request, "blog/cancellation.html", context)
 
-
+@login_required(login_url='accounts:login')
 def add_post(request):
-    """Create a new blog post with HTMX actions."""
-    from datetime import datetime
-    from django.contrib.auth import get_user_model
-    from django.utils import timezone
+    """Create a new blog post (authenticated users only)."""
 
     if request.method == "POST":
         form = PostForm(request.POST)
-        action = request.POST.get("action")
+        print("Form data:", request.POST)  # Debugging line to check form data
+    
         if form.is_valid():
+            print("Form is valid")
             post = form.save(commit=False)
-            if request.user.is_authenticated:
-                post.author = request.user
-            else:
-                User = get_user_model()
-                post.author = User.objects.first()
+            post.author = request.user
+            action = request.POST.get("action")
+            tags_input = request.POST.get("tags_input", "")
 
-            tags_input = form.cleaned_data.get("tags_input", "")
             if action == "publish":
                 post.status = "published"
                 if not post.published_at:
@@ -124,23 +122,19 @@ def add_post(request):
             else:
                 post.status = "draft"
 
-            if action != "preview":
-                post.save()
-                form.save_m2m()
-                if tags_input:
-                    tag_names = [t.strip() for t in tags_input.split(",") if t.strip()]
-                    tags = []
-                    for name in tag_names:
-                        tag, _ = Tag.objects.get_or_create(
-                            slug=slugify(name), defaults={"name": name}
-                        )
-                        tags.append(tag)
-                    post.tags.set(tags)
-
-            if action == "preview":
-                post.created_at = timezone.now()
-                return render(request, "blog/post_preview.html", {"post": post})
-
+            post.save()
+            form.save_m2m()
+            if tags_input:
+                tag_names = [t.strip() for t in tags_input.split(",") if t.strip()]
+                tags = []
+                for name in tag_names:
+                    tag, _ = Tag.objects.get_or_create(
+                        slug=slugify(name), defaults={"name": name}
+                    )
+                    tags.append(tag)
+                post.tags.set(tags)
+            return redirect("blog_home")
+            
             if request.htmx:
                 return render(request, "blog/add_post_success.html", {"post": post})
 
@@ -149,6 +143,4 @@ def add_post(request):
         form = PostForm()
 
     context = {"form": form, "year": datetime.now().year}
-    if request.htmx:
-        return render(request, "blog/_post_form.html", context)
     return render(request, "blog/add_post.html", context)
