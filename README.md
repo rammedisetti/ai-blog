@@ -36,3 +36,10 @@ password validators and are securely hashed.
 A lightweight login page lets existing users sign in with their username or
 email address and password. After authenticating, users are redirected to the
 homepage.
+
+## User Dashboard
+
+Authenticated users now have access to a dashboard at `/user_dashboard/`. The page
+uses a two column layout with a sidebar showing the avatar and navigation links.
+Users can update their profile information, manage notification preferences and
+change their password. A list of the user's own articles is also available.
