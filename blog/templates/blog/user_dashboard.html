@@ -5,7 +5,7 @@
 {% block body_class %}min-h-screen flex flex-col bg-[#F8F9FB] text-gray-800{% endblock %}
 
 {% block content %}
-<div class="container p-6 md:flex gap-6" x-data="{ tab: 'profile' }">
+<div class="container p-6 md:flex gap-6"  x-data="{ tab: '{{ active_tab|default:'profile'|escapejs }}' }">
     <aside class="md:w-80 bg-white rounded-lg shadow p-4 mb-6 md:mb-0 max-h-max">
         <div class="flex items-center text-center space-y-2">
             {% if user.profile_picture_url %}
@@ -13,9 +13,10 @@
             {% else %}
             <i class="fas fa-user-circle text-6xl text-gray-400"></i>
             {% endif %}
-            <div class="flex flex-col items-start text-center space-y-2"  >
-            <div class="font-semibold">{{ user.get_full_name|default:user.username }}</div>
-            {% if user.role %}<div class="text-sm text-gray-500">{{ user.role }}</div>{% endif %}</div>
+            <div class="flex flex-col items-start text-center space-y-2">
+                <div class="font-semibold">{{ user.get_full_name|default:user.username }}</div>
+                {% if user.role %}<div class="text-sm text-gray-500">{{ user.role }}</div>{% endif %}
+            </div>
         </div>
         <nav class="mt-6 space-y-2">
             <a href="#" @click.prevent="tab = 'profile'" :class="tab === 'profile' ? 'bg-blue-100 text-blue-700' : ''"
@@ -92,8 +93,7 @@
             {% if posts %}
             <ul class="space-y-2">
                 {% for post in posts %}
-                <li><a href="{% url 'article_detail' slug=post.slug %}" class="text-blue-600 hover:underline">{{
-                        post.title }}</a></li>
+                <li><a href="{% url 'article_detail' slug=post.slug %}" class="text-blue-600 hover:underline">{{ post.title }}</a></li>
                 {% endfor %}
             </ul>
             {% else %}
@@ -101,7 +101,8 @@
             {% endif %}
         </section>
         <!-- Preferences Section -->
-        <section id="prefs" x-show="tab === 'prefs'" x-cloak class="bg-white rounded-lg shadow p-6" x-data="{ changed: false }">
+        <section id="prefs" x-show="tab === 'prefs'" x-cloak class="bg-white rounded-lg shadow p-6"
+            x-data="{ changed: false }">
             <h2 class="text-xl font-semibold mb-4">Notification Preferences</h2>
             <form method="post" @change="changed = true">
                 {% csrf_token %}
@@ -121,12 +122,9 @@
                     </div>
                     {% endfor %}
                 </div>
-                <button
-            name="update_prefs"
-            class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            type="submit"
-            :disabled="!changed"
-        >Save</button>
+                <button name="update_prefs"
+                    class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    type="submit" :disabled="!changed">Save</button>
             </form>
         </section>
         <!-- Password Section -->
@@ -134,16 +132,25 @@
             <h2 class="text-xl font-semibold mb-4">Update Password</h2>
             <form method="post">
                 {% csrf_token %}
-                {{ password_form.non_field_errors }}
+                {% if password_form.non_field_errors %}
+                <div class="mb-4 text-red-500 text-sm">
+                    {% for error in password_form.non_field_errors %}
+                    <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
                 {% for field in password_form %}
                 <div class="mb-4">
                     {{ field.label_tag }}
                     {{ field|add_class:'w-full border rounded p-2' }}
-                    {% for error in field.errors %}<div class="text-red-500 text-sm">{{ error }}</div>{% endfor %}
+                    {% for error in field.errors %}
+                    <div class="text-red-500 text-sm">{{ error }}</div>
+                    {% endfor %}
                 </div>
                 {% endfor %}
-                <button name="change_password" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Change
-                    Password</button>
+                <button name="change_password" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    Change Password
+                </button>
             </form>
         </section>
     </div>
@@ -152,8 +159,8 @@
 
 {% block extra_js %}
 <script>
-  window.onload = function() {
-    window.scrollTo(0, 0);
-  }
+    window.onload = function () {
+        window.scrollTo(0, 0);
+    }
 </script>
 {% endblock %}

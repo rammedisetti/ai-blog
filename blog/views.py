@@ -157,6 +157,8 @@ def user_dashboard(request):
     pref_form = PreferencesForm(instance=request.user)
     password_form = PasswordUpdateForm(request.user)
 
+    active_tab = "profile"  # Default active tab
+    
     if request.method == "POST":
         if "update_profile" in request.POST:
             profile_form = ProfileForm(request.POST, instance=request.user)
@@ -164,20 +166,23 @@ def user_dashboard(request):
                 profile_form.save()
                 messages.success(request, "Profile updated")
                 return redirect("user_dashboard")
+            active_tab = "profile"
         elif "update_prefs" in request.POST:
-            print("prefs updated")
             pref_form = PreferencesForm(request.POST, instance=request.user)
             if pref_form.is_valid():
                 pref_form.save()
                 messages.success(request, "Preferences updated")
                 return redirect("user_dashboard")
+            active_tab = "prefs"
         elif "change_password" in request.POST:
             password_form = PasswordUpdateForm(request.user, request.POST)
             if password_form.is_valid():
+                print("password updated form valid")
                 user = password_form.save()
                 update_session_auth_hash(request, user)
                 messages.success(request, "Password changed")
                 return redirect("user_dashboard")
+            active_tab = "password"
 
     context = {
         "posts": posts,
@@ -185,5 +190,6 @@ def user_dashboard(request):
         "pref_form": pref_form,
         "password_form": password_form,
         "year": datetime.now().year,
+        "active_tab": active_tab,
     }
     return render(request, "blog/user_dashboard.html", context)
