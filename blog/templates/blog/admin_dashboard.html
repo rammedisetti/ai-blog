@@ -1,0 +1,30 @@
+{% extends "blog/base.html" %}
+{% load widget_tweaks %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<section class="px-6 py-12 max-w-3xl mx-auto space-y-8">
+  <h1 class="text-3xl font-bold">Manage Authors</h1>
+  <form method="post" class="bg-white p-4 rounded shadow space-y-4">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+    <div>
+      {{ field.label_tag }}
+      {{ field|add_class:"w-full border rounded p-2" }}
+      {% for error in field.errors %}<div class="text-red-500 text-sm">{{ error }}</div>{% endfor %}
+    </div>
+    {% endfor %}
+    <button class="px-4 py-2 bg-blue-600 text-white rounded" type="submit">Create Author</button>
+  </form>
+  <div class="bg-white p-4 rounded shadow">
+    <h2 class="text-xl font-semibold mb-2">Existing Authors</h2>
+    <ul class="list-disc ml-5 space-y-1">
+      {% for a in authors %}
+      <li>{{ a.get_full_name|default:a.username }} ({{ a.email }})</li>
+      {% empty %}
+      <li>No authors.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+{% endblock %}

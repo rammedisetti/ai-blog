@@ -71,6 +71,20 @@
                         {{ profile_form.location|add_class:'w-full border rounded p-2' }}
                     </div>
                 </div>
+                <div class="grid md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        {{ profile_form.profession.label_tag }}
+                        {{ profile_form.profession|add_class:'w-full border rounded p-2' }}
+                    </div>
+                    <div>
+                        {{ profile_form.date_of_birth.label_tag }}
+                        {{ profile_form.date_of_birth|add_class:'w-full border rounded p-2' }}
+                    </div>
+                </div>
+                <div class="mt-4">
+                    {{ profile_form.interests.label_tag }}
+                    {{ profile_form.interests }}
+                </div>
                 <div class="mt-4">
                     {{ profile_form.hobbies.label_tag }}
                     {{ profile_form.hobbies|add_class:'w-full border rounded p-2' }}
@@ -88,17 +102,54 @@
             </form>
         </section>
         <!-- Articles Section -->
-        <section id="articles" x-show="tab === 'articles'" x-cloak class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold mb-4">My Articles</h2>
-            {% if posts %}
-            <ul class="space-y-2">
-                {% for post in posts %}
-                <li><a href="{% url 'article_detail' slug=post.slug %}" class="text-blue-600 hover:underline">{{ post.title }}</a></li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <p>No articles yet.</p>
-            {% endif %}
+        <section id="articles" x-show="tab === 'articles'" x-cloak class="bg-white rounded-lg shadow p-6 space-y-8">
+            <div>
+                <h2 class="text-xl font-semibold mb-4">My Articles</h2>
+                {% if posts %}
+                <ul class="space-y-2">
+                    {% for post in posts %}
+                    <li class="flex items-center justify-between">
+                        <a href="{% url 'article_detail' slug=post.slug %}" class="text-blue-600 hover:underline">{{ post.title }}</a>
+                        <form method="post" action="{% url 'update_post_status' post.id %}" class="flex items-center gap-2">
+                            {% csrf_token %}
+                            <select name="status" class="border rounded p-1 text-sm">
+                                {% for key, val in post.STATUS_CHOICES %}
+                                <option value="{{ key }}" {% if post.status == key %}selected{% endif %}>{{ val }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="px-2 py-1 bg-blue-600 text-white rounded text-xs">Save</button>
+                        </form>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>No articles yet.</p>
+                {% endif %}
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold mb-4">Saved Articles</h2>
+                {% if saved_posts %}
+                <ul class="space-y-2">
+                    {% for post in saved_posts %}
+                    <li><a href="{% url 'article_detail' slug=post.slug %}" class="text-blue-600 hover:underline">{{ post.title }}</a></li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>No saved articles.</p>
+                {% endif %}
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold mb-4">Liked Articles</h2>
+                {% if liked_posts %}
+                <ul class="space-y-2">
+                    {% for post in liked_posts %}
+                    <li><a href="{% url 'article_detail' slug=post.slug %}" class="text-blue-600 hover:underline">{{ post.title }}</a></li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>No liked articles.</p>
+                {% endif %}
+            </div>
         </section>
         <!-- Preferences Section -->
         <section id="prefs" x-show="tab === 'prefs'" x-cloak class="bg-white rounded-lg shadow p-6"

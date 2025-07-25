@@ -8,6 +8,7 @@ from django.contrib.auth.forms import (
     PasswordChangeForm,
 )
 from django.contrib.auth import authenticate
+from .models import InterestChoices
 
 User = get_user_model()
 
@@ -19,13 +20,27 @@ class SignupForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ("username", "email", "password1", "password2")
+        fields = (
+            "username",
+            "email",
+            "password1",
+            "password2",
+            "first_name",
+            "last_name",
+        )
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
         if User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError("A user with that email already exists.")
         return email
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.role = User.Role.READER
+        if commit:
+            user.save()
+        return user
 
 
 class LoginForm(AuthenticationForm):
@@ -57,6 +72,12 @@ class LoginForm(AuthenticationForm):
 class ProfileForm(forms.ModelForm):
     """Form for updating basic profile information."""
 
+    interests = forms.MultipleChoiceField(
+        choices=InterestChoices.choices,
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+
     class Meta:
         model = User
         fields = [
@@ -67,8 +88,19 @@ class ProfileForm(forms.ModelForm):
             "status",
             "location",
             "hobbies",
+            "profession",
+            "date_of_birth",
+            "interests",
             "bio",
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.interests:
+            self.initial["interests"] = self.instance.interests
+
+    def clean_interests(self):
+        return self.cleaned_data.get("interests", [])
 
 
 class PreferencesForm(forms.ModelForm):
