@@ -165,6 +165,7 @@ def user_dashboard(request):
                 messages.success(request, "Profile updated")
                 return redirect("user_dashboard")
         elif "update_prefs" in request.POST:
+            print("prefs updated")
             pref_form = PreferencesForm(request.POST, instance=request.user)
             if pref_form.is_valid():
                 pref_form.save()

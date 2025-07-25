@@ -7,30 +7,40 @@
 {% block content %}
 <div class="container p-6 md:flex gap-6" x-data="{ tab: 'profile' }">
     <aside class="md:w-80 bg-white rounded-lg shadow p-4 mb-6 md:mb-0 max-h-max">
-        <div class="flex flex-col items-center text-center space-y-2">
+        <div class="flex items-center text-center space-y-2">
             {% if user.profile_picture_url %}
-            <img src="{{ user.profile_picture_url }}" alt="Avatar" class="w-20 h-20 rounded-full object-cover">
+            <img src="{{ user.profile_picture_url }}" alt="Avatar" class="w-20 h-20 mr-4 object-cover">
             {% else %}
             <i class="fas fa-user-circle text-6xl text-gray-400"></i>
             {% endif %}
+            <div class="flex flex-col items-start text-center space-y-2"  >
             <div class="font-semibold">{{ user.get_full_name|default:user.username }}</div>
-            {% if user.role %}<div class="text-sm text-gray-500">{{ user.role }}</div>{% endif %}
+            {% if user.role %}<div class="text-sm text-gray-500">{{ user.role }}</div>{% endif %}</div>
         </div>
         <nav class="mt-6 space-y-2">
-            <a href="#" @click.prevent="tab = 'profile'" :class="tab === 'profile' ? 'bg-blue-100 text-blue-700' : ''" class="block px-3 py-2 rounded hover:bg-gray-100">Profile</a>
-            <a href="#" @click.prevent="tab = 'articles'" :class="tab === 'articles' ? 'bg-blue-100 text-blue-700' : ''" class="block px-3 py-2 rounded hover:bg-gray-100">My Articles</a>
-            <a href="#" @click.prevent="tab = 'prefs'" :class="tab === 'prefs' ? 'bg-blue-100 text-blue-700' : ''" class="block px-3 py-2 rounded hover:bg-gray-100">Preferences</a>
-            <a href="#" @click.prevent="tab = 'password'" :class="tab === 'password' ? 'bg-blue-100 text-blue-700' : ''" class="block px-3 py-2 rounded hover:bg-gray-100">Password</a>
+            <a href="#" @click.prevent="tab = 'profile'" :class="tab === 'profile' ? 'bg-blue-100 text-blue-700' : ''"
+                class="block px-3 py-2 rounded hover:bg-gray-100">Profile</a>
+            <a href="#" @click.prevent="tab = 'articles'" :class="tab === 'articles' ? 'bg-blue-100 text-blue-700' : ''"
+                class="block px-3 py-2 rounded hover:bg-gray-100">My Articles</a>
+            <a href="#" @click.prevent="tab = 'prefs'" :class="tab === 'prefs' ? 'bg-blue-100 text-blue-700' : ''"
+                class="block px-3 py-2 rounded hover:bg-gray-100">Preferences</a>
+            <a href="#" @click.prevent="tab = 'password'" :class="tab === 'password' ? 'bg-blue-100 text-blue-700' : ''"
+                class="block px-3 py-2 rounded hover:bg-gray-100">Password</a>
             <form method="post" action="{% url 'accounts:logout' %}" class="mt-4">
                 {% csrf_token %}
-                <button type="submit" class="w-full text-left px-3 py-2 rounded text-red-600 hover:bg-gray-100">Logout</button>
+                <button type="submit"
+                    class="w-full text-left px-3 py-2 rounded text-red-600 hover:bg-gray-100">Logout</button>
             </form>
         </nav>
     </aside>
     <div class="flex-1 space-y-8">
         <!-- Profile Section -->
         <section id="profile" x-show="tab === 'profile'" x-cloak class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold mb-4">Profile Information</h2>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold">Profile Information</h2>
+                <button type="button" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"> <i
+                        class="fas fa-pencil-alt mr-2"></i>Edit</button>
+            </div>
             <form method="post">
                 {% csrf_token %}
                 {{ profile_form.non_field_errors }}
@@ -69,8 +79,10 @@
                     {{ profile_form.bio|add_class:'w-full border rounded p-2' }}
                 </div>
                 <div class="mt-4 flex gap-3">
-                    <button name="update_profile" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save</button>
-                    <a href="{% url 'user_dashboard' %}" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Cancel</a>
+                    <button name="update_profile"
+                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save</button>
+                    <a href="{% url 'user_dashboard' %}"
+                        class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Cancel</a>
                 </div>
             </form>
         </section>
@@ -80,7 +92,8 @@
             {% if posts %}
             <ul class="space-y-2">
                 {% for post in posts %}
-                <li><a href="{% url 'article_detail' slug=post.slug %}" class="text-blue-600 hover:underline">{{ post.title }}</a></li>
+                <li><a href="{% url 'article_detail' slug=post.slug %}" class="text-blue-600 hover:underline">{{
+                        post.title }}</a></li>
                 {% endfor %}
             </ul>
             {% else %}
@@ -88,19 +101,32 @@
             {% endif %}
         </section>
         <!-- Preferences Section -->
-        <section id="prefs" x-show="tab === 'prefs'" x-cloak class="bg-white rounded-lg shadow p-6">
+        <section id="prefs" x-show="tab === 'prefs'" x-cloak class="bg-white rounded-lg shadow p-6" x-data="{ changed: false }">
             <h2 class="text-xl font-semibold mb-4">Notification Preferences</h2>
-            <form method="post">
+            <form method="post" @change="changed = true">
                 {% csrf_token %}
                 <div class="space-y-4">
                     {% for field in pref_form %}
-                    <label class="flex items-center justify-between">
+                    <div class="flex items-center justify-between">
                         <span>{{ field.label }}</span>
-                        {{ field|add_class:'ml-2 h-5 w-5' }}
-                    </label>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            {{ field|add_class:"sr-only peer" }}
+                            <div
+                                class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-500 peer-checked:bg-blue-600 transition-colors">
+                            </div>
+                            <div
+                                class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-5">
+                            </div>
+                        </label>
+                    </div>
                     {% endfor %}
                 </div>
-                <button name="update_prefs" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save</button>
+                <button
+            name="update_prefs"
+            class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            type="submit"
+            :disabled="!changed"
+        >Save</button>
             </form>
         </section>
         <!-- Password Section -->
@@ -116,9 +142,18 @@
                     {% for error in field.errors %}<div class="text-red-500 text-sm">{{ error }}</div>{% endfor %}
                 </div>
                 {% endfor %}
-                <button name="change_password" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Change Password</button>
+                <button name="change_password" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Change
+                    Password</button>
             </form>
         </section>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  window.onload = function() {
+    window.scrollTo(0, 0);
+  }
+</script>
 {% endblock %}
