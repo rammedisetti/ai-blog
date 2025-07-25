@@ -93,6 +93,16 @@ class Post(models.Model):
     meta_description = models.TextField(blank=True)
     categories = models.ManyToManyField(Category, related_name="posts", blank=True)
     tags = models.ManyToManyField(Tag, related_name="posts", blank=True)
+    liked_by = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name="liked_posts",
+        blank=True,
+    )
+    saved_by = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name="saved_posts",
+        blank=True,
+    )
 
     class Meta:
         db_table = "posts"
