@@ -144,3 +144,14 @@ def add_post(request):
 
     context = {"form": form, "year": datetime.now().year}
     return render(request, "blog/add_post.html", context)
+
+def user_dashboard(request):
+    """Render the user dashboard with their posts."""
+    from datetime import datetime
+
+    if not request.user.is_authenticated:
+        return redirect("accounts:login")
+
+    posts = Post.objects.filter(author=request.user).select_related("author")
+    context = {"posts": posts, "year": datetime.now().year}
+    return render(request, "blog/user_dashboard.html", context)

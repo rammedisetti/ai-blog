@@ -26,84 +26,71 @@
                     class="{% if request.resolver_match.url_name == 'home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Home</a>
                 <a href="{% url 'blog_home' %}" aria-label="Blog"
                     class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
+
+            </nav>
+            <div class="hidden md:flex items-center space-x-4">
                 {% if request.user.is_authenticated %}
-                <div class="relative inline-block text-left" id="profile-dropdown">
-                    <button type="button" class="flex items-center space-x-2 focus:outline-none" id="profile-menu-btn"
-                        aria-haspopup="true" aria-expanded="false">
+                <div class="flex items-center text-left space-x-4" id="profile-dropdown">
+                    <span class="font-semibold text-gray-800">Hi, {{ user.username }}</span>
+                    <a href="{% url 'user_dashboard' %}" class="flex items-center space-x-2 focus:outline-none">
                         {% if user.profile.image.url %}
-                        <img src="#" alt="Profile"
+                        <img src="{{ user.profile.image.url }}" alt="Profile"
                             class="w-9 h-9 rounded-full object-cover border-2 border-blue-400 shadow-sm" />
                         {% else %}
                         <i class="fas fa-user-circle text-3xl text-blue-500"></i>
                         {% endif %}
-                        <span class="font-semibold text-gray-800">{{ user.username }}</span>
-                    </button>
-                    <!-- Dropdown menu (hidden by default) -->
-                    <div id="profile-menu"
-                        class="absolute mt-2 w-48 bg-white rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 z-50 transition-all duration-200 opacity-0 pointer-events-none">
-                        <a href="#"
-                            class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-xl">
-                            <i class="fas fa-user-edit mr-2 text-blue-500"></i> Manage
-                        </a>
-                        <form method="post" action="{% url 'accounts:logout' %}">
-                            {% csrf_token %}
-                            <button type="submit"
-                                class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 rounded-b-xl">
-                                <i class="fas fa-sign-out-alt mr-2 text-red-500"></i> Logout
-                            </button>
-                        </form>
-                    </div>
+                    </a>
+
+                    {% else %}
+                    <a href="{% url 'accounts:auth_split' %}?form=login" aria-label="Login"
+                        class="px-4 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-50">Login</a>
+                    <a href="{% url 'accounts:auth_split' %}?form=signup" aria-label="Sign Up"
+                        class="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Sign Up</a>
+                    {% endif %}
                 </div>
-                {% else %}
-                <a href="{% url 'accounts:auth_split' %}?form=login" aria-label="Login"
-                    class="px-4 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-50">Login</a>
-                <a href="{% url 'accounts:auth_split' %}?form=signup" aria-label="Sign Up"
-                    class="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Sign Up</a>
-                {% endif %}
-            </nav>
-        </div>
-        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
-            <nav class="flex flex-col space-y-2">
-                <a href="{% url 'home' %}" aria-label="Home"
-                    class="{% if request.resolver_match.url_name == 'home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Home</a>
-                <a href="{% url 'blog_home' %}" aria-label="Blog"
-                    class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
-                {% if request.user.is_authenticated %}
-                <div class="relative inline-block text-left" id="profile-dropdown">
-                    <button type="button" class="flex items-center space-x-2 focus:outline-none" id="profile-menu-btn"
-                        aria-haspopup="true" aria-expanded="false">
-                        {% if user.profile.image.url %}
-                        <img src="#" alt="Profile"
-                            class="w-9 h-9 rounded-full object-cover border-2 border-blue-400 shadow-sm" />
-                        {% else %}
-                        <i class="fas fa-user-circle text-3xl text-blue-500"></i>
-                        {% endif %}
-                        <span class="font-semibold text-gray-800">{{ user.username }}</span>
-                    </button>
-                    <!-- Dropdown menu (hidden by default) -->
-                    <div id="profile-menu"
-                        class="absolute mt-2 w-48 bg-white rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 z-50 transition-all duration-200 opacity-0 pointer-events-none">
-                        <a href="#"
-                            class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-xl">
-                            <i class="fas fa-user-edit mr-2 text-blue-500"></i> Manage
-                        </a>
-                        <form method="post" action="{% url 'accounts:logout' %}">
-                            {% csrf_token %}
-                            <button type="submit"
-                                class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 rounded-b-xl">
-                                <i class="fas fa-sign-out-alt mr-2 text-red-500"></i> Logout
-                            </button>
-                        </form>
+            </div>
+            <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+                <nav class="flex flex-col space-y-2">
+                    <a href="{% url 'home' %}" aria-label="Home"
+                        class="{% if request.resolver_match.url_name == 'home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Home</a>
+                    <a href="{% url 'blog_home' %}" aria-label="Blog"
+                        class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
+                    {% if request.user.is_authenticated %}
+                    <div class="relative inline-block text-left" id="profile-dropdown">
+                        <button type="button" class="flex items-center space-x-2 focus:outline-none"
+                            id="profile-menu-btn" aria-haspopup="true" aria-expanded="false">
+                            {% if user.profile.image.url %}
+                            <img src="#" alt="Profile"
+                                class="w-9 h-9 rounded-full object-cover border-2 border-blue-400 shadow-sm" />
+                            {% else %}
+                            <i class="fas fa-user-circle text-3xl text-blue-500"></i>
+                            {% endif %}
+                            <span class="font-semibold text-gray-800">{{ user.username }}</span>
+                        </button>
+                        <!-- Dropdown menu (hidden by default) -->
+                        <div id="profile-menu"
+                            class="absolute mt-2 w-48 bg-white rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 z-50 transition-all duration-200 opacity-0 pointer-events-none">
+                            <a href="#"
+                                class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-xl">
+                                <i class="fas fa-user-edit mr-2 text-blue-500"></i> Manage
+                            </a>
+                            <form method="post" action="{% url 'accounts:logout' %}">
+                                {% csrf_token %}
+                                <button type="submit"
+                                    class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 rounded-b-xl">
+                                    <i class="fas fa-sign-out-alt mr-2 text-red-500"></i> Logout
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                </div>
-                {% else %}
-                <a href="{% url 'accounts:auth_split' %}?form=login" aria-label="Login"
-                    class="hover:text-blue-600">Login</a>
-                <a href="{% url 'accounts:auth_split' %}?form=signup" aria-label="Sign Up"
-                    class="hover:text-blue-600">Sign Up</a>
-                {% endif %}
-            </nav>
-        </div>
+                    {% else %}
+                    <a href="{% url 'accounts:auth_split' %}?form=login" aria-label="Login"
+                        class="hover:text-blue-600">Login</a>
+                    <a href="{% url 'accounts:auth_split' %}?form=signup" aria-label="Sign Up"
+                        class="hover:text-blue-600">Sign Up</a>
+                    {% endif %}
+                </nav>
+            </div>
     </header>
 
     {% block content %}{% endblock %}

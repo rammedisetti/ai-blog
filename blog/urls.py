@@ -11,4 +11,5 @@ urlpatterns = [
     path('terms/', views.terms, name='terms'),
     path('cancellation/', views.cancellation, name='cancellation'),
     path('add_post/', views.add_post, name='add_post'),
+    path('user_dashboard/', views.user_dashboard, name='user_dashboard',)
 ]
