@@ -2,7 +2,11 @@
 
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import (
+    AuthenticationForm,
+    UserCreationForm,
+    PasswordChangeForm,
+)
 from django.contrib.auth import authenticate
 
 User = get_user_model()
@@ -48,3 +52,39 @@ class LoginForm(AuthenticationForm):
                 self.confirm_login_allowed(self.user_cache)
 
         return self.cleaned_data
+
+
+class ProfileForm(forms.ModelForm):
+    """Form for updating basic profile information."""
+
+    class Meta:
+        model = User
+        fields = [
+            "first_name",
+            "last_name",
+            "profile_picture_url",
+            "role",
+            "status",
+            "location",
+            "hobbies",
+            "bio",
+        ]
+
+
+class PreferencesForm(forms.ModelForm):
+    """Notification preference toggles for the user."""
+
+    class Meta:
+        model = User
+        fields = [
+            "email_notifications",
+            "newsletter_subscription",
+            "comment_notifications",
+            "marketing_updates",
+        ]
+
+
+class PasswordUpdateForm(PasswordChangeForm):
+    """Wrapper around Django's PasswordChangeForm for clarity."""
+
+    pass

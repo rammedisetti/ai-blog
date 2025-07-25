@@ -1,5 +1,9 @@
 from django.shortcuts import render, redirect
 from .forms import ContactForm, PostForm
+from accounts.forms import ProfileForm, PreferencesForm, PasswordUpdateForm
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import update_session_auth_hash
 from .models import Post, Category, Tag
 from django.utils.text import slugify
 from django.contrib.auth.decorators import login_required
@@ -145,13 +149,43 @@ def add_post(request):
     context = {"form": form, "year": datetime.now().year}
     return render(request, "blog/add_post.html", context)
 
+@login_required(login_url="accounts:login")
 def user_dashboard(request):
-    """Render the user dashboard with their posts."""
+    """Display and update the user's profile and related settings."""
     from datetime import datetime
 
-    if not request.user.is_authenticated:
-        return redirect("accounts:login")
-
     posts = Post.objects.filter(author=request.user).select_related("author")
-    context = {"posts": posts, "year": datetime.now().year}
+
+    profile_form = ProfileForm(instance=request.user)
+    pref_form = PreferencesForm(instance=request.user)
+    password_form = PasswordUpdateForm(request.user)
+
+    if request.method == "POST":
+        if "update_profile" in request.POST:
+            profile_form = ProfileForm(request.POST, instance=request.user)
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, "Profile updated")
+                return redirect("user_dashboard")
+        elif "update_prefs" in request.POST:
+            pref_form = PreferencesForm(request.POST, instance=request.user)
+            if pref_form.is_valid():
+                pref_form.save()
+                messages.success(request, "Preferences updated")
+                return redirect("user_dashboard")
+        elif "change_password" in request.POST:
+            password_form = PasswordUpdateForm(request.user, request.POST)
+            if password_form.is_valid():
+                user = password_form.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, "Password changed")
+                return redirect("user_dashboard")
+
+    context = {
+        "posts": posts,
+        "profile_form": profile_form,
+        "pref_form": pref_form,
+        "password_form": password_form,
+        "year": datetime.now().year,
+    }
     return render(request, "blog/user_dashboard.html", context)
