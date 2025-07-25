@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from .models import Post, Category, Tag
 from django.utils.text import slugify
-from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from django.utils import timezone
 
@@ -109,9 +108,7 @@ def add_post(request):
     """Create a new blog post (authenticated users only)."""
 
     if request.method == "POST":
-        form = PostForm(request.POST)
-        print("Form data:", request.POST)  # Debugging line to check form data
-    
+        form = PostForm(request.POST)    
         if form.is_valid():
             print("Form is valid")
             post = form.save(commit=False)

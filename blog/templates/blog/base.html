@@ -9,6 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     {% block extra_css %}{% endblock %}
 </head>
 
@@ -33,8 +34,8 @@
                 <div class="flex items-center text-left space-x-4" id="profile-dropdown">
                     <span class="font-semibold text-gray-800">Hi, {{ user.username }}</span>
                     <a href="{% url 'user_dashboard' %}" class="flex items-center space-x-2 focus:outline-none">
-                        {% if user.profile.image.url %}
-                        <img src="{{ user.profile.image.url }}" alt="Profile"
+                        {% if user.profile_picture_url %}
+                        <img src="{{ user.profile_picture_url }}" alt="Profile"
                             class="w-9 h-9 rounded-full object-cover border-2 border-blue-400 shadow-sm" />
                         {% else %}
                         <i class="fas fa-user-circle text-3xl text-blue-500"></i>
