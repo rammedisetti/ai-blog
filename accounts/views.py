@@ -2,8 +2,14 @@
 
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.views import (
+    PasswordResetView,
+    PasswordResetDoneView,
+    PasswordResetConfirmView,
+    PasswordResetCompleteView,
+)
 from django.shortcuts import redirect, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.decorators.http import require_http_methods
 
 from .forms import LoginForm, SignupForm
@@ -101,3 +107,30 @@ def author_dashboard(request):
 def author_management(request):
     """Management panel reserved for superusers."""
     return render(request, "accounts/author_management.html")
+
+
+class ForgotPasswordView(PasswordResetView):
+    """Start password reset by sending an email to the user."""
+
+    template_name = "accounts/password_reset_form.html"
+    email_template_name = "accounts/password_reset_email.txt"
+    success_url = reverse_lazy("accounts:password_reset_done")
+
+
+class ForgotPasswordDoneView(PasswordResetDoneView):
+    """Display a message after the reset email is sent."""
+
+    template_name = "accounts/password_reset_done.html"
+
+
+class ForgotPasswordConfirmView(PasswordResetConfirmView):
+    """Allow the user to set a new password via the emailed link."""
+
+    template_name = "accounts/password_reset_confirm.html"
+    success_url = reverse_lazy("accounts:password_reset_complete")
+
+
+class ForgotPasswordCompleteView(PasswordResetCompleteView):
+    """Confirmation page shown after the password has been reset."""
+
+    template_name = "accounts/password_reset_complete.html"
