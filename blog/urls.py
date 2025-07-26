@@ -14,7 +14,8 @@ urlpatterns = [
     path("toggle_like/<int:post_id>/", views.toggle_like, name="toggle_like"),
     path("toggle_save/<int:post_id>/", views.toggle_save, name="toggle_save"),
     path("update_post_status/<int:post_id>/", views.update_post_status, name="update_post_status"),
-    path("admin-dashboard/", views.admin_dashboard, name="admin_dashboard"),
-    path('user_dashboard/', views.user_dashboard, name='user_dashboard',), #to be removed later
+    path("admin-dashboard/", views.admin_dashboard, name="admin_dashboard"), #to be removed later
     path("reader_dashboard/", views.reader_dashboard, name="reader_dashboard"),
+    path("author_dashboard/", views.author_dashboard, name="author_dashboard"),
+    path("author_management/", views.author_management, name="author_management"),
 ]

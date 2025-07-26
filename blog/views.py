@@ -200,57 +200,6 @@ def add_post(request):
     context = {"form": form, "year": datetime.now().year}
     return render(request, "blog/add_post.html", context)
 
-@login_required(login_url="accounts:login")
-def user_dashboard(request):
-    """Display and update the user's profile and related settings."""
-    from datetime import datetime
-
-    posts = Post.objects.filter(author=request.user).select_related("author")
-    liked_posts = request.user.liked_posts.select_related("author")
-    saved_posts = request.user.saved_posts.select_related("author")
-
-    profile_form = ProfileForm(instance=request.user)
-    pref_form = PreferencesForm(instance=request.user)
-    password_form = PasswordUpdateForm(request.user)
-
-    active_tab = "profile"  # Default active tab
-    
-    if request.method == "POST":
-        if "update_profile" in request.POST:
-            profile_form = ProfileForm(request.POST, instance=request.user)
-            if profile_form.is_valid():
-                profile_form.save()
-                messages.success(request, "Profile updated")
-                return redirect("user_dashboard")
-            active_tab = "profile"
-        elif "update_prefs" in request.POST:
-            pref_form = PreferencesForm(request.POST, instance=request.user)
-            if pref_form.is_valid():
-                pref_form.save()
-                messages.success(request, "Preferences updated")
-                return redirect("user_dashboard")
-            active_tab = "prefs"
-        elif "change_password" in request.POST:
-            password_form = PasswordUpdateForm(request.user, request.POST)
-            if password_form.is_valid():
-                print("password updated form valid")
-                user = password_form.save()
-                update_session_auth_hash(request, user)
-                messages.success(request, "Password changed")
-                return redirect("user_dashboard")
-            active_tab = "password"
-
-    context = {
-        "posts": posts,
-        "liked_posts": liked_posts,
-        "saved_posts": saved_posts,
-        "profile_form": profile_form,
-        "pref_form": pref_form,
-        "password_form": password_form,
-        "year": datetime.now().year,
-        "active_tab": active_tab,
-    }
-    return render(request, "blog/user_dashboard.html", context)
 
 def _in_group(user, group_name: str) -> bool:
     """Helper to check if a user belongs to a given group."""
@@ -306,3 +255,16 @@ def reader_dashboard(request):
         "active_tab": active_tab,
     }
     return render(request, "blog/reader_dashboard.html", context)
+
+@login_required(login_url="accounts:login")
+@user_passes_test(lambda u: _in_group(u, "author"))
+def author_dashboard(request):
+    """Dashboard view accessible only to authors."""
+    return render(request, "blog/author_dashboard.html")
+
+
+@login_required(login_url="accounts:login")
+@user_passes_test(lambda u: u.is_superuser)
+def author_management(request):
+    """Management panel reserved for superusers."""
+    return render(request, "blog/author_management.html")
