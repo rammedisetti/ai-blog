@@ -4,7 +4,7 @@ from accounts.forms import ProfileForm, PreferencesForm, PasswordUpdateForm, Sig
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import update_session_auth_hash
-from .models import Post, Category, Tag, UserSavedPost
+from .models import Post, Category, Tag, UserSavedPost, Comment
 from accounts.models import User
 from django.shortcuts import get_object_or_404
 from django.utils.text import slugify
@@ -74,7 +74,7 @@ def article_detail(request, slug):
         .distinct()[:3]
     )
     # Comments (approved only)
-    comments = post.comments.filter(status="approved").select_related("user")
+    comments = Comment.objects.filter(post=post, status="approved").order_by('created_at')
 
     # Stats
     like_count = post.liked_by.count()
@@ -400,6 +400,24 @@ def author_management(request):
     else:
         form = SignupForm()
 
+    # Handle comment approval/denial
+    if request.method == 'POST' and 'approve_comment' in request.POST:
+        comment_id = request.POST.get('comment_id')
+        action = request.POST.get('approve_comment')
+        
+        try:
+            comment = Comment.objects.get(id=comment_id)
+            if action == 'approve':
+                comment.status = "approved"
+                comment.save()
+                messages.success(request, "Comment approved.")
+            elif action == 'deny':
+                comment.delete()  # Or set comment.status = "denied" if you want to keep records
+                messages.success(request, "Comment denied.")
+        except Comment.DoesNotExist:
+            messages.error(request, "Comment not found.")
+
+    pending_comments = Comment.objects.filter(status="pending").order_by('-created_at')
     authors = User.objects.filter(role=User.Role.AUTHOR)
-    context = {"form": form, "authors": authors}
+    context = {"form": form, "authors": authors, "pending_comments": pending_comments}
     return render(request, "blog/author_management.html", context)
