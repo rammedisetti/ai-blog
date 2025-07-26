@@ -1,7 +1,16 @@
-<button hx-post="{% url 'toggle_save' post.id %}" hx-target="this" hx-swap="outerHTML" class="hover:text-blue-600">
-    {% if user in post.saved_by.all %}
-    <i class="fas fa-bookmark"></i>
-    {% else %}
-    <i class="far fa-bookmark"></i>
-    {% endif %}
-</button>
+<form 
+    hx-post="{% url 'toggle_save' post.id %}" 
+    hx-swap="outerHTML"
+    hx-trigger="click"
+    class="inline"
+>
+    {% csrf_token %}
+    <button type="submit" aria-label="Save" class="focus:outline-none">
+        {% if is_saved %}
+            <i class="fas fa-bookmark text-blue-600"></i>
+        {% else %}
+            <i class="far fa-bookmark"></i>
+        {% endif %}
+        <span class="ml-1">{{ save_count }}</span>
+    </button>
+</form>

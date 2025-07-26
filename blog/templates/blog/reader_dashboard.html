@@ -138,8 +138,7 @@
                         <img src="{{ post.featured_image_url }}" class="w-24 h-16 object-cover rounded" />
                         {% endif %}
                         <div>
-                            <a href="{% url 'article_detail' slug=post.slug %}" class="font-semibold hover:underline">{{
-                                post.title }}</a>
+                            <a href="{% url 'article_detail' slug=post.slug %}" class="font-semibold hover:underline">{{ post.title }}</a>
                         </div>
                     </article>
                     {% endfor %}

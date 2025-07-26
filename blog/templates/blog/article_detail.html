@@ -1,4 +1,6 @@
 {% extends "blog/base.html" %}
+{% include "blog/partials/save_button.html" with post=post is_saved=is_saved save_count=save_count %}
+{% include "blog/partials/like_button.html" with post=post %}
 {% load widget_tweaks %}
 {% load static %}
 

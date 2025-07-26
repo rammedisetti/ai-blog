@@ -58,6 +58,11 @@ def article_detail(request, slug):
     else:
         comment_form = CommentForm()
 
+    # Check if the post is saved by the user
+    is_saved = request.user.is_authenticated and request.user in post.saved_by.all()
+    # check if the user has already liked the post
+    is_liked = request.user.is_authenticated and request.user in post.liked_by.all()
+
     # Related posts (same categories, not this post)
     related_posts = (
         Post.objects.filter(status="published", categories__in=post.categories.all())
@@ -82,7 +87,9 @@ def article_detail(request, slug):
         "like_count": like_count,
         "save_count": save_count,
         "comment_count": comment_count,
-        "view_count": view_count + 1,  # since we just incremented
+        "view_count": view_count + 1,
+        "is_saved": is_saved,
+        "is_liked": is_liked,
     }
     return render(request, "blog/article_detail.html", context)
 
@@ -152,7 +159,8 @@ def toggle_like(request, post_id):
         post.liked_by.add(request.user)
         liked = True
     if request.htmx:
-        context = {"post": post, "liked": liked}
+        is_liked = post.liked_by.filter(id=request.user.id).exists()
+        context = {"post": post, "is_liked": is_liked}
         return render(request, "blog/partials/like_button.html", context)
     return redirect("article_detail", slug=post.slug)
 
@@ -260,7 +268,7 @@ def reader_dashboard(request):
         .order_by("-saved_at")
     )
     saved_posts = [rel.post for rel in saved_relations]
-    saved_at_map = {rel.post_id: rel.saved_at for rel in saved_relations}
+    saved_at_map = {rel.post_id: rel.saved_at for rel in saved_relations} #to verify this logic later on
     saved_categories = Category.objects.filter(posts__in=saved_posts)
     related_posts = (
         Post.objects.filter(status="published", categories__in=saved_categories)
