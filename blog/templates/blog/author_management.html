@@ -1,30 +1,90 @@
 {% extends "blog/base.html" %}
 {% load widget_tweaks %}
+
 {% block title %}Admin Dashboard{% endblock %}
+{% block body_class %}min-h-screen flex flex-col bg-[#F8F9FB] text-gray-800{% endblock %}
+
 {% block content %}
-<section class="px-6 py-12 max-w-3xl mx-auto space-y-8">
-  <h1 class="text-3xl font-bold">Manage Authors</h1>
-  <form method="post" class="bg-white p-4 rounded shadow space-y-4">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
-    {% for field in form %}
-    <div>
-      {{ field.label_tag }}
-      {{ field|add_class:"w-full border rounded p-2" }}
-      {% for error in field.errors %}<div class="text-red-500 text-sm">{{ error }}</div>{% endfor %}
+<div class="container p-6 md:flex gap-6" x-data="{ tab: 'authors' }">
+    <aside class="md:w-72 bg-white rounded-lg shadow p-4 mb-6 md:mb-0 max-h-max">
+        <h1 class="text-xl font-semibold mb-4">Admin Panel</h1>
+        <nav class="space-y-2">
+            <a href="#" @click.prevent="tab = 'authors'" :class="tab === 'authors' ? 'bg-blue-100 text-blue-700' : ''"
+                class="block px-3 py-2 rounded hover:bg-gray-100">Authors</a>
+            <a href="#" @click.prevent="tab = 'posts'" :class="tab === 'posts' ? 'bg-blue-100 text-blue-700' : ''"
+                class="block px-3 py-2 rounded hover:bg-gray-100">Posts</a>
+            <a href="#" @click.prevent="tab = 'comments'" :class="tab === 'comments' ? 'bg-blue-100 text-blue-700' : ''"
+                class="block px-3 py-2 rounded hover:bg-gray-100">Comments</a>
+            <a href="#" @click.prevent="tab = 'analytics'" :class="tab === 'analytics' ? 'bg-blue-100 text-blue-700' : ''"
+                class="block px-3 py-2 rounded hover:bg-gray-100">Analytics</a>
+        </nav>
+    </aside>
+    <div class="flex-1 space-y-8">
+        <section id="authors" x-show="tab === 'authors'" x-cloak class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold">Author Accounts</h2>
+            </div>
+            <form method="post" class="space-y-4 mb-6">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                {% for field in form %}
+                <div>
+                    {{ field.label_tag }}
+                    {{ field|add_class:'w-full border rounded p-2' }}
+                    {% for error in field.errors %}
+                    <div class="text-red-500 text-sm">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                <button class="px-4 py-2 bg-blue-600 text-white rounded" type="submit">Create Author</button>
+            </form>
+            <div class="border-t pt-4 overflow-x-auto">
+                <h3 class="font-semibold mb-2">Existing Authors</h3>
+                <table class="w-full text-left text-sm">
+                    <thead>
+                        <tr class="border-b">
+                            <th class="py-2">Name</th>
+                            <th class="py-2">Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in authors %}
+                        <tr class="border-b last:border-0">
+                            <td class="py-2">{{ a.get_full_name|default:a.username }}</td>
+                            <td class="py-2">{{ a.email }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td class="py-2" colspan="2">No authors.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="posts" x-show="tab === 'posts'" x-cloak class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">Post Moderation</h2>
+            <p class="text-gray-500">No pending posts.</p>
+        </section>
+
+        <section id="comments" x-show="tab === 'comments'" x-cloak class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">Comment Review</h2>
+            <p class="text-gray-500">No comments awaiting review.</p>
+        </section>
+
+        <section id="analytics" x-show="tab === 'analytics'" x-cloak class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">Site Analytics</h2>
+            <p class="text-gray-500">Analytics coming soon.</p>
+        </section>
     </div>
-    {% endfor %}
-    <button class="px-4 py-2 bg-blue-600 text-white rounded" type="submit">Create Author</button>
-  </form>
-  <div class="bg-white p-4 rounded shadow">
-    <h2 class="text-xl font-semibold mb-2">Existing Authors</h2>
-    <ul class="list-disc ml-5 space-y-1">
-      {% for a in authors %}
-      <li>{{ a.get_full_name|default:a.username }} ({{ a.email }})</li>
-      {% empty %}
-      <li>No authors.</li>
-      {% endfor %}
-    </ul>
-  </div>
-</section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    window.onload = function () {
+        window.scrollTo(0, 0);
+    }
+</script>
 {% endblock %}
