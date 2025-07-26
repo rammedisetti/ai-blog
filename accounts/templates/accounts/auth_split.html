@@ -76,7 +76,7 @@
                 <div class="text-red-500 text-sm">{{ error }}</div>
                 {% endfor %}
                 <button type="submit" class="w-full py-3 text-white font-semibold rounded bg-gradient-to-r from-[#5171FF] to-[#A366FF] hover:shadow-md">Log In</button>
-                <p class="text-center text-sm mt-6">Don't have an account? <a href="#" id="switchToLogin" class="text-[#347CFF] underline">Sign up</a></p>
+                <p class="text-center text-sm mt-6">Don't have an account? <a href="#" id="switchToLogin" class="text-[#347CFF] underline">Sign up</a> | <a href="{% url 'accounts:password_reset' %}" class="text-[#347CFF] underline">Forgot password?</a></p>
             </form>
         </div>
     </div>
