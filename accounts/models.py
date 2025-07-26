@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group
 from django.db import models
 import uuid
 
@@ -43,3 +43,15 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+    def save(self, *args, **kwargs):
+        """Ensure user is placed in the correct group based on role."""
+        super().save(*args, **kwargs)
+        reader_group, _ = Group.objects.get_or_create(name=User.Role.READER)
+        author_group, _ = Group.objects.get_or_create(name=User.Role.AUTHOR)
+        if self.role == User.Role.AUTHOR:
+            self.groups.add(author_group)
+            self.groups.remove(reader_group)
+        else:
+            self.groups.add(reader_group)
+            self.groups.remove(author_group)

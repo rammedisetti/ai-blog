@@ -1,6 +1,7 @@
 """Views for the accounts app."""
 
 from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
@@ -74,3 +75,29 @@ def logout_view(request):
     """Log out the user and redirect to home."""
     logout(request)
     return redirect("accounts:login")
+
+
+def _in_group(user, group_name: str) -> bool:
+    """Helper to check if a user belongs to a given group."""
+    return user.groups.filter(name=group_name).exists()
+
+
+@login_required(login_url="accounts:login")
+@user_passes_test(lambda u: _in_group(u, "reader"))
+def reader_dashboard(request):
+    """Dashboard view accessible only to readers."""
+    return render(request, "reader_dashboard.html")
+
+
+@login_required(login_url="accounts:login")
+@user_passes_test(lambda u: _in_group(u, "author"))
+def author_dashboard(request):
+    """Dashboard view accessible only to authors."""
+    return render(request, "author_dashboard.html")
+
+
+@login_required(login_url="accounts:login")
+@user_passes_test(lambda u: u.is_superuser)
+def author_management(request):
+    """Management panel reserved for superusers."""
+    return render(request, "author_management.html")
