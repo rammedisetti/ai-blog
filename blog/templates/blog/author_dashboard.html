@@ -1,1 +1,223 @@
-<h1>Author Dashboard</h1>
+{% extends "blog/base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Dashboard - HowAiworks{% endblock %}
+{% block body_class %}min-h-screen flex flex-col bg-[#F8F9FB] text-gray-800{% endblock %}
+
+{% block content %}
+<div class="container p-6 md:flex gap-6"  x-data="{ tab: '{{ active_tab|default:'profile'|escapejs }}' }">
+    <aside class="md:w-80 bg-white rounded-lg shadow p-4 mb-6 md:mb-0 max-h-max">
+        <div class="flex items-center text-center space-y-2">
+            {% if user.profile_picture_url %}
+            <img src="{{ user.profile_picture_url }}" alt="Avatar" class="w-20 h-20 mr-4 object-cover">
+            {% else %}
+            <i class="fas fa-user mr-4 text-6xl text-gray-400"></i>
+            {% endif %}
+            <div class="flex flex-col items-start text-center space-y-2">
+                <div class="font-semibold">{{ user.get_full_name|default:user.username }}</div>
+                {% if user.role %}<div class="text-sm text-gray-500">{{ user.role }}</div>{% endif %}
+            </div>
+        </div>
+        <nav class="mt-6 space-y-2">
+            <a href="#" @click.prevent="tab = 'profile'" :class="tab === 'profile' ? 'bg-blue-100 text-blue-700' : ''"
+                class="block px-3 py-2 rounded hover:bg-gray-100">Profile</a>
+            <a href="#" @click.prevent="tab = 'articles'" :class="tab === 'articles' ? 'bg-blue-100 text-blue-700' : ''"
+                class="block px-3 py-2 rounded hover:bg-gray-100">My Articles</a>
+            <a href="#" @click.prevent="tab = 'prefs'" :class="tab === 'prefs' ? 'bg-blue-100 text-blue-700' : ''"
+                class="block px-3 py-2 rounded hover:bg-gray-100">Preferences</a>
+            <a href="#" @click.prevent="tab = 'password'" :class="tab === 'password' ? 'bg-blue-100 text-blue-700' : ''"
+                class="block px-3 py-2 rounded hover:bg-gray-100">Password</a>
+            <form method="post" action="{% url 'accounts:logout' %}" class="mt-4">
+                {% csrf_token %}
+                <button type="submit"
+                    class="w-full text-left px-3 py-2 rounded text-red-600 hover:bg-gray-100">Logout</button>
+            </form>
+        </nav>
+    </aside>
+    <div class="flex-1 space-y-8">
+        <div x-show="tab === 'articles'" class="flex justify-end mb-4">
+            <a href="{% url 'add_post' %}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                + Create Post
+            </a>
+        </div>
+        <!-- Profile Section -->
+        <section id="profile" x-show="tab === 'profile'" x-cloak class="bg-white rounded-lg shadow p-6" x-data="{ edit: false }">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold">Profile Information</h2>
+        <button
+            type="button"
+            class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            @click="edit = true"
+            x-show="!edit"
+        >
+            <i class="fas fa-pencil-alt"></i>
+            Edit
+        </button>
+    </div>
+    <!-- Display Mode -->
+    <div x-show="!edit">
+        <div class="grid md:grid-cols-2 gap-4">
+            <div><span class="font-semibold">First Name:</span> {{ user.first_name }}</div>
+            <div><span class="font-semibold">Last Name:</span> {{ user.last_name }}</div>
+            <div><span class="font-semibold">Role:</span> {{ user.role }}</div>
+            <div><span class="font-semibold">Status:</span> {{ user.status }}</div>
+            <div><span class="font-semibold">Location:</span> {{ user.location }}</div>
+            <div><span class="font-semibold">Profession:</span> {{ user.profession }}</div>
+            <div><span class="font-semibold">Date of Birth:</span> {{ user.date_of_birth }}</div>
+            <div><span class="font-semibold">Interests:</span> {{ user.interests }}</div>
+            
+        </div>
+    </div>
+    <!-- Edit Mode -->
+    <form method="post" x-show="edit" @submit="edit = false">
+        {% csrf_token %}
+        {{ profile_form.non_field_errors }}
+        <div class="grid md:grid-cols-2 gap-4">
+            <div>
+                {{ profile_form.first_name.label_tag }}
+                {{ profile_form.first_name|add_class:'w-full border rounded p-2' }}
+            </div>
+            <div>
+                {{ profile_form.last_name.label_tag }}
+                {{ profile_form.last_name|add_class:'w-full border rounded p-2' }}
+            </div>
+            <div>
+                {{ profile_form.profile_picture_url.label_tag }}
+                {{ profile_form.profile_picture_url|add_class:'w-full border rounded p-2' }}
+            </div>
+            <div>
+                {{ profile_form.role.label_tag }}
+                {{ profile_form.role|add_class:'w-full border rounded p-2' }}
+            </div>
+            <div>
+                {{ profile_form.status.label_tag }}
+                {{ profile_form.status|add_class:'w-full border rounded p-2' }}
+            </div>
+            <div>
+                {{ profile_form.location.label_tag }}
+                {{ profile_form.location|add_class:'w-full border rounded p-2' }}
+            </div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-4 mt-4">
+            <div>
+                {{ profile_form.profession.label_tag }}
+                {{ profile_form.profession|add_class:'w-full border rounded p-2' }}
+            </div>
+            <div>
+                {{ profile_form.date_of_birth.label_tag }}
+                {{ profile_form.date_of_birth|add_class:'w-full border rounded p-2' }}
+            </div>
+        </div>
+        <div class="mt-4">
+            {{ profile_form.interests.label_tag }}
+            {{ profile_form.interests }}
+        </div>
+        <div class="mt-4 flex gap-3">
+            <button name="update_profile"
+                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save</button>
+            <button type="button"
+                class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                @click="edit = false">Cancel</button>
+        </div>
+    </form>
+</section>
+        <!-- Articles Section -->
+        <section id="articles" x-show="tab === 'articles'" x-cloak class="bg-white rounded-lg shadow p-6 space-y-8">
+            <div>
+                <h2 class="text-xl font-semibold mb-4">My Articles</h2>
+                {% if posts %}
+                <ul class="space-y-4">
+                {% for post in posts %}
+                <li class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b pb-4">
+                    <div class="flex-1">
+                        <a href="{% url 'article_detail' slug=post.slug %}" class="text-blue-600 hover:underline text-lg font-semibold">{{ post.title }}</a>
+                        <div class="flex gap-4 mt-2 text-sm text-gray-600">
+                            <span><i class="fas fa-heart text-red-500"></i> {{ post.liked_by.count }}</span>
+                            <span><i class="fas fa-bookmark text-blue-500"></i> {{ post.saved_by.count }}</span>
+                            <span><i class="fas fa-share-alt text-green-500"></i> {{ post.view_count }}</span>
+                            <span><i class="fas fa-comments text-yellow-500"></i> {{ post.comments.count }}</span>
+                        </div>
+                    </div>
+                    <form method="post" action="{% url 'update_post_status' post.id %}" class="flex items-center gap-2">
+                        {% csrf_token %}
+                        <select name="status" class="border rounded p-1 text-sm">
+                            {% for key, val in post.STATUS_CHOICES %}
+                            <option value="{{ key }}" {% if post.status == key %}selected{% endif %}>{{ val }}</option>
+                            {% endfor %}
+                        </select>
+                        <button class="px-2 py-1 bg-blue-600 text-white rounded text-sm">Save</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+                {% else %}
+                <p>No articles yet.</p>
+                {% endif %}
+            </div>
+            
+            
+        </section>
+        <!-- Preferences Section -->
+        <section id="prefs" x-show="tab === 'prefs'" x-cloak class="bg-white rounded-lg shadow p-6"
+            x-data="{ changed: false }">
+            <h2 class="text-xl font-semibold mb-4">Notification Preferences</h2>
+            <form method="post" @change="changed = true">
+                {% csrf_token %}
+                <div class="space-y-4">
+                    {% for field in pref_form %}
+                    <div class="flex items-center justify-between">
+                        <span>{{ field.label }}</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            {{ field|add_class:"sr-only peer" }}
+                            <div
+                                class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-500 peer-checked:bg-blue-600 transition-colors">
+                            </div>
+                            <div
+                                class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-5">
+                            </div>
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button name="update_prefs"
+                    class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    type="submit" :disabled="!changed">Save</button>
+            </form>
+        </section>
+        <!-- Password Section -->
+        <section id="password" x-show="tab === 'password'" x-cloak class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">Update Password</h2>
+            <form method="post">
+                {% csrf_token %}
+                {% if password_form.non_field_errors %}
+                <div class="mb-4 text-red-500 text-sm">
+                    {% for error in password_form.non_field_errors %}
+                    <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% for field in password_form %}
+                <div class="mb-4">
+                    {{ field.label_tag }}
+                    {{ field|add_class:'w-full border rounded p-2' }}
+                    {% for error in field.errors %}
+                    <div class="text-red-500 text-sm">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                <button name="change_password" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    Change Password
+                </button>
+            </form>
+        </section>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    window.onload = function () {
+        window.scrollTo(0, 0);
+    }
+</script>
+{% endblock %}

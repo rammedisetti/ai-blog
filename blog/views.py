@@ -39,17 +39,36 @@ def article_detail(request, slug):
     from django.shortcuts import get_object_or_404
 
     post = get_object_or_404(
-        Post.objects.select_related("author").prefetch_related("categories", "tags"),
+        Post.objects.select_related("author").prefetch_related("categories", "tags", "comments__user", "liked_by", "saved_by"),
         slug=slug,
         status="published",
     )
 
+    # Related posts (same categories, not this post)
     related_posts = (
         Post.objects.filter(status="published", categories__in=post.categories.all())
         .exclude(id=post.id)
         .distinct()[:3]
     )
-    context = {"year": datetime.now().year, "post": post, "related_posts": related_posts}
+    # Comments (approved only)
+    comments = post.comments.filter(status="approved").select_related("user")
+
+    # Stats
+    like_count = post.liked_by.count()
+    save_count = post.saved_by.count()
+    comment_count = comments.count()
+    view_count = post.view_count
+
+    context = {
+        "year": datetime.now().year,
+        "post": post,
+        "related_posts": related_posts,
+        "comments": comments,
+        "like_count": like_count,
+        "save_count": save_count,
+        "comment_count": comment_count,
+        "view_count": view_count + 1,  # since we just incremented
+    }
     return render(request, "blog/article_detail.html", context)
 
 
@@ -138,26 +157,7 @@ def update_post_status(request, post_id):
         if status == "published" and not post.published_at:
             post.published_at = timezone.now()
         post.save()
-    return redirect("user_dashboard")
-
-
-@user_passes_test(lambda u: u.is_superuser)
-def admin_dashboard(request):
-    """Admin-only dashboard for managing authors."""
-    if request.method == "POST":
-        form = SignupForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.role = User.Role.AUTHOR
-            user.is_staff = True
-            user.save()
-            return redirect("admin_dashboard")
-    else:
-        form = SignupForm()
-
-    authors = User.objects.filter(role=User.Role.AUTHOR)
-    context = {"form": form, "authors": authors}
-    return render(request, "blog/admin_dashboard.html", context)
+    return redirect("author_dashboard")
 
 @login_required(login_url='accounts:login')
 def add_post(request):
@@ -206,14 +206,32 @@ def _in_group(user, group_name: str) -> bool:
     return user.groups.filter(name=group_name).exists()
 
 @login_required(login_url="accounts:login")
+def dashboard_redirect(request):
+    user = request.user
+    if user.is_superuser:
+        return redirect("author_management")
+    elif hasattr(user, "role") and user.role == User.Role.AUTHOR:
+        return redirect("author_dashboard")
+    elif hasattr(user, "role") and user.role == User.Role.READER:
+        return redirect("reader_dashboard")
+    else:
+        return redirect("home")
+
+@login_required(login_url="accounts:login")
 @user_passes_test(lambda u: _in_group(u, "reader"))
 def reader_dashboard(request):
     """Dashboard view accessible only to readers."""
-    posts = Post.objects.filter(author=request.user).select_related("author")
     liked_posts = request.user.liked_posts.select_related("author")
     saved_posts = request.user.saved_posts.select_related("author")
 
-    profile_form = ProfileForm(instance=request.user)
+     # Remove 'role' from the profile form fields for readers
+    class ReaderProfileForm(ProfileForm):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            if "role" in self.fields:
+                self.fields["role"].disabled = True  # or use del self.fields["role"] to hide completely
+
+    profile_form = ReaderProfileForm(instance=request.user)
     pref_form = PreferencesForm(instance=request.user)
     password_form = PasswordUpdateForm(request.user)
 
@@ -221,7 +239,7 @@ def reader_dashboard(request):
     
     if request.method == "POST":
         if "update_profile" in request.POST:
-            profile_form = ProfileForm(request.POST, instance=request.user)
+            profile_form = ReaderProfileForm(request.POST, instance=request.user)
             if profile_form.is_valid():
                 profile_form.save()
                 messages.success(request, "Profile updated")
@@ -245,9 +263,8 @@ def reader_dashboard(request):
             active_tab = "password"
 
     context = {
-        "posts": posts,
-        "liked_posts": liked_posts,
         "saved_posts": saved_posts,
+        "liked_posts": liked_posts,
         "profile_form": profile_form,
         "pref_form": pref_form,
         "password_form": password_form,
@@ -260,11 +277,70 @@ def reader_dashboard(request):
 @user_passes_test(lambda u: _in_group(u, "author"))
 def author_dashboard(request):
     """Dashboard view accessible only to authors."""
-    return render(request, "blog/author_dashboard.html")
+    posts = Post.objects.filter(author=request.user).prefetch_related("comments", "liked_by", "saved_by")
+    # Remove 'role' from the profile form fields for authors
+    class AuthorProfileForm(ProfileForm):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            if "role" in self.fields:
+                self.fields["role"].disabled = True
+
+    profile_form = AuthorProfileForm(instance=request.user)
+    pref_form = PreferencesForm(instance=request.user)
+    password_form = PasswordUpdateForm(request.user)
+    active_tab = "profile"
+
+    if request.method == "POST":
+        if "update_profile" in request.POST:
+            profile_form = AuthorProfileForm(request.POST, instance=request.user)
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, "Profile updated")
+                return redirect("author_dashboard")
+            active_tab = "profile"
+        elif "update_prefs" in request.POST:
+            pref_form = PreferencesForm(request.POST, instance=request.user)
+            if pref_form.is_valid():
+                pref_form.save()
+                messages.success(request, "Preferences updated")
+                return redirect("author_dashboard")
+            active_tab = "prefs"
+        elif "change_password" in request.POST:
+            password_form = PasswordUpdateForm(request.user, request.POST)
+            if password_form.is_valid():
+                user = password_form.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, "Password changed")
+                return redirect("author_dashboard")
+            active_tab = "password"
+
+    context = {
+        "profile_form": profile_form,
+        "pref_form": pref_form,
+        "password_form": password_form,
+        "posts": posts,
+        "year": datetime.now().year,
+        "active_tab": active_tab,
+    }
+    return render(request, "blog/author_dashboard.html", context)
 
 
 @login_required(login_url="accounts:login")
 @user_passes_test(lambda u: u.is_superuser)
 def author_management(request):
     """Management panel reserved for superusers."""
-    return render(request, "blog/author_management.html")
+    """Admin-only dashboard for managing authors."""
+    if request.method == "POST":
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.role = User.Role.AUTHOR
+            user.is_staff = True
+            user.save()
+            return redirect("author_management")
+    else:
+        form = SignupForm()
+
+    authors = User.objects.filter(role=User.Role.AUTHOR)
+    context = {"form": form, "authors": authors}
+    return render(request, "blog/author_management.html", context)
