@@ -260,6 +260,7 @@ def reader_dashboard(request):
         .order_by("-saved_at")
     )
     saved_posts = [rel.post for rel in saved_relations]
+    saved_at_map = {rel.post_id: rel.saved_at for rel in saved_relations}
     saved_categories = Category.objects.filter(posts__in=saved_posts)
     related_posts = (
         Post.objects.filter(status="published", categories__in=saved_categories)
@@ -307,6 +308,7 @@ def reader_dashboard(request):
 
     context = {
         "saved_posts": saved_posts,
+        "saved_at_map": saved_at_map,
         "liked_posts": liked_posts,
         "related_posts": related_posts,
         "profile_form": profile_form,
