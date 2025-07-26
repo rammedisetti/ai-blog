@@ -8,5 +8,5 @@ class UserAdmin(DjangoUserAdmin):
     model = User
     list_display = ("username", "email", "is_staff", "role", "is_active")
     fieldsets = DjangoUserAdmin.fieldsets + (
-        ("Profile", {"fields": ("bio", "profile_picture_url", "role")}),
+        ("Profile", {"fields": ("profile_picture_url", "role")}),
     )
