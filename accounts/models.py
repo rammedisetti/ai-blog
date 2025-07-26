@@ -21,14 +21,12 @@ class User(AbstractUser):
         AUTHOR = "author", "Author"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    bio = models.TextField(blank=True)
     profile_picture_url = models.URLField(blank=True)
     role = models.CharField(
         max_length=20, choices=Role.choices, default=Role.READER
     )
     status = models.CharField(max_length=50, blank=True)
     location = models.CharField(max_length=100, blank=True)
-    hobbies = models.TextField(blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
     profession = models.CharField(max_length=100, blank=True)
     interests = models.JSONField(default=list, blank=True)

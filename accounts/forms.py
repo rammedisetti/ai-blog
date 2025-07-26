@@ -87,11 +87,9 @@ class ProfileForm(forms.ModelForm):
             "role",
             "status",
             "location",
-            "hobbies",
             "profession",
             "date_of_birth",
             "interests",
-            "bio",
         ]
 
     def __init__(self, *args, **kwargs):
