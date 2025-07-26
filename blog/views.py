@@ -62,6 +62,10 @@ def article_detail(request, slug):
     is_saved = request.user.is_authenticated and request.user in post.saved_by.all()
     # check if the user has already liked the post
     is_liked = request.user.is_authenticated and request.user in post.liked_by.all()
+    #check for user role
+    user_role = None
+    if request.user.is_authenticated:
+        user_role = "reader" if request.user.groups.filter(name="reader").exists() else "author"
 
     # Related posts (same categories, not this post)
     related_posts = (
@@ -90,6 +94,7 @@ def article_detail(request, slug):
         "view_count": view_count + 1,
         "is_saved": is_saved,
         "is_liked": is_liked,
+        "user_role": user_role,
     }
     return render(request, "blog/article_detail.html", context)
 

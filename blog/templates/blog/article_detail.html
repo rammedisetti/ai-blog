@@ -1,6 +1,9 @@
 {% extends "blog/base.html" %}
-{% include "blog/partials/save_button.html" with post=post is_saved=is_saved save_count=save_count %}
-{% include "blog/partials/like_button.html" with post=post %}
+{% if user.is_authenticated %}
+{% include "blog/partials/like_button.html" with post=post is_liked=is_liked user_role=user_role %}
+{% include "blog/partials/save_button.html" with post=post is_saved=is_saved save_count=save_count user_role=user_role
+%}
+{% endif %}
 {% load widget_tweaks %}
 {% load static %}
 
@@ -24,19 +27,11 @@
             </span>
         </div>
         <div class="flex justify-center gap-4 mt-4 text-gray-500">
-            <a href="#" aria-label="Share on Twitter" class="hover:text-blue-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg>
-            </a>
-            <a href="#" aria-label="Share on LinkedIn" class="hover:text-blue-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zM4 4a2 2 0 110 4 2 2 0 010-4z"/></svg>
-            </a>
-            <a href="#" aria-label="Share on Facebook" class="hover:text-blue-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
-            </a>
-            <button onclick="navigator.clipboard.writeText(window.location.href)" aria-label="Copy link" class="hover:text-blue-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 000 8h3a4 4 0 000-8H3zm0 0a4 4 0 010-8h3a4 4 0 010 8H3zm9-8h3a4 4 0 010 8h-3m0 0a4 4 0 000 8h3a4 4 0 000-8h-3z"/></svg>
+            <button onclick="navigator.clipboard.writeText(window.location.href)" aria-label="Copy link"
+                class="hover:text-blue-600">
+                <i class="fas fa-link"></i>
             </button>
-            {% if user.is_authenticated %}
+            {% if user.is_authenticated and user_role != "author" %}
             {% include "blog/partials/like_button.html" %}
             {% include "blog/partials/save_button.html" %}
             {% endif %}
@@ -45,7 +40,8 @@
 
     <!-- Featured Image -->
     {% if post.featured_image_url %}
-    <img src="{{ post.featured_image_url }}" alt="{{ post.title }}" class="rounded-t-xl mb-8 w-full object-cover aspect-video">
+    <img src="{{ post.featured_image_url }}" alt="{{ post.title }}"
+        class="rounded-t-xl mb-8 w-full object-cover aspect-video">
     {% endif %}
 
     <!-- Article Body -->
@@ -69,10 +65,16 @@
             <h3 class="font-bold">{{ post.author.get_full_name|default:post.author.username }}</h3>
             <div class="flex space-x-3 mt-2 text-gray-500">
                 <a href="#" aria-label="Twitter" class="hover:text-blue-600">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg>
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z" />
+                    </svg>
                 </a>
                 <a href="#" aria-label="LinkedIn" class="hover:text-blue-600">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zM4 4a2 2 0 110 4 2 2 0 010-4z"/></svg>
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zM4 4a2 2 0 110 4 2 2 0 010-4z" />
+                    </svg>
                 </a>
             </div>
         </div>
@@ -110,12 +112,15 @@
             {% for rpost in related_posts %}
             <article class="bg-white rounded-xl shadow hover:shadow-lg transition">
                 {% if rpost.featured_image_url %}
-                <img src="{{ rpost.featured_image_url }}" alt="{{ rpost.title }}" class="rounded-t-xl w-full object-cover">
+                <img src="{{ rpost.featured_image_url }}" alt="{{ rpost.title }}"
+                    class="rounded-t-xl w-full object-cover">
                 {% endif %}
                 <div class="p-4">
-                    <h3 class="font-semibold text-lg mb-1 text-blue-600 hover:underline"><a href="{% url 'article_detail' slug=rpost.slug %}">{{ rpost.title }}</a></h3>
+                    <h3 class="font-semibold text-lg mb-1 text-blue-600 hover:underline"><a
+                            href="{% url 'article_detail' slug=rpost.slug %}">{{ rpost.title }}</a></h3>
                     <p class="text-sm text-gray-600 mb-2">{{ rpost.excerpt }}</p>
-                    <div class="text-xs text-gray-500">{{ rpost.author.get_full_name|default:rpost.author.username }} &bull; {{ rpost.published_at|date:"M d, Y" }}</div>
+                    <div class="text-xs text-gray-500">{{ rpost.author.get_full_name|default:rpost.author.username }}
+                        &bull; {{ rpost.published_at|date:"M d, Y" }}</div>
                 </div>
             </article>
             {% endfor %}
@@ -123,12 +128,15 @@
     </section>
 
     <!-- Newsletter CTA -->
-    <section class="mt-16 py-16 text-center text-white" style="background: linear-gradient(90deg,#5171FF 0%,#A366FF 100%);">
+    <section class="mt-16 py-16 text-center text-white"
+        style="background: linear-gradient(90deg,#5171FF 0%,#A366FF 100%);">
         <h2 class="text-3xl font-bold mb-4">Never Miss an AI Update</h2>
         <p class="mb-8">Get the latest articles delivered straight to your inbox</p>
         <form class="w-full max-w-md mx-auto flex flex-col sm:flex-row gap-3">
-            <input type="email" placeholder="Enter your email" class="flex-1 px-4 py-3 rounded-full text-gray-900 focus:outline-none" required>
-            <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700">Subscribe</button>
+            <input type="email" placeholder="Enter your email"
+                class="flex-1 px-4 py-3 rounded-full text-gray-900 focus:outline-none" required>
+            <button type="submit"
+                class="px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700">Subscribe</button>
         </form>
     </section>
 </article>
