@@ -11,7 +11,7 @@
             {% if user.profile_picture_url %}
             <img src="{{ user.profile_picture_url }}" alt="Avatar" class="w-20 h-20 mr-4 object-cover">
             {% else %}
-            <i class="fas fa-user-circle text-6xl text-gray-400"></i>
+            <i class="fas fa-user mr-4 text-6xl text-gray-400"></i>
             {% endif %}
             <div class="flex flex-col items-start text-center space-y-2">
                 <div class="font-semibold">{{ user.get_full_name|default:user.username }}</div>
@@ -36,71 +36,95 @@
     </aside>
     <div class="flex-1 space-y-8">
         <!-- Profile Section -->
-        <section id="profile" x-show="tab === 'profile'" x-cloak class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-semibold">Profile Information</h2>
-                <button type="button" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"> <i
-                        class="fas fa-pencil-alt mr-2"></i>Edit</button>
+        <section id="profile" x-show="tab === 'profile'" x-cloak class="bg-white rounded-lg shadow p-6" x-data="{ edit: false }">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold">Profile Information</h2>
+        <button
+            type="button"
+            class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            @click="edit = true"
+            x-show="!edit"
+        >
+            <i class="fas fa-pencil-alt"></i>
+            Edit
+        </button>
+    </div>
+    <!-- Display Mode -->
+    <div x-show="!edit">
+        <div class="grid md:grid-cols-2 gap-4">
+            <div><span class="font-semibold">First Name:</span> {{ user.first_name }}</div>
+            <div><span class="font-semibold">Last Name:</span> {{ user.last_name }}</div>
+            <div><span class="font-semibold">Role:</span> {{ user.role }}</div>
+            <div><span class="font-semibold">Status:</span> {{ user.status }}</div>
+            <div><span class="font-semibold">Location:</span> {{ user.location }}</div>
+            <div><span class="font-semibold">Profession:</span> {{ user.profession }}</div>
+            <div><span class="font-semibold">Date of Birth:</span> {{ user.date_of_birth }}</div>
+            <div><span class="font-semibold">Interests:</span> {{ user.interests }}</div>
+            <div><span class="font-semibold">Hobbies:</span> {{ user.hobbies }}</div>
+            <div class="md:col-span-2"><span class="font-semibold">Bio:</span> {{ user.bio }}</div>
+        </div>
+    </div>
+    <!-- Edit Mode -->
+    <form method="post" x-show="edit" @submit="edit = false">
+        {% csrf_token %}
+        {{ profile_form.non_field_errors }}
+        <div class="grid md:grid-cols-2 gap-4">
+            <div>
+                {{ profile_form.first_name.label_tag }}
+                {{ profile_form.first_name|add_class:'w-full border rounded p-2' }}
             </div>
-            <form method="post">
-                {% csrf_token %}
-                {{ profile_form.non_field_errors }}
-                <div class="grid md:grid-cols-2 gap-4">
-                    <div>
-                        {{ profile_form.first_name.label_tag }}
-                        {{ profile_form.first_name|add_class:'w-full border rounded p-2' }}
-                    </div>
-                    <div>
-                        {{ profile_form.last_name.label_tag }}
-                        {{ profile_form.last_name|add_class:'w-full border rounded p-2' }}
-                    </div>
-                    <div>
-                        {{ profile_form.profile_picture_url.label_tag }}
-                        {{ profile_form.profile_picture_url|add_class:'w-full border rounded p-2' }}
-                    </div>
-                    <div>
-                        {{ profile_form.role.label_tag }}
-                        {{ profile_form.role|add_class:'w-full border rounded p-2' }}
-                    </div>
-                    <div>
-                        {{ profile_form.status.label_tag }}
-                        {{ profile_form.status|add_class:'w-full border rounded p-2' }}
-                    </div>
-                    <div>
-                        {{ profile_form.location.label_tag }}
-                        {{ profile_form.location|add_class:'w-full border rounded p-2' }}
-                    </div>
-                </div>
-                <div class="grid md:grid-cols-2 gap-4 mt-4">
-                    <div>
-                        {{ profile_form.profession.label_tag }}
-                        {{ profile_form.profession|add_class:'w-full border rounded p-2' }}
-                    </div>
-                    <div>
-                        {{ profile_form.date_of_birth.label_tag }}
-                        {{ profile_form.date_of_birth|add_class:'w-full border rounded p-2' }}
-                    </div>
-                </div>
-                <div class="mt-4">
-                    {{ profile_form.interests.label_tag }}
-                    {{ profile_form.interests }}
-                </div>
-                <div class="mt-4">
-                    {{ profile_form.hobbies.label_tag }}
-                    {{ profile_form.hobbies|add_class:'w-full border rounded p-2' }}
-                </div>
-                <div class="mt-4">
-                    {{ profile_form.bio.label_tag }}
-                    {{ profile_form.bio|add_class:'w-full border rounded p-2' }}
-                </div>
-                <div class="mt-4 flex gap-3">
-                    <button name="update_profile"
-                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save</button>
-                    <a href="{% url 'user_dashboard' %}"
-                        class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Cancel</a>
-                </div>
-            </form>
-        </section>
+            <div>
+                {{ profile_form.last_name.label_tag }}
+                {{ profile_form.last_name|add_class:'w-full border rounded p-2' }}
+            </div>
+            <div>
+                {{ profile_form.profile_picture_url.label_tag }}
+                {{ profile_form.profile_picture_url|add_class:'w-full border rounded p-2' }}
+            </div>
+            <div>
+                {{ profile_form.role.label_tag }}
+                {{ profile_form.role|add_class:'w-full border rounded p-2' }}
+            </div>
+            <div>
+                {{ profile_form.status.label_tag }}
+                {{ profile_form.status|add_class:'w-full border rounded p-2' }}
+            </div>
+            <div>
+                {{ profile_form.location.label_tag }}
+                {{ profile_form.location|add_class:'w-full border rounded p-2' }}
+            </div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-4 mt-4">
+            <div>
+                {{ profile_form.profession.label_tag }}
+                {{ profile_form.profession|add_class:'w-full border rounded p-2' }}
+            </div>
+            <div>
+                {{ profile_form.date_of_birth.label_tag }}
+                {{ profile_form.date_of_birth|add_class:'w-full border rounded p-2' }}
+            </div>
+        </div>
+        <div class="mt-4">
+            {{ profile_form.interests.label_tag }}
+            {{ profile_form.interests }}
+        </div>
+        <div class="mt-4">
+            {{ profile_form.hobbies.label_tag }}
+            {{ profile_form.hobbies|add_class:'w-full border rounded p-2' }}
+        </div>
+        <div class="mt-4">
+            {{ profile_form.bio.label_tag }}
+            {{ profile_form.bio|add_class:'w-full border rounded p-2' }}
+        </div>
+        <div class="mt-4 flex gap-3">
+            <button name="update_profile"
+                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save</button>
+            <button type="button"
+                class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                @click="edit = false">Cancel</button>
+        </div>
+    </form>
+</section>
         <!-- Articles Section -->
         <section id="articles" x-show="tab === 'articles'" x-cloak class="bg-white rounded-lg shadow p-6 space-y-8">
             <div>
