@@ -86,18 +86,18 @@ def _in_group(user, group_name: str) -> bool:
 @user_passes_test(lambda u: _in_group(u, "reader"))
 def reader_dashboard(request):
     """Dashboard view accessible only to readers."""
-    return render(request, "reader_dashboard.html")
+    return render(request, "accounts/reader_dashboard.html")
 
 
 @login_required(login_url="accounts:login")
 @user_passes_test(lambda u: _in_group(u, "author"))
 def author_dashboard(request):
     """Dashboard view accessible only to authors."""
-    return render(request, "author_dashboard.html")
+    return render(request, "accounts/author_dashboard.html")
 
 
 @login_required(login_url="accounts:login")
 @user_passes_test(lambda u: u.is_superuser)
 def author_management(request):
     """Management panel reserved for superusers."""
-    return render(request, "author_management.html")
+    return render(request, "accounts/author_management.html")

@@ -33,7 +33,7 @@
                 {% if request.user.is_authenticated %}
                 <div class="flex items-center text-left space-x-4" id="profile-dropdown">
                     <span class="font-semibold text-gray-800">Hi, {{ user.username }}</span>
-                    <a href="{% url 'user_dashboard' %}" class="flex items-center space-x-2 focus:outline-none">
+                    <a href="{% url 'reader_dashboard' %}" class="flex items-center space-x-2 focus:outline-none">
                         {% if user.profile_picture_url %}
                         <img src="{{ user.profile_picture_url }}" alt="Profile"
                             class="w-9 h-9 rounded-full object-cover border-2 border-blue-400 shadow-sm" />
