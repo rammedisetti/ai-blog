@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'blog',
     'django_htmx',
     'django_extensions',
+    'core',
 ]
 
 # Use custom user model from the accounts app
