@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
-from .forms import ContactForm, PostForm
+from .forms import ContactForm, PostForm, CommentForm
 from accounts.forms import ProfileForm, PreferencesForm, PasswordUpdateForm, SignupForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import update_session_auth_hash
-from .models import Post, Category, Tag
+from .models import Post, Category, Tag, UserSavedPost
 from accounts.models import User
 from django.shortcuts import get_object_or_404
 from django.utils.text import slugify
@@ -39,10 +39,24 @@ def article_detail(request, slug):
     from django.shortcuts import get_object_or_404
 
     post = get_object_or_404(
-        Post.objects.select_related("author").prefetch_related("categories", "tags", "comments__user", "liked_by", "saved_by"),
+        Post.objects.select_related("author").prefetch_related(
+            "categories", "tags", "comments__user", "liked_by", "saved_by"
+        ),
         slug=slug,
         status="published",
     )
+
+    if request.method == "POST" and request.user.is_authenticated:
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            new_comment = comment_form.save(commit=False)
+            new_comment.post = post
+            new_comment.user = request.user
+            new_comment.status = "pending"
+            new_comment.save()
+            return redirect("article_detail", slug=slug)
+    else:
+        comment_form = CommentForm()
 
     # Related posts (same categories, not this post)
     related_posts = (
@@ -64,6 +78,7 @@ def article_detail(request, slug):
         "post": post,
         "related_posts": related_posts,
         "comments": comments,
+        "comment_form": comment_form,
         "like_count": like_count,
         "save_count": save_count,
         "comment_count": comment_count,
@@ -126,24 +141,41 @@ def cancellation(request):
 
 
 @login_required(login_url="accounts:login")
+@user_passes_test(lambda u: _in_group(u, "reader"))
 def toggle_like(request, post_id):
     """Toggle like on a post for the current user."""
-    post = get_object_or_404(Post, id=post_id)
+    post = get_object_or_404(Post, id=post_id, status="published")
     if request.user in post.liked_by.all():
         post.liked_by.remove(request.user)
+        liked = False
     else:
         post.liked_by.add(request.user)
+        liked = True
+    if request.htmx:
+        context = {"post": post, "liked": liked}
+        return render(request, "blog/partials/like_button.html", context)
     return redirect("article_detail", slug=post.slug)
 
 
 @login_required(login_url="accounts:login")
+@user_passes_test(lambda u: _in_group(u, "reader"))
 def toggle_save(request, post_id):
     """Toggle save on a post for the current user."""
-    post = get_object_or_404(Post, id=post_id)
-    if request.user in post.saved_by.all():
+    post = get_object_or_404(Post, id=post_id, status="published")
+    saved, created = UserSavedPost.objects.get_or_create(user=request.user, post=post)
+    if not created and saved.is_active:
+        saved.is_active = False
+        saved.save()
         post.saved_by.remove(request.user)
+        is_saved = False
     else:
+        saved.is_active = True
+        saved.save()
         post.saved_by.add(request.user)
+        is_saved = True
+    if request.htmx:
+        context = {"post": post, "is_saved": is_saved}
+        return render(request, "blog/partials/save_button.html", context)
     return redirect("article_detail", slug=post.slug)
 
 
@@ -222,7 +254,18 @@ def dashboard_redirect(request):
 def reader_dashboard(request):
     """Dashboard view accessible only to readers."""
     liked_posts = request.user.liked_posts.select_related("author")
-    saved_posts = request.user.saved_posts.select_related("author")
+    saved_relations = (
+        UserSavedPost.objects.filter(user=request.user, is_active=True)
+        .select_related("post__author")
+        .order_by("-saved_at")
+    )
+    saved_posts = [rel.post for rel in saved_relations]
+    saved_categories = Category.objects.filter(posts__in=saved_posts)
+    related_posts = (
+        Post.objects.filter(status="published", categories__in=saved_categories)
+        .exclude(id__in=[p.id for p in saved_posts])
+        .distinct()[:3]
+    )
 
      # Remove 'role' from the profile form fields for readers
     class ReaderProfileForm(ProfileForm):
@@ -265,6 +308,7 @@ def reader_dashboard(request):
     context = {
         "saved_posts": saved_posts,
         "liked_posts": liked_posts,
+        "related_posts": related_posts,
         "profile_form": profile_form,
         "pref_form": pref_form,
         "password_form": password_form,

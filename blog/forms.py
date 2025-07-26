@@ -1,5 +1,5 @@
 from django import forms
-from .models import ContactMessage, Post
+from .models import ContactMessage, Post, Comment
 
 
 class ContactForm(forms.ModelForm):
@@ -36,5 +36,15 @@ class PostForm(forms.ModelForm):
         ]
         widgets = {
             "categories": forms.SelectMultiple,
+        }
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ["content", "parent_comment"]
+        widgets = {
+            "content": forms.Textarea(attrs={"rows": 3}),
+            "parent_comment": forms.HiddenInput(),
         }
 

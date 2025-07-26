@@ -112,6 +112,22 @@ class Post(models.Model):
         return self.title
 
 
+class UserSavedPost(models.Model):
+    """Tracks which users saved which posts."""
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    saved_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = "user_saved_posts"
+        unique_together = ("user", "post")
+
+    def __str__(self):
+        return f"{self.user} saved {self.post}"
+
+
 class Comment(models.Model):
     """Comments left on posts."""
 

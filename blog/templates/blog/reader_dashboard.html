@@ -144,11 +144,19 @@
             <div>
                 <h2 class="text-xl font-semibold mb-4">Saved Articles</h2>
                 {% if saved_posts %}
-                <ul class="space-y-2">
+                <div class="grid gap-4 sm:grid-cols-2">
                     {% for post in saved_posts %}
-                    <li><a href="{% url 'article_detail' slug=post.slug %}" class="text-blue-600 hover:underline">{{ post.title }}</a></li>
+                    <article class="bg-white p-4 rounded shadow flex gap-4">
+                        {% if post.featured_image_url %}
+                        <img src="{{ post.featured_image_url }}" class="w-24 h-16 object-cover rounded" />
+                        {% endif %}
+                        <div>
+                            <a href="{% url 'article_detail' slug=post.slug %}" class="font-semibold hover:underline">{{ post.title }}</a>
+                            <p class="text-sm text-gray-500">Saved on {{ post.usersavedpost_set.get(user=user).saved_at|date:"M d, Y" }}</p>
+                        </div>
+                    </article>
                     {% endfor %}
-                </ul>
+                </div>
                 {% else %}
                 <p>No saved articles.</p>
                 {% endif %}
@@ -163,6 +171,18 @@
                 </ul>
                 {% else %}
                 <p>No liked articles.</p>
+                {% endif %}
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold mb-4">Related Posts</h2>
+                {% if related_posts %}
+                <ul class="space-y-2">
+                    {% for post in related_posts %}
+                    <li><a href="{% url 'article_detail' slug=post.slug %}" class="text-blue-600 hover:underline">{{ post.title }}</a></li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>No related posts found.</p>
                 {% endif %}
             </div>
         </section>
