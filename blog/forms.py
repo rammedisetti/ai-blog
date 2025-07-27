@@ -1,4 +1,5 @@
 from django import forms
+from ckeditor.widgets import CKEditorWidget
 from .models import ContactMessage, Post, Comment
 
 
@@ -36,6 +37,7 @@ class PostForm(forms.ModelForm):
         ]
         widgets = {
             "categories": forms.SelectMultiple,
+            "content": CKEditorWidget(),
         }
 
 

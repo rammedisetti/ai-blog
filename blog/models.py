@@ -1,4 +1,5 @@
 from django.db import models
+from ckeditor.fields import RichTextField
 
 
 class ContactMessage(models.Model):
@@ -81,7 +82,7 @@ class Post(models.Model):
     )
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
-    content = models.TextField()
+    content = RichTextField()
     excerpt = models.TextField(blank=True)
     featured_image_url = models.URLField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")
