@@ -157,9 +157,9 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),   # For project-level static files
-]
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'static'),   # For project-level static files
+# ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # For collectstatic in production
 
 MEDIA_URL = '/media/'
