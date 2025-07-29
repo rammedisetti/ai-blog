@@ -17,5 +17,7 @@ urlpatterns = [
     path("reader_dashboard/", views.reader_dashboard, name="reader_dashboard"),
     path("author_dashboard/", views.author_dashboard, name="author_dashboard"),
     path("author_management/", views.author_management, name="author_management"),
+    path("admin_posts/", views.admin_post_list, name="admin_post_list"),
+    path("delete_post/<int:post_id>/", views.delete_post, name="delete_post"),
     path("dashboard/", views.dashboard_redirect, name="dashboard_redirect"),
 ]

@@ -89,9 +89,51 @@
             </div>
         </section>
 
-        <section id="posts" x-show="tab === 'posts'" x-cloak class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold mb-4">Post Moderation</h2>
-            <p class="text-gray-500">No pending posts.</p>
+        <section id="posts" x-show="tab === 'posts'" x-cloak class="bg-white rounded-lg shadow p-6 space-y-6">
+            <h2 class="text-xl font-semibold">Post Moderation</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="bg-gray-100 p-4 rounded">
+                    <div class="text-sm text-gray-500">Total Posts</div>
+                    <div class="text-2xl font-semibold">{{ total_posts }}</div>
+                </div>
+                <div class="bg-gray-100 p-4 rounded">
+                    <div class="text-sm text-gray-500">Published</div>
+                    <div class="text-2xl font-semibold">{{ published_posts }}</div>
+                </div>
+                <div class="bg-gray-100 p-4 rounded">
+                    <div class="text-sm text-gray-500">Drafts</div>
+                    <div class="text-2xl font-semibold">{{ draft_posts }}</div>
+                </div>
+            </div>
+            <form class="flex flex-col md:flex-row md:items-end gap-4" hx-get="{% url 'admin_post_list' %}" hx-target="#post-list" hx-indicator="#loading">
+                <div class="flex-1">
+                    <label for="search" class="sr-only">Search</label>
+                    <input id="search" type="text" name="q" value="{{ query }}" placeholder="Search title" class="w-full border rounded p-2" />
+                </div>
+                <div>
+                    <label for="category" class="sr-only">Category</label>
+                    <select id="category" name="category" class="border rounded p-2">
+                        <option value="">All Categories</option>
+                        {% for c in categories %}
+                        <option value="{{ c.id }}" {% if selected_category == c.id|stringformat:'s' %}selected{% endif %}>{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="tag" class="sr-only">Tag</label>
+                    <select id="tag" name="tag" class="border rounded p-2">
+                        <option value="">All Tags</option>
+                        {% for t in tags %}
+                        <option value="{{ t.id }}" {% if selected_tag == t.id|stringformat:'s' %}selected{% endif %}>{{ t.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Filter</button>
+            </form>
+            <div id="post-list" class="overflow-x-auto" hx-get="{% url 'admin_post_list' %}?q={{ query|urlencode }}&category={{ selected_category }}&tag={{ selected_tag }}" hx-trigger="load">
+                {% include 'blog/partials/admin_post_list.html' with posts=posts %}
+            </div>
+            <div id="loading" class="hidden text-center py-4">Loading...</div>
         </section>
 
         <section id="comments" x-show="tab === 'comments'" x-cloak class="bg-white rounded-lg shadow p-6">
