@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from .forms import ContactForm, PostForm, CommentForm
 from accounts.forms import ProfileForm, PreferencesForm, PasswordUpdateForm, SignupForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import update_session_auth_hash
 from .models import Post, Category, Tag, UserSavedPost, Comment
+from django.db import models
 from accounts.models import User
 from django.shortcuts import get_object_or_404
 from django.utils.text import slugify
@@ -417,7 +419,84 @@ def author_management(request):
         except Comment.DoesNotExist:
             messages.error(request, "Comment not found.")
 
-    pending_comments = Comment.objects.filter(status="pending").order_by('-created_at')
+    query = request.GET.get("q", "")
+    category_id = request.GET.get("category")
+    tag_id = request.GET.get("tag")
+
+    posts = (
+        Post.objects.all()
+        .select_related("author")
+        .prefetch_related("categories", "tags")
+    )
+    if query:
+        posts = posts.filter(title__icontains=query)
+    if category_id:
+        posts = posts.filter(categories__id=category_id)
+    if tag_id:
+        posts = posts.filter(tags__id=tag_id)
+    posts = posts.distinct()
+
+    pending_comments = Comment.objects.filter(status="pending").order_by("-created_at")
     authors = User.objects.filter(role=User.Role.AUTHOR)
-    context = {"form": form, "authors": authors, "pending_comments": pending_comments}
+
+    total_posts = Post.objects.count()
+    draft_posts = Post.objects.filter(status="draft").count()
+    published_posts = Post.objects.filter(status="published").count()
+    most_viewed = Post.objects.order_by("-view_count")[:5]
+    category_stats = Category.objects.annotate(count=models.Count("posts"))
+    tag_stats = Tag.objects.annotate(count=models.Count("posts"))
+
+    context = {
+        "form": form,
+        "authors": authors,
+        "pending_comments": pending_comments,
+        "posts": posts,
+        "categories": Category.objects.all(),
+        "tags": Tag.objects.all(),
+        "total_posts": total_posts,
+        "draft_posts": draft_posts,
+        "published_posts": published_posts,
+        "most_viewed": most_viewed,
+        "category_stats": category_stats,
+        "tag_stats": tag_stats,
+        "query": query,
+        "selected_category": category_id,
+        "selected_tag": tag_id,
+    }
     return render(request, "blog/author_management.html", context)
+
+
+@login_required(login_url="accounts:login")
+@user_passes_test(lambda u: u.is_superuser)
+def admin_post_list(request):
+    """Return the post list filtered by query parameters for HTMX."""
+    query = request.GET.get("q", "")
+    category_id = request.GET.get("category")
+    tag_id = request.GET.get("tag")
+
+    posts = (
+        Post.objects.all()
+        .select_related("author")
+        .prefetch_related("categories", "tags")
+    )
+    if query:
+        posts = posts.filter(title__icontains=query)
+    if category_id:
+        posts = posts.filter(categories__id=category_id)
+    if tag_id:
+        posts = posts.filter(tags__id=tag_id)
+    posts = posts.distinct()
+
+    context = {"posts": posts}
+    return render(request, "blog/partials/admin_post_list.html", context)
+
+
+@login_required(login_url="accounts:login")
+@user_passes_test(lambda u: u.is_superuser)
+def delete_post(request, post_id):
+    """Delete a post if the user is a superuser."""
+    post = get_object_or_404(Post, id=post_id)
+    post.delete()
+    if request.htmx:
+        return HttpResponse("")
+    return redirect("author_management")
