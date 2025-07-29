@@ -2,9 +2,9 @@
 {% load widget_tweaks %}
 {% block title %}Add Post{% endblock %}
 {% block content %}
-<section class="px-6 py-12">
-    <div class="max-w-3xl mx-auto bg-white shadow rounded-lg p-6">
-        <h1 class="text-3xl font-bold">Create New Post</h1>
+<section class="px-4 sm:px-6 py-12">
+    <div class="max-w-3xl mx-auto bg-white shadow rounded-lg p-4 sm:p-6">
+        <h1 class="text-2xl sm:text-3xl font-bold">Create New Post</h1>
         <p class="text-gray-600 mb-6">Share your latest insights with our readers.</p>
         <form id="post-form" class="space-y-4" method="post">
             {% csrf_token %}
@@ -20,7 +20,7 @@
             {% for error in form.non_field_errors %}
                 <div class="text-red-500 text-sm">{{ error }}</div>
             {% endfor %}
-            <div class="flex gap-3 pt-2">
+            <div class="flex flex-col sm:flex-row gap-3 pt-2">
                 <button name="action" value="draft" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" type="submit">Save Draft</button>
                 <button name="action" value="publish" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" type="submit">Publish Post</button>
             </div>
