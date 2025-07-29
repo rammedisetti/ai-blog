@@ -15,12 +15,10 @@
 
 <body class="{% block body_class %}min-h-screen flex flex-col bg-white text-gray-800{% endblock %}">
     <header class="border-b bg-white">
-        <div class="max-w-7xl mx-auto px-6 flex items-center justify-between py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between py-4 relative">
             <a href="/" class="text-xl font-semibold" aria-label="HowAiworks Home">HowAiworks</a>
-            <button id="nav-toggle" class="md:hidden">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
+            <button id="nav-toggle" class="md:hidden text-2xl">
+                <i class="fas fa-bars"></i>
             </button>
             <nav id="nav-menu" class="hidden md:flex items-center space-x-6">
                 <a href="{% url 'home' %}" aria-label="Home"
@@ -50,49 +48,30 @@
                     {% endif %}
                 </div>
             </div>
-            <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
-                <nav class="flex flex-col space-y-2">
-                    <a href="{% url 'home' %}" aria-label="Home"
-                        class="{% if request.resolver_match.url_name == 'home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Home</a>
-                    <a href="{% url 'blog_home' %}" aria-label="Blog"
-                        class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
-                    {% if request.user.is_authenticated %}
-                    <div class="relative inline-block text-left" id="profile-dropdown">
-                        <button type="button" class="flex items-center space-x-2 focus:outline-none"
-                            id="profile-menu-btn" aria-haspopup="true" aria-expanded="false">
-                            {% if user.profile.image.url %}
-                            <img src="#" alt="Profile"
-                                class="w-9 h-9 rounded-full object-cover border-2 border-blue-400 shadow-sm" />
-                            {% else %}
-                            <i class="fas fa-user-circle text-3xl text-blue-500"></i>
-                            {% endif %}
-                            <span class="font-semibold text-gray-800">{{ user.username }}</span>
-                        </button>
-                        <!-- Dropdown menu (hidden by default) -->
-                        <div id="profile-menu"
-                            class="absolute mt-2 w-48 bg-white rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 z-50 transition-all duration-200 opacity-0 pointer-events-none">
-                            <a href="#"
-                                class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-xl">
-                                <i class="fas fa-user-edit mr-2 text-blue-500"></i> Manage
-                            </a>
-                            <form method="post" action="{% url 'accounts:logout' %}">
-                                {% csrf_token %}
-                                <button type="submit"
-                                    class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 rounded-b-xl">
-                                    <i class="fas fa-sign-out-alt mr-2 text-red-500"></i> Logout
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                    {% else %}
-                    <a href="{% url 'accounts:auth_split' %}?form=login" aria-label="Login"
-                        class="hover:text-blue-600">Login</a>
-                    <a href="{% url 'accounts:auth_split' %}?form=signup" aria-label="Sign Up"
-                        class="hover:text-blue-600">Sign Up</a>
-                    {% endif %}
-                </nav>
-            </div>
-    </header>
+</div>
+<div id="mobile-container" class="md:hidden">
+    <div id="mobile-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden"></div>
+    <nav id="mobile-menu" class="fixed top-0 right-0 w-64 h-full bg-white p-6 transform translate-x-full transition-transform">
+        <button id="nav-close" class="mb-4 text-2xl text-gray-600">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="flex flex-col space-y-4">
+            <a href="{% url 'home' %}" aria-label="Home" class="{% if request.resolver_match.url_name == 'home' %}text-blue-600 font-semibold{% else %}hover:text-blue-600{% endif %}">Home</a>
+            <a href="{% url 'blog_home' %}" aria-label="Blog" class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold{% else %}hover:text-blue-600{% endif %}">Blog</a>
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'dashboard_redirect' %}" class="hover:text-blue-600">Dashboard</a>
+            <form method="post" action="{% url 'accounts:logout' %}" class="pt-2">
+                {% csrf_token %}
+                <button type="submit" class="text-left w-full py-2 text-red-600">Logout</button>
+            </form>
+            {% else %}
+            <a href="{% url 'accounts:auth_split' %}?form=login" aria-label="Login" class="hover:text-blue-600">Login</a>
+            <a href="{% url 'accounts:auth_split' %}?form=signup" aria-label="Sign Up" class="hover:text-blue-600">Sign Up</a>
+            {% endif %}
+        </div>
+    </nav>
+</div>
+</header>
 
     {% block content %}{% endblock %}
 
@@ -143,9 +122,22 @@
     <script>
         const navToggle = document.getElementById('nav-toggle');
         const mobileMenu = document.getElementById('mobile-menu');
-        navToggle && navToggle.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
+        const navClose = document.getElementById('nav-close');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+
+        function openMenu() {
+            mobileMenu.classList.remove('translate-x-full');
+            mobileOverlay.classList.remove('hidden');
+        }
+
+        function closeMenu() {
+            mobileMenu.classList.add('translate-x-full');
+            mobileOverlay.classList.add('hidden');
+        }
+
+        navToggle && navToggle.addEventListener('click', openMenu);
+        navClose && navClose.addEventListener('click', closeMenu);
+        mobileOverlay && mobileOverlay.addEventListener('click', closeMenu);
     </script>
     {% block extra_js %}{% endblock %}
 </body>
