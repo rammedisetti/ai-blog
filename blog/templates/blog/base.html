@@ -1,94 +1,172 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}HowAiworks{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     {% block extra_css %}{% endblock %}
 </head>
+
 <body class="{% block body_class %}min-h-screen flex flex-col bg-white text-gray-800{% endblock %}">
     <header class="border-b bg-white">
-        <div class="max-w-7xl mx-auto px-6 flex items-center justify-between py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between py-4 relative">
             <a href="/" class="text-xl font-semibold" aria-label="HowAiworks Home">HowAiworks</a>
-            <button id="nav-toggle" class="md:hidden">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            <button id="nav-toggle" class="md:hidden text-2xl">
+                <i class="fas fa-bars"></i>
             </button>
             <nav id="nav-menu" class="hidden md:flex items-center space-x-6">
-                <a href="{% url 'home' %}" aria-label="Home" class="{% if request.resolver_match.url_name == 'home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Home</a>
-                <a href="{% url 'blog_home' %}" aria-label="Blog" class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
-                {% if request.user.is_authenticated %}
-                <form method="post" action="{% url 'accounts:logout' %}">
-                    {% csrf_token %}
-                    <button type="submit" class="px-4 py-1 bg-red-600 text-white rounded hover:bg-red-700">Logout</button>
-                </form>
-                {% else %}
-                <a href="{% url 'accounts:auth_split' %}?form=login" aria-label="Login"
-                    class="px-4 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-50">Login</a>
-                <a href="{% url 'accounts:auth_split' %}?form=signup" aria-label="Sign Up"
-                    class="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Sign Up</a>
-                {% endif %}
+                <a href="{% url 'home' %}" aria-label="Home"
+                    class="{% if request.resolver_match.url_name == 'home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Home</a>
+                <a href="{% url 'blog_home' %}" aria-label="Blog"
+                    class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
+                <a href="{% url 'ecommerce:product_list' %}" aria-label="Products"
+                    class="{% if request.resolver_match.app_name == 'ecommerce' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Products</a>
+
             </nav>
-        </div>
-        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
-            <nav class="flex flex-col space-y-2">
-                <a href="{% url 'home' %}" aria-label="Home" class="{% if request.resolver_match.url_name == 'home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Home</a>
-                <a href="{% url 'blog_home' %}" aria-label="Blog" class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold border-b-2 border-blue-600{% else %}hover:text-blue-600{% endif %}">Blog</a>
+            <div class="hidden md:flex items-center space-x-4">
                 {% if request.user.is_authenticated %}
-                <form method="post" action="{% url 'accounts:logout' %}">
-                    {% csrf_token %}
-                    <button type="submit" class="hover:text-white bg-red-600 text-white px-4 py-1 rounded">Logout</button>
-                </form>
-                {% else %}
-                <a href="{% url 'accounts:auth_split' %}?form=login" aria-label="Login" class="hover:text-blue-600">Login</a>
-                <a href="{% url 'accounts:auth_split' %}?form=signup" aria-label="Sign Up" class="hover:text-blue-600">Sign Up</a>
-                {% endif %}
-            </nav>
+                <div class="flex items-center text-left space-x-4" id="profile-dropdown">
+                    <span class="font-semibold text-gray-800">Hi, {{ user.username }}</span>
+                    <a href="{% url 'dashboard_redirect' %}" class="flex items-center space-x-2 focus:outline-none">
+                        {% if user.profile_picture_url %}
+                        <img src="{{ user.profile_picture_url }}" alt="Profile"
+                            class="w-9 h-9 rounded-full object-cover border-2 border-blue-400 shadow-sm" />
+                        {% else %}
+                        <i class="fas fa-user-circle text-3xl text-blue-500"></i>
+                        {% endif %}
+                    </a>
+
+                    {% else %}
+                    <a href="{% url 'accounts:auth_split' %}?form=login" aria-label="Login"
+                        class="px-4 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-50">Login</a>
+                    <a href="{% url 'accounts:auth_split' %}?form=signup" aria-label="Sign Up"
+                        class="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+</div>
+<div id="mobile-container" class="md:hidden">
+    <div id="mobile-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden"></div>
+    <nav id="mobile-menu" class="fixed top-0 right-0 w-64 h-full bg-white p-6 transform translate-x-full transition-transform">
+        <button id="nav-close" class="mb-4 text-2xl text-gray-600">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="flex flex-col space-y-4">
+            <a href="{% url 'home' %}" aria-label="Home" class="{% if request.resolver_match.url_name == 'home' %}text-blue-600 font-semibold{% else %}hover:text-blue-600{% endif %}">Home</a>
+            <a href="{% url 'blog_home' %}" aria-label="Blog" class="{% if request.resolver_match.url_name == 'blog_home' %}text-blue-600 font-semibold{% else %}hover:text-blue-600{% endif %}">Blog</a>
+            <a href="{% url 'ecommerce:product_list' %}" aria-label="Products" class="{% if request.resolver_match.app_name == 'ecommerce' %}text-blue-600 font-semibold{% else %}hover:text-blue-600{% endif %}">Products</a>
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'dashboard_redirect' %}" class="hover:text-blue-600">Dashboard</a>
+            <form method="post" action="{% url 'accounts:logout' %}" class="pt-2">
+                {% csrf_token %}
+                <button type="submit" class="text-left w-full py-2 text-red-600">Logout</button>
+            </form>
+            {% else %}
+            <a href="{% url 'accounts:auth_split' %}?form=login" aria-label="Login" class="hover:text-blue-600">Login</a>
+            <a href="{% url 'accounts:auth_split' %}?form=signup" aria-label="Sign Up" class="hover:text-blue-600">Sign Up</a>
+            {% endif %}
         </div>
-    </header>
+    </nav>
+</div>
+</header>
 
     {% block content %}{% endblock %}
 
     <footer class="bg-[#101522] text-gray-300 pt-12 pb-6 mt-auto">
         <div class="max-w-7xl mx-auto px-6 grid gap-8 md:grid-cols-3">
             <div>
-                <p class="text-sm">Your trusted source for AI technology insights, debates, and practical guides. Stay informed about the future of artificial intelligence.</p>
+                <p class="text-sm">Your trusted source for AI technology insights, debates, and practical guides. Stay
+                    informed about the future of artificial intelligence.</p>
                 <div class="flex space-x-4 mt-4">
                     <a href="#" aria-label="Twitter">
-                        <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg>
+                        <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z" />
+                        </svg>
                     </a>
                     <a href="#" aria-label="LinkedIn">
-                        <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zM4 4a2 2 0 110 4 2 2 0 010-4z"/></svg>
+                        <svg class="w-5 h-5 text-gray-400 hover:text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zM4 4a2 2 0 110 4 2 2 0 010-4z" />
+                        </svg>
                     </a>
                 </div>
             </div>
             <div class="text-sm flex flex-col space-y-2">
                 <a href="{% url 'terms' %}" aria-label="Terms of Service" class="hover:text-white">Terms of Service</a>
                 <a href="{% url 'privacy' %}" aria-label="Privacy Policy" class="hover:text-white">Privacy Policy</a>
-                <a href="{% url 'cancellation' %}" aria-label="Cancellation and Refund Policy" class="hover:text-white">Cancellation &amp; Refund Policy</a>
+                <a href="{% url 'cancellation' %}" aria-label="Cancellation and Refund Policy"
+                    class="hover:text-white">Cancellation &amp; Refund Policy</a>
                 <a href="{% url 'contact' %}" aria-label="Contact" class="hover:text-white">Contact</a>
                 <a href="{% url 'about' %}" aria-label="About" class="hover:text-white">About</a>
+                <a href="{% url 'add_post' %}" aria-label="Add Post" class="hover:text-white">Add Post</a>
             </div>
             <div>
-                <form hx-post="#" hx-target="#footer-message" hx-swap="outerHTML" class="flex flex-col sm:flex-row gap-3">
-                    <input type="email" placeholder="Email" required class="flex-1 px-4 py-2 rounded-lg text-gray-900 focus:outline-none">
-                    <button type="submit" class="px-4 py-2 bg-blue-600 rounded-lg text-white hover:bg-blue-700">Join</button>
+                <form hx-post="#" hx-target="#footer-message" hx-swap="outerHTML"
+                    class="flex flex-col sm:flex-row gap-3">
+                    <input type="email" placeholder="Email" required
+                        class="flex-1 px-4 py-2 rounded-lg text-gray-900 focus:outline-none">
+                    <button type="submit"
+                        class="px-4 py-2 bg-blue-600 rounded-lg text-white hover:bg-blue-700">Join</button>
                 </form>
                 <div id="footer-message" class="mt-2 text-sm"></div>
             </div>
         </div>
-        <div class="text-center text-xs text-gray-500 mt-10">&copy; {{ year|default:'2024' }} HowAiworks. All rights reserved.</div>
+        <div class="text-center text-xs text-gray-500 mt-10">&copy; {{ year|default:'2024' }} HowAiworks. All rights
+            reserved.</div>
     </footer>
 
     <script>
-    const navToggle = document.getElementById('nav-toggle');
-    const mobileMenu = document.getElementById('mobile-menu');
-    navToggle && navToggle.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-    });
+        const navToggle = document.getElementById('nav-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navClose = document.getElementById('nav-close');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+
+        function openMenu() {
+            mobileMenu.classList.remove('translate-x-full');
+            mobileOverlay.classList.remove('hidden');
+        }
+
+        function closeMenu() {
+            mobileMenu.classList.add('translate-x-full');
+            mobileOverlay.classList.add('hidden');
+        }
+
+        navToggle && navToggle.addEventListener('click', openMenu);
+        navClose && navClose.addEventListener('click', closeMenu);
+        mobileOverlay && mobileOverlay.addEventListener('click', closeMenu);
     </script>
     {% block extra_js %}{% endblock %}
 </body>
+<!-- Script: Dropdown Toggle -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const btn = document.getElementById('profile-menu-btn');
+        const menu = document.getElementById('profile-menu');
+        const parent = document.getElementById('profile-dropdown');
+
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            menu.classList.toggle('opacity-0');
+            menu.classList.toggle('pointer-events-none');
+            menu.classList.toggle('opacity-100');
+            menu.classList.toggle('pointer-events-auto');
+        });
+
+        // Click outside to close
+        document.addEventListener('click', function (event) {
+            if (!parent.contains(event.target)) {
+                menu.classList.add('opacity-0', 'pointer-events-none');
+                menu.classList.remove('opacity-100', 'pointer-events-auto');
+            }
+        });
+    });
+</script>
+
 </html>

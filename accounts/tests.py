@@ -15,6 +15,8 @@ class SignupTests(TestCase):
             {
                 "username": "tester",
                 "email": "tester@example.com",
+                "first_name": "Test",
+                "last_name": "User",
                 "password1": "StrongPass123",
                 "password2": "StrongPass123",
             },
@@ -29,6 +31,8 @@ class SignupTests(TestCase):
             {
                 "username": "tester2",
                 "email": "tester@example.com",
+                "first_name": "Test",
+                "last_name": "User",
                 "password1": "StrongPass123",
                 "password2": "StrongPass123",
             },
@@ -41,6 +45,8 @@ class SignupTests(TestCase):
             {
                 "username": "tester3",
                 "email": "tester3@example.com",
+                "first_name": "Test",
+                "last_name": "User",
                 "password1": "StrongPass123",
                 "password2": "WrongPass123",
             },
@@ -53,6 +59,8 @@ class SignupTests(TestCase):
             {
                 "username": "tester4",
                 "email": "tester4@example.com",
+                "first_name": "Test",
+                "last_name": "User",
                 "password1": "short",
                 "password2": "short",
             },

@@ -6,6 +6,9 @@
 *.pyc
 __pycache__/
 
-#ignre specific files
+# ignore specific files
 settings-local.py
 manage-local.py
+
+# ignore folders
+.vscode/

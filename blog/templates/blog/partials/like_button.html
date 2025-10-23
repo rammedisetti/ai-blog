@@ -1,0 +1,16 @@
+<form 
+    hx-post="{% url 'toggle_like' post.id %}" 
+    hx-swap="outerHTML"
+    hx-trigger="click"
+    class="inline"
+>
+    {% csrf_token %}
+    <button type="submit" aria-label="Like" class="focus:outline-none">
+        {% if is_liked %}
+            <i class="fas fa-heart text-red-600"></i>
+        {% else %}
+            <i class="far fa-heart"></i>
+        {% endif %}
+        <span class="ml-1">{{ post.liked_by.count }}</span>
+    </button>
+</form>

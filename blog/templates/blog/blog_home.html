@@ -6,8 +6,8 @@
 {% block content %}
 
     <!-- Hero / Intro -->
-    <section class="px-6 py-12 text-center max-w-3xl mx-auto">
-        <h1 class="text-4xl sm:text-5xl font-extrabold mb-4">AI Technology <span class="text-blue-600">Blog</span></h1>
+    <section class="px-4 sm:px-6 py-12 text-center max-w-3xl mx-auto">
+        <h1 class="text-3xl sm:text-5xl font-extrabold mb-4">AI Technology <span class="text-blue-600">Blog</span></h1>
         <p class="text-lg text-gray-600 mb-8">Explore the latest insights, debates, and how-to guides in artificial intelligence.</p>
         <div class="flex flex-col sm:flex-row justify-center gap-3">
             <div class="relative w-full sm:max-w-md">
@@ -29,78 +29,32 @@
     <!-- Blog Grid -->
     <main class="flex-1 max-w-7xl mx-auto px-6 md:flex md:gap-8">
         <div class="flex-1 grid gap-8 sm:grid-cols-2">
-            <!-- Card 1 -->
+            {% for post in posts %}
             <article class="bg-white rounded-xl shadow hover:shadow-lg transition">
-                <img src="https://source.unsplash.com/collection/190727/800x450" alt="AI" class="rounded-t-xl aspect-video object-cover">
+                {% if post.featured_image_url %}
+                <img src="{{ post.featured_image_url }}" alt="{{ post.title }}" class="rounded-t-xl aspect-video object-cover">
+                {% endif %}
                 <div class="p-6">
                     <div class="flex items-center text-sm text-gray-500 mb-3 space-x-2">
-                        <span>Jun 12, 2024</span>
-                        <img src="https://source.unsplash.com/40x40/?face" class="w-6 h-6 rounded-full" alt="author">
-                        <span>Jane Doe</span>
+                        <span>{{ post.published_at|date:"M d, Y" }}</span>
+                        {% if post.author.profile_picture_url %}
+                        <img src="{{ post.author.profile_picture_url }}" class="w-6 h-6 rounded-full" alt="author">
+                        {% endif %}
+                        <span>{{ post.author.get_full_name|default:post.author.username }}</span>
                     </div>
-                    <h3 class="font-semibold text-lg mb-2">Breakthroughs in Neural Networks</h3>
-                    <p class="text-gray-600 mb-4">Discover the most recent advances in deep learning and how they are shaping the future of AI applications.</p>
+                    <h3 class="font-semibold text-lg mb-2">{{ post.title }}</h3>
+                    <p class="text-gray-600 text-sm mb-4 line-clamp-3">{{ post.excerpt }}</p>
                     <div class="flex flex-wrap gap-2 mb-4">
-                        <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-600">AI News</span>
-                        <span class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-600">Research</span>
+                        {% for tag in post.tags.all %}
+                        <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-600">{{ tag.name }}</span>
+                        {% endfor %}
                     </div>
-                    <a href="/blog/the-future-of-ai-in-software-development/" class="text-blue-600 inline-flex items-center">Read More<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></a>
+                    <a href="{% url 'article_detail' slug=post.slug %}" class="text-blue-600 inline-flex items-center">Read More<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></a>
                 </div>
             </article>
-            <!-- Card 2 -->
-            <article class="bg-white rounded-xl shadow hover:shadow-lg transition">
-                <img src="https://source.unsplash.com/collection/190727/801x451" alt="AI" class="rounded-t-xl aspect-video object-cover">
-                <div class="p-6">
-                    <div class="flex items-center text-sm text-gray-500 mb-3 space-x-2">
-                        <span>May 29, 2024</span>
-                        <img src="https://source.unsplash.com/40x40/?portrait" class="w-6 h-6 rounded-full" alt="author">
-                        <span>John Smith</span>
-                    </div>
-                    <h3 class="font-semibold text-lg mb-2">AI Ethics: A Heated Debate</h3>
-                    <p class="text-gray-600 mb-4">Experts weigh in on the ethical challenges posed by artificial intelligence and autonomous systems.</p>
-                    <div class="flex flex-wrap gap-2 mb-4">
-                        <span class="px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-600">Debate</span>
-                        <span class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-600">Ethics</span>
-                    </div>
-                    <a href="/blog/the-future-of-ai-in-software-development/" class="text-blue-600 inline-flex items-center">Read More<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></a>
-                </div>
-            </article>
-            <!-- Card 3 -->
-            <article class="bg-white rounded-xl shadow hover:shadow-lg transition">
-                <img src="https://source.unsplash.com/collection/190727/802x452" alt="AI" class="rounded-t-xl aspect-video object-cover">
-                <div class="p-6">
-                    <div class="flex items-center text-sm text-gray-500 mb-3 space-x-2">
-                        <span>May 10, 2024</span>
-                        <img src="https://source.unsplash.com/40x40/?man" class="w-6 h-6 rounded-full" alt="author">
-                        <span>Alicia Keys</span>
-                    </div>
-                    <h3 class="font-semibold text-lg mb-2">Step-by-Step Guide to Building Chatbots</h3>
-                    <p class="text-gray-600 mb-4">Learn how to create intelligent chatbots with modern frameworks and natural language processing APIs.</p>
-                    <div class="flex flex-wrap gap-2 mb-4">
-                        <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-600">How-To</span>
-                        <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-600">Guide</span>
-                    </div>
-                    <a href="/blog/the-future-of-ai-in-software-development/" class="text-blue-600 inline-flex items-center">Read More<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></a>
-                </div>
-            </article>
-            <!-- Card 4 -->
-            <article class="bg-white rounded-xl shadow hover:shadow-lg transition">
-                <img src="https://source.unsplash.com/collection/190727/803x453" alt="AI" class="rounded-t-xl aspect-video object-cover">
-                <div class="p-6">
-                    <div class="flex items-center text-sm text-gray-500 mb-3 space-x-2">
-                        <span>Apr 22, 2024</span>
-                        <img src="https://source.unsplash.com/40x40/?girl" class="w-6 h-6 rounded-full" alt="author">
-                        <span>Michael Lee</span>
-                    </div>
-                    <h3 class="font-semibold text-lg mb-2">Exploring Quantum Computing for AI</h3>
-                    <p class="text-gray-600 mb-4">A look at how quantum computing will accelerate AI research and the challenges ahead.</p>
-                    <div class="flex flex-wrap gap-2 mb-4">
-                        <span class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-600">Tech Insights</span>
-                        <span class="px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-600">Future</span>
-                    </div>
-                    <a href="/blog/the-future-of-ai-in-software-development/" class="text-blue-600 inline-flex items-center">Read More<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></a>
-                </div>
-            </article>
+            {% empty %}
+            <p>No posts available.</p>
+            {% endfor %}
         </div>
         <!-- Sidebar -->
         <aside class="hidden md:block w-72 space-y-8">
@@ -124,10 +78,13 @@
             <div class="bg-gray-50 p-4 rounded-xl shadow">
                 <h4 class="font-semibold mb-3">Categories</h4>
                 <ul class="text-sm space-y-1">
-                    <li class="flex justify-between"><a href="#" class="text-blue-600 hover:underline">News</a><span>12</span></li>
-                    <li class="flex justify-between"><a href="#" class="text-blue-600 hover:underline">Debate</a><span>7</span></li>
-                    <li class="flex justify-between"><a href="#" class="text-blue-600 hover:underline">How-To</a><span>15</span></li>
-                    <li class="flex justify-between"><a href="#" class="text-blue-600 hover:underline">Tech Insights</a><span>9</span></li>
+                    {% for category in categories %}
+                    <li class="flex justify-between">
+                        <a href="#" class="text-blue-600 hover:underline">{{ category.name }}</a>
+                    </li>
+                    {% empty %}
+                    <li>No categories</li>
+                    {% endfor %}
                 </ul>
             </div>
         </aside>

@@ -1,0 +1,186 @@
+{% extends "blog/base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Admin Dashboard{% endblock %}
+{% block body_class %}min-h-screen flex flex-col bg-[#F8F9FB] text-gray-800{% endblock %}
+
+{% block content %}
+<div class="container p-6 md:flex gap-6" x-data="{ tab: 'authors', showAuthorForm: false }">
+    <aside class="md:w-72 bg-white rounded-lg shadow p-4 mb-6 md:mb-0 max-h-max">
+        <h1 class="text-xl font-semibold mb-4">Admin Panel</h1>
+        <nav class="space-y-2">
+            <a href="#" @click.prevent="tab = 'authors'" :class="tab === 'authors' ? 'bg-blue-100 text-blue-700' : ''"
+                class="block px-3 py-2 rounded hover:bg-gray-100">Authors</a>
+            <a href="#" @click.prevent="tab = 'posts'" :class="tab === 'posts' ? 'bg-blue-100 text-blue-700' : ''"
+                class="block px-3 py-2 rounded hover:bg-gray-100">Posts</a>
+            <a href="#" @click.prevent="tab = 'comments'" :class="tab === 'comments' ? 'bg-blue-100 text-blue-700' : ''"
+                class="block px-3 py-2 rounded hover:bg-gray-100">Comments</a>
+            <a href="#" @click.prevent="tab = 'analytics'" :class="tab === 'analytics' ? 'bg-blue-100 text-blue-700' : ''"
+                class="block px-3 py-2 rounded hover:bg-gray-100">Analytics</a>
+            <form method="post" action="{% url 'accounts:logout' %}" class="mt-4">
+                {% csrf_token %}
+                <button type="submit"
+                    class="w-full text-left px-3 py-2 rounded text-red-600 hover:bg-gray-100">Logout</button>
+            </form>
+        </nav>
+    </aside>
+    <div class="flex-1 space-y-8">
+        <section id="authors" x-show="tab === 'authors'" x-cloak class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold">Author Accounts</h2>
+                <button 
+                    @click="showAuthorForm = true" 
+                    x-show="!showAuthorForm"
+                    class="px-4 py-2 bg-blue-600 text-white rounded flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Add Author
+                </button>
+            </div>
+            
+            <form method="post" class="space-y-4 mb-6" x-show="showAuthorForm" x-cloak>
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-semibold">Create New Author</h3>
+                    <button type="button" @click="showAuthorForm = false" class="text-gray-500 hover:text-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                {% for field in form %}
+                <div>
+                    {{ field.label_tag }}
+                    {{ field|add_class:'w-full border rounded p-2' }}
+                    {% for error in field.errors %}
+                    <div class="text-red-500 text-sm">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                <div class="flex justify-end">
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded" type="submit">Create Author</button>
+                </div>
+            </form>
+            
+            <div class="border-t pt-4 overflow-x-auto" x-bind:class="{'border-t': showAuthorForm}">
+                <h3 class="font-semibold mb-2">Existing Authors</h3>
+                <table class="w-full text-left text-sm">
+                    <thead>
+                        <tr class="border-b">
+                            <th class="py-2">Name</th>
+                            <th class="py-2">Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in authors %}
+                        <tr class="border-b last:border-0">
+                            <td class="py-2">{{ a.get_full_name|default:a.username }}</td>
+                            <td class="py-2">{{ a.email }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td class="py-2" colspan="2">No authors.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="posts" x-show="tab === 'posts'" x-cloak class="bg-white rounded-lg shadow p-6 space-y-6">
+            <h2 class="text-xl font-semibold">Post Moderation</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="bg-gray-100 p-4 rounded">
+                    <div class="text-sm text-gray-500">Total Posts</div>
+                    <div class="text-2xl font-semibold">{{ total_posts }}</div>
+                </div>
+                <div class="bg-gray-100 p-4 rounded">
+                    <div class="text-sm text-gray-500">Published</div>
+                    <div class="text-2xl font-semibold">{{ published_posts }}</div>
+                </div>
+                <div class="bg-gray-100 p-4 rounded">
+                    <div class="text-sm text-gray-500">Drafts</div>
+                    <div class="text-2xl font-semibold">{{ draft_posts }}</div>
+                </div>
+            </div>
+            <form class="flex flex-col md:flex-row md:items-end gap-4" hx-get="{% url 'admin_post_list' %}" hx-target="#post-list" hx-indicator="#loading">
+                <div class="flex-1">
+                    <label for="search" class="sr-only">Search</label>
+                    <input id="search" type="text" name="q" value="{{ query }}" placeholder="Search title" class="w-full border rounded p-2" />
+                </div>
+                <div>
+                    <label for="category" class="sr-only">Category</label>
+                    <select id="category" name="category" class="border rounded p-2">
+                        <option value="">All Categories</option>
+                        {% for c in categories %}
+                        <option value="{{ c.id }}" {% if selected_category == c.id|stringformat:'s' %}selected{% endif %}>{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="tag" class="sr-only">Tag</label>
+                    <select id="tag" name="tag" class="border rounded p-2">
+                        <option value="">All Tags</option>
+                        {% for t in tags %}
+                        <option value="{{ t.id }}" {% if selected_tag == t.id|stringformat:'s' %}selected{% endif %}>{{ t.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Filter</button>
+            </form>
+            <div id="post-list" class="overflow-x-auto" hx-get="{% url 'admin_post_list' %}?q={{ query|urlencode }}&category={{ selected_category }}&tag={{ selected_tag }}" hx-trigger="load">
+                {% include 'blog/partials/admin_post_list.html' with posts=posts %}
+            </div>
+            <div id="loading" class="hidden text-center py-4">Loading...</div>
+        </section>
+
+        <section id="comments" x-show="tab === 'comments'" x-cloak class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">Pending Comment Review</h2>
+            {% if pending_comments %}
+            <ul class="divide-y divide-gray-200">
+                {% for comment in pending_comments %}
+                <li class="py-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="font-semibold">{{ comment.user.get_full_name|default:comment.user.username }}</span>
+                            <span class="text-gray-500 text-xs ml-2">on <a href="{% url 'article_detail' slug=comment.post.slug %}" class="text-blue-600 hover:underline">{{ comment.post.title }}</a></span>
+                            <span class="text-gray-500 text-xs ml-2">· {{ comment.created_at|date:"M d, Y H:i" }}</span>
+                        </div>
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm">View</button>
+                            <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded shadow-lg z-10 p-4" x-cloak>
+                                <div class="mb-2 text-gray-700 whitespace-pre-line">{{ comment.content }}</div>
+                                <form method="post" class="flex gap-2 mt-2">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                                    <button name="approve_comment" value="approve" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm" type="submit">Approve</button>
+                                    <button name="approve_comment" value="deny" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm" type="submit">Deny</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-gray-500">No comments awaiting review.</p>
+            {% endif %}
+        </section>
+
+        <section id="analytics" x-show="tab === 'analytics'" x-cloak class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">Site Analytics</h2>
+            <p class="text-gray-500">Analytics coming soon.</p>
+        </section>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    window.onload = function () {
+        window.scrollTo(0, 0);
+    }
+</script>
+{% endblock %}

@@ -2,8 +2,13 @@
 
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import (
+    AuthenticationForm,
+    UserCreationForm,
+    PasswordChangeForm,
+)
 from django.contrib.auth import authenticate
+from .models import InterestChoices
 
 User = get_user_model()
 
@@ -15,13 +20,27 @@ class SignupForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ("username", "email", "password1", "password2")
+        fields = (
+            "username",
+            "email",
+            "password1",
+            "password2",
+            "first_name",
+            "last_name",
+        )
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
         if User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError("A user with that email already exists.")
         return email
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.role = User.Role.READER
+        if commit:
+            user.save()
+        return user
 
 
 class LoginForm(AuthenticationForm):
@@ -48,3 +67,54 @@ class LoginForm(AuthenticationForm):
                 self.confirm_login_allowed(self.user_cache)
 
         return self.cleaned_data
+
+
+class ProfileForm(forms.ModelForm):
+    """Form for updating basic profile information."""
+
+    interests = forms.MultipleChoiceField(
+        choices=InterestChoices.choices,
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
+
+    class Meta:
+        model = User
+        fields = [
+            "first_name",
+            "last_name",
+            "profile_picture_url",
+            "role",
+            "status",
+            "location",
+            "profession",
+            "date_of_birth",
+            "interests",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.interests:
+            self.initial["interests"] = self.instance.interests
+
+    def clean_interests(self):
+        return self.cleaned_data.get("interests", [])
+
+
+class PreferencesForm(forms.ModelForm):
+    """Notification preference toggles for the user."""
+
+    class Meta:
+        model = User
+        fields = [
+            "email_notifications",
+            "newsletter_subscription",
+            "comment_notifications",
+            "marketing_updates",
+        ]
+
+
+class PasswordUpdateForm(PasswordChangeForm):
+    """Wrapper around Django's PasswordChangeForm for clarity."""
+
+    pass

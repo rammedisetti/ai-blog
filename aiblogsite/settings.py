@@ -26,7 +26,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False  
 
-ALLOWED_HOSTS = ['howaiworks-dev-qrggn.ondigitalocean.app']
+ALLOWED_HOSTS = ['howaiworks-dev-qrggn.ondigitalocean.app', 'howaiworks.tech']
 
 
 # Application definition
@@ -39,9 +39,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'widget_tweaks',
+    'ckeditor',
     'accounts',
     'blog',
+    'django_htmx',
+    'django_extensions',
+    'core',
+    'ecommerce',
 ]
+
+# Use custom user model from the accounts app
+AUTH_USER_MODEL = 'accounts.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -51,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',
 ]
 
 ROOT_URLCONF = 'aiblogsite.urls'
@@ -85,25 +94,32 @@ WSGI_APPLICATION = 'aiblogsite.wsgi.application'
 
 #postgresSQL dev base
 
-from urllib.parse import urlparse 
+from urllib.parse import urlparse
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
-db_info = urlparse(DATABASE_URL)
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'howaiworks-dev-db',
-        'USER': db_info.username,
-        'PASSWORD': db_info.password,
-        'HOST': db_info.hostname,
-        'PORT': db_info.port,
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
+if DATABASE_URL:
+    db_info = urlparse(DATABASE_URL)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'howaiworks-dev-db',
+            'USER': db_info.username,
+            'PASSWORD': db_info.password,
+            'HOST': db_info.hostname,
+            'PORT': db_info.port,
+            'OPTIONS': {
+                'sslmode': 'require',
+            },
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
@@ -142,13 +158,22 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),   # For project-level static files
-]
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'static'),   # For project-level static files
+# ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # For collectstatic in production
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 300,
+        'width': '100%',
+        'extraPlugins': ','.join(['pastefromword']),
+    }
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
