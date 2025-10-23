@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django_htmx',
     'django_extensions',
     'core',
+    'ecommerce',
 ]
 
 # Use custom user model from the accounts app
