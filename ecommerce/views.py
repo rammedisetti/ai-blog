@@ -1,3 +1,5 @@
+from django.views.decorators.http import require_POST
+
 from .forms import ProductForm
 from django.contrib.auth.decorators import login_required
 # Inventory dashboard (list products)
@@ -68,3 +70,12 @@ def checkout(request):
     # Payment gateway integration goes here
     # On successful payment, create Order and Payment records
     return render(request, 'ecommerce/checkout.html', {'cart': cart, 'items': items})
+
+# Delete product
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff)
+@require_POST
+def delete_product(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
+    product.delete()
+    return redirect('ecommerce:inventory_dashboard')

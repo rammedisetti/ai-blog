@@ -12,6 +12,8 @@ from django.shortcuts import get_object_or_404
 from django.utils.text import slugify
 from datetime import datetime
 from django.utils import timezone
+from ecommerce.models import Product
+from ecommerce.forms import ProductForm
 
 def home(request):
     """Render landing page with current year."""
@@ -462,6 +464,9 @@ def author_management(request):
         "query": query,
         "selected_category": category_id,
         "selected_tag": tag_id,
+        # Inventory management context:
+        "products": Product.objects.all(),
+        "product_form": ProductForm(),
     }
     return render(request, "blog/author_management.html", context)
 
