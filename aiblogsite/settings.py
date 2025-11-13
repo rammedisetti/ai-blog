@@ -179,3 +179,8 @@ CKEDITOR_CONFIGS = {
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+ECOMMERCE_CHECKOUT_FLOW = os.environ.get('ECOMMERCE_CHECKOUT_FLOW', 'normal')   #switch between 'normal' and 'razorpay'
+RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID', '')
+RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET', '')
+RAZORPAY_CURRENCY = os.environ.get('RAZORPAY_CURRENCY', 'INR')
