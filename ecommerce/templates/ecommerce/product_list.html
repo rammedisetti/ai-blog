@@ -4,7 +4,7 @@
   <h1 class="text-3xl font-bold mb-8 text-gray-800">Products</h1>
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
     {% for product in products %}
-    <div class="bg-white rounded-xl shadow-md hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex flex-col">
+    <div class="bg-white rounded-xl shadow-md flex flex-col transition-all duration-200 transform {% if product.is_active %}hover:shadow-xl hover:-translate-y-1{% else %}opacity-60{% endif %}">
       <div class="relative">
         <img 
           src="{{ product.thumbnail.url }}" 
@@ -15,22 +15,39 @@
         {% if product.is_free %}
         <span class="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded">Free</span>
         {% endif %}
+        {% if not product.is_active %}
+        <span class="absolute top-2 right-2 bg-orange-100 text-orange-700 text-xs font-semibold px-2 py-1 rounded">Inactive</span>
+        {% endif %}
       </div>
       <div class="flex-1 flex flex-col p-4">
         <h2 class="text-lg font-semibold text-gray-900 mb-2">{{ product.name }}</h2>
-        <div class="mb-2">
-          <span class="text-blue-600 font-bold text-xl">₹{{ product.price }}</span>
-          {% if product.discount_price %}
-            <span class="text-gray-400 line-through ml-2">₹{{ product.discount_price }}</span>
+        <div class="flex items-center gap-2 mb-2">
+          {% if product.is_free %}
+            {% if product.price %}
+              <span class="text-sm text-gray-400 line-through">₹{{ product.price }}</span>
+            {% endif %}
+            <span class="text-green-600 font-bold text-xl">Free</span>
+          {% else %}
+            {% if product.discount_price %}
+              <span class="text-blue-600 font-bold text-xl">₹{{ product.discount_price }}</span>
+              <span class="text-gray-400 line-through ml-1">₹{{ product.price }}</span>
+            {% else %}
+              <span class="text-blue-600 font-bold text-xl">₹{{ product.price }}</span>
+            {% endif %}
           {% endif %}
         </div>
         <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ product.description|truncatechars:80 }}</p>
         <div class="mt-auto flex space-x-2">
-          <a href="{% url 'ecommerce:product_detail' product.slug %}" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-center transition">View Details</a>
-          <form method="post" action="{% url 'ecommerce:add_to_cart' product.product_id %}">
-            {% csrf_token %}
-            <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">Add to Cart</button>
-          </form>
+          {% if product.is_active %}
+            <a href="{% url 'ecommerce:product_detail' product.slug %}" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-center transition">View Details</a>
+            <form method="post" action="{% url 'ecommerce:add_to_cart' product.product_id %}">
+              {% csrf_token %}
+              <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">Add to Cart</button>
+            </form>
+          {% else %}
+            <span class="flex-1 px-4 py-2 bg-gray-200 text-gray-500 rounded text-center text-sm font-semibold cursor-not-allowed" aria-disabled="true">View Details</span>
+            <button type="button" class="px-4 py-2 bg-gray-200 text-gray-500 rounded cursor-not-allowed" disabled>Add to Cart</button>
+          {% endif %}
         </div>
       </div>
     </div>
