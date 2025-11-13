@@ -12,8 +12,29 @@ from django.shortcuts import get_object_or_404
 from django.utils.text import slugify
 from datetime import datetime
 from django.utils import timezone
-from ecommerce.models import Product
+from ecommerce.models import Product, Order, Payment
 from ecommerce.forms import ProductForm
+from decimal import Decimal
+
+
+def _compose_order_history(orders_qs):
+    """Return per-order details with payment and item metadata for dashboard tables."""
+    history = []
+    for order in orders_qs:
+        try:
+            payment = order.payment
+        except Payment.DoesNotExist:
+            payment = None
+
+        history.append(
+            {
+                "order": order,
+                "payment": payment,
+                "items": list(order.items.all()),
+            }
+        )
+
+    return history
 
 
 def _coerce_positive_int(value):
@@ -334,11 +355,21 @@ def reader_dashboard(request):
                 return redirect("user_dashboard")
             active_tab = "password"
 
+    orders_qs = (
+        Order.objects.filter(user=request.user)
+        .select_related("user")
+        .prefetch_related("items__product")
+        .order_by("-created_at")
+    )
+
+    order_history = _compose_order_history(orders_qs)
+
     context = {
         "saved_posts": saved_posts,
         "saved_at_map": saved_at_map,
         "liked_posts": liked_posts,
         "related_posts": related_posts,
+        "order_history": order_history,
         "profile_form": profile_form,
         "pref_form": pref_form,
         "password_form": password_form,
@@ -388,11 +419,21 @@ def author_dashboard(request):
                 return redirect("author_dashboard")
             active_tab = "password"
 
+    orders_qs = (
+        Order.objects.filter(user=request.user)
+        .select_related("user")
+        .prefetch_related("items__product")
+        .order_by("-created_at")
+    )
+
+    order_history = _compose_order_history(orders_qs)
+
     context = {
         "profile_form": profile_form,
         "pref_form": pref_form,
         "password_form": password_form,
         "posts": posts,
+        "order_history": order_history,
         "year": datetime.now().year,
         "active_tab": active_tab,
     }
@@ -461,6 +502,35 @@ def author_management(request):
     category_stats = Category.objects.annotate(count=models.Count("posts"))
     tag_stats = Tag.objects.annotate(count=models.Count("posts"))
 
+    orders_qs = (
+        Order.objects.select_related("user")
+        .prefetch_related("items__product")
+        .order_by("-created_at")
+    )
+    order_history = _compose_order_history(orders_qs)
+
+    captured_revenue = sum(
+        (
+            entry["order"].total_amount
+            for entry in order_history
+            if entry["payment"] and (entry["payment"].status or "").lower() == "captured"
+        ),
+        Decimal("0.00"),
+    )
+
+    captured_orders = sum(
+        1
+        for entry in order_history
+        if entry["payment"] and (entry["payment"].status or "").lower() == "captured"
+    )
+    total_orders = len(order_history)
+    order_metrics = {
+        "total_orders": total_orders,
+        "captured_orders": captured_orders,
+        "pending_orders": total_orders - captured_orders,
+        "captured_revenue": captured_revenue,
+    }
+
     context = {
         "form": form,
         "authors": authors,
@@ -480,6 +550,8 @@ def author_management(request):
         # Inventory management context:
         "products": Product.objects.all(),
         "product_form": ProductForm(),
+        "order_history": order_history,
+        "order_metrics": order_metrics,
     }
     return render(request, "blog/author_management.html", context)
 

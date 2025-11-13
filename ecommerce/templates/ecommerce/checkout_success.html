@@ -1,0 +1,66 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<div class="bg-[#F8F9FB]">
+  <div class="max-w-4xl mx-auto px-4 py-12">
+    <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">Thank you for your purchase</h1>
+          <p class="text-sm text-gray-500 mt-1">Order #{{ order.id }} &middot; {{ order.created_at|date:"M d, Y H:i" }}</p>
+        </div>
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-700">Payment confirmed</span>
+      </div>
+
+      <div class="mt-8 space-y-6">
+        <section>
+          <h2 class="text-lg font-semibold text-gray-900 mb-3">Order summary</h2>
+          <div class="border border-gray-100 rounded-lg">
+            <table class="min-w-full divide-y divide-gray-100 text-sm">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-3 text-left text-gray-500 font-medium">Product</th>
+                  <th class="px-4 py-3 text-right text-gray-500 font-medium">Quantity</th>
+                  <th class="px-4 py-3 text-right text-gray-500 font-medium">Price</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                {% for item in order.items.all %}
+                <tr>
+                  <td class="px-4 py-3 text-gray-900">{{ item.product.name }}</td>
+                  <td class="px-4 py-3 text-right text-gray-600">{{ item.quantity }}</td>
+                  <td class="px-4 py-3 text-right text-gray-900">₹{{ item.price|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-gray-50 border border-gray-100 rounded-lg p-5">
+            <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Total paid</h3>
+            <p class="mt-2 text-3xl font-bold text-blue-600">₹{{ order.total_amount|floatformat:2 }}</p>
+          </div>
+
+          <div class="bg-gray-50 border border-gray-100 rounded-lg p-5 space-y-1 text-sm">
+            <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Payment details</h3>
+            {% if payment %}
+              <p class="text-gray-600">Gateway: Razorpay</p>
+              <p class="text-gray-600">Payment ID: {{ payment.payment_id }}</p>
+              <p class="text-gray-600">Status: {{ payment.status|title }}</p>
+            {% else %}
+              <p class="text-gray-600">Payment record not available.</p>
+            {% endif %}
+          </div>
+        </section>
+      </div>
+
+      <div class="mt-10 flex flex-wrap gap-3">
+        <a href="{% url 'ecommerce:product_list' %}" class="inline-flex items-center px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow transition">Continue shopping</a>
+        <a href="{% url 'blog:reader_dashboard' %}" class="inline-flex items-center px-5 py-3 border border-gray-200 text-gray-700 hover:bg-gray-50 font-semibold rounded-lg transition">Go to dashboard</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

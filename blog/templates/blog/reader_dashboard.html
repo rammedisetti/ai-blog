@@ -23,6 +23,8 @@
                 class="block px-3 py-2 rounded hover:bg-gray-100">Profile</a>
             <a href="#" @click.prevent="tab = 'articles'" :class="tab === 'articles' ? 'bg-blue-100 text-blue-700' : ''"
                 class="block px-3 py-2 rounded hover:bg-gray-100">My Articles</a>
+            <a href="#" @click.prevent="tab = 'purchases'" :class="tab === 'purchases' ? 'bg-blue-100 text-blue-700' : ''"
+                class="block px-3 py-2 rounded hover:bg-gray-100">Purchases</a>
             <a href="#" @click.prevent="tab = 'prefs'" :class="tab === 'prefs' ? 'bg-blue-100 text-blue-700' : ''"
                 class="block px-3 py-2 rounded hover:bg-gray-100">Preferences</a>
             <a href="#" @click.prevent="tab = 'password'" :class="tab === 'password' ? 'bg-blue-100 text-blue-700' : ''"
@@ -147,6 +149,79 @@
                 <p>No saved articles.</p>
                 {% endif %}
             </div>
+        </section>
+        <!-- Purchases Section -->
+        <section id="purchases" x-show="tab === 'purchases'" x-cloak class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold">Purchase History</h2>
+                {% if order_history %}
+                <span class="text-sm text-gray-500">Showing {{ order_history|length }} orders</span>
+                {% endif %}
+            </div>
+            {% if order_history %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 text-sm">
+                    <thead class="bg-gray-50 text-gray-600 uppercase tracking-wide text-xs">
+                        <tr>
+                            <th class="px-4 py-3 text-left">Date</th>
+                            <th class="px-4 py-3 text-left">Order</th>
+                            <th class="px-4 py-3 text-left">Items</th>
+                            <th class="px-4 py-3 text-left">Total</th>
+                            <th class="px-4 py-3 text-left">Transaction</th>
+                            <th class="px-4 py-3 text-left">Invoice</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        {% for entry in order_history %}
+                        {% with order=entry.order payment=entry.payment %}
+                        <tr class="align-top">
+                            <td class="px-4 py-3 text-gray-600">
+                                <div>{{ order.created_at|date:"M d, Y" }}</div>
+                                <div class="text-xs text-gray-400">{{ order.created_at|date:"H:i" }}</div>
+                            </td>
+                            <td class="px-4 py-3 text-gray-700">
+                                <div class="font-semibold">#{{ order.id }}</div>
+                                <div class="text-xs text-gray-500 capitalize">{{ order.status }}</div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <ul class="space-y-1">
+                                    {% for item in entry.items %}
+                                    <li class="text-gray-700">
+                                        {{ item.product.name }}
+                                        <span class="text-xs text-gray-500">×{{ item.quantity }}</span>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            <td class="px-4 py-3 font-semibold text-gray-800">
+                                {% if order.total_amount %}
+                                ₹{{ order.total_amount|floatformat:2 }}
+                                {% else %}
+                                Free
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3">
+                                {% if payment %}
+                                <div class="font-mono text-xs break-all">{{ payment.payment_id }}</div>
+                                <div class="text-xs text-gray-500 uppercase mt-1">{{ payment.payment_method }}</div>
+                                {% else %}
+                                <span class="text-gray-400">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="inline-flex items-center px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs font-semibold">
+                                    INV-{{ order.created_at|date:"Ymd" }}-{{ order.id|stringformat:"04d" }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-gray-500">You have not completed any purchases yet.</p>
+            {% endif %}
         </section>
         <!-- Preferences Section -->
         <section id="prefs" x-show="tab === 'prefs'" x-cloak class="bg-white rounded-lg shadow p-6"

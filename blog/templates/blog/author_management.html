@@ -19,6 +19,8 @@
                 class="block px-3 py-2 rounded hover:bg-gray-100">Analytics</a>
             <a href="#" @click.prevent="tab = 'inventory'" :class="tab === 'inventory' ? 'bg-blue-100 text-blue-700' : ''"
                 class="block px-3 py-2 rounded hover:bg-gray-100">Inventory</a>
+            <a href="#" @click.prevent="tab = 'orders'" :class="tab === 'orders' ? 'bg-blue-100 text-blue-700' : ''"
+                class="block px-3 py-2 rounded hover:bg-gray-100">Purchases</a>
             <form method="post" action="{% url 'accounts:logout' %}" class="mt-4">
                 {% csrf_token %}
                 <button type="submit"
@@ -88,6 +90,104 @@
                         {% endfor %}
                     </tbody>
                 </table>
+            </div>
+        </section>
+
+        <section id="orders" x-show="tab === 'orders'" x-cloak class="bg-white rounded-lg shadow p-6">
+            <div class="flex flex-col gap-6">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <h2 class="text-xl font-semibold">Purchase &amp; Order History</h2>
+                    {% if order_metrics %}
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                        <div class="bg-gray-50 border border-gray-100 rounded-lg p-3">
+                            <p class="text-gray-500 uppercase tracking-wide text-xs">Total Orders</p>
+                            <p class="text-lg font-semibold text-gray-900">{{ order_metrics.total_orders }}</p>
+                        </div>
+                        <div class="bg-gray-50 border border-gray-100 rounded-lg p-3">
+                            <p class="text-gray-500 uppercase tracking-wide text-xs">Captured</p>
+                            <p class="text-lg font-semibold text-green-600">{{ order_metrics.captured_orders }}</p>
+                        </div>
+                        <div class="bg-gray-50 border border-gray-100 rounded-lg p-3">
+                            <p class="text-gray-500 uppercase tracking-wide text-xs">Pending</p>
+                            <p class="text-lg font-semibold text-amber-600">{{ order_metrics.pending_orders }}</p>
+                        </div>
+                        <div class="bg-gray-50 border border-gray-100 rounded-lg p-3">
+                            <p class="text-gray-500 uppercase tracking-wide text-xs">Captured Revenue</p>
+                            <p class="text-lg font-semibold text-blue-600">₹{{ order_metrics.captured_revenue|floatformat:2 }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if order_history %}
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 text-sm">
+                        <thead class="bg-gray-50 text-gray-600 uppercase tracking-wide text-xs">
+                            <tr>
+                                <th class="px-4 py-3 text-left">Date</th>
+                                <th class="px-4 py-3 text-left">Buyer</th>
+                                <th class="px-4 py-3 text-left">Order</th>
+                                <th class="px-4 py-3 text-left">Items</th>
+                                <th class="px-4 py-3 text-left">Total</th>
+                                <th class="px-4 py-3 text-left">Transaction</th>
+                                <th class="px-4 py-3 text-left">Invoice</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            {% for entry in order_history %}
+                            {% with order=entry.order payment=entry.payment %}
+                            <tr class="align-top">
+                                <td class="px-4 py-3 text-gray-600">
+                                    <div>{{ order.created_at|date:"M d, Y" }}</div>
+                                    <div class="text-xs text-gray-400">{{ order.created_at|date:"H:i" }}</div>
+                                </td>
+                                <td class="px-4 py-3 text-gray-700">
+                                    <div class="font-semibold">{{ order.user.get_full_name|default:order.user.username }}</div>
+                                    <div class="text-xs text-gray-500">{{ order.user.email }}</div>
+                                </td>
+                                <td class="px-4 py-3 text-gray-700">
+                                    <div class="font-semibold">#{{ order.id }}</div>
+                                    <div class="text-xs text-gray-500 capitalize">{{ order.status }}</div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <ul class="space-y-1">
+                                        {% for item in entry.items %}
+                                        <li class="text-gray-700">
+                                            {{ item.product.name }}
+                                            <span class="text-xs text-gray-500">×{{ item.quantity }}</span>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                                <td class="px-4 py-3 font-semibold text-gray-800">
+                                    {% if order.total_amount %}
+                                    ₹{{ order.total_amount|floatformat:2 }}
+                                    {% else %}
+                                    Free
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-3">
+                                    {% if payment %}
+                                    <div class="font-mono text-xs break-all">{{ payment.payment_id }}</div>
+                                    <div class="text-xs text-gray-500 uppercase mt-1">{{ payment.payment_method }}</div>
+                                    {% else %}
+                                    <span class="text-gray-400">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="inline-flex items-center px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs font-semibold">
+                                        INV-{{ order.created_at|date:"Ymd" }}-{{ order.id|stringformat:"04d" }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endwith %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-gray-500">No orders have been placed yet.</p>
+                {% endif %}
             </div>
         </section>
 

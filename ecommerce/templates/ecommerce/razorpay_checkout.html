@@ -1,0 +1,190 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<div class="bg-[#F8F9FB]">
+  <div class="max-w-6xl mx-auto px-4 py-10">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <p class="text-sm uppercase tracking-wider text-blue-600 font-semibold">Checkout</p>
+        <h1 class="text-3xl font-bold text-gray-900 mt-1">Pay Securely with Razorpay</h1>
+      </div>
+      <a href="{% url 'ecommerce:cart_detail' %}" class="text-blue-600 hover:text-blue-700 text-sm font-semibold">&larr; Back to cart</a>
+    </div>
+
+    {% if items %}
+    <div class="grid gap-8 lg:grid-cols-[2fr,1fr]">
+      <section class="bg-white border border-gray-100 rounded-xl shadow-sm p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-6">Razorpay Checkout</h2>
+        <form id="razorpay-checkout-form" class="space-y-6">
+          {% csrf_token %}
+          <div class="bg-blue-50 border border-blue-100 text-blue-800 px-4 py-3 rounded-lg text-sm">
+            You will complete the payment using Razorpay. All major cards, UPI, net banking, and wallets are supported.
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-sm font-medium text-gray-600 mb-1">Name</label>
+              <input type="text" value="{{ razorpay_prefill.name }}" readonly class="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 text-gray-700">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-600 mb-1">Email</label>
+              <input type="email" value="{{ razorpay_prefill.email }}" readonly class="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 text-gray-700">
+            </div>
+          </div>
+
+          <div>
+            <p class="text-sm text-gray-600">Total payable: <span class="text-lg font-semibold text-blue-600">₹{{ grand_total|floatformat:2 }}</span></p>
+          </div>
+
+          <button type="button" id="razorpay-pay-button" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow transition" data-amount-display="₹{{ grand_total|floatformat:2 }}">
+            Pay ₹{{ grand_total|floatformat:2 }} with Razorpay
+          </button>
+
+          <p class="text-xs text-gray-400">You authorise Razorpay to process this transaction securely on our behalf.</p>
+        </form>
+      </section>
+
+      <aside class="bg-white border border-gray-100 rounded-xl shadow-sm p-6 h-fit">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Order Summary</h2>
+        <div class="space-y-4">
+          <ul class="divide-y divide-gray-100">
+            {% for item in items %}
+            <li class="py-3 flex justify-between items-start">
+              <div>
+                <p class="text-sm font-semibold text-gray-900">{{ item.product.name }}</p>
+                <p class="text-xs text-gray-500">Digital License</p>
+              </div>
+              <div class="text-right">
+                {% if item.is_free %}
+                  <p class="text-sm font-semibold text-green-600">Free</p>
+                  {% if item.original_price %}
+                    <p class="text-[11px] text-gray-400 line-through">₹{{ item.original_price|floatformat:2 }}</p>
+                  {% endif %}
+                {% else %}
+                  <p class="text-sm font-semibold text-gray-900">₹{{ item.line_total|floatformat:2 }}</p>
+                  <p class="text-[11px] text-gray-400">
+                    ₹{{ item.unit_price|floatformat:2 }} each
+                    {% if item.discount_price %}
+                      <span class="ml-1 line-through">₹{{ item.original_price|floatformat:2 }}</span>
+                    {% endif %}
+                  </p>
+                {% endif %}
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+
+          <dl class="space-y-3 text-sm">
+            <div class="flex justify-between">
+              <dt class="text-gray-500">Subtotal</dt>
+              <dd class="font-semibold text-gray-900">₹{{ subtotal|floatformat:2 }}</dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-gray-500">Shipping</dt>
+              <dd class="text-green-600 font-semibold">Free</dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-gray-500">Items</dt>
+              <dd class="text-gray-900">{{ total_items }}</dd>
+            </div>
+            <div class="border-t border-gray-200 pt-4 flex justify-between">
+              <dt class="text-gray-500 uppercase tracking-wider">Total Due</dt>
+              <dd class="text-2xl font-bold text-blue-600">₹{{ grand_total|floatformat:2 }}</dd>
+            </div>
+          </dl>
+        </div>
+        <p class="text-xs text-gray-400 text-center mt-4">Razorpay handles secure payment processing and data encryption.</p>
+      </aside>
+    </div>
+    {% else %}
+    <div class="bg-white border border-dashed border-gray-200 rounded-xl p-10 text-center">
+      <h2 class="text-2xl font-semibold text-gray-900">No items to checkout</h2>
+      <p class="text-gray-500 mt-2">Add items to your cart to proceed with checkout.</p>
+      <a href="{% url 'ecommerce:product_list' %}" class="mt-6 inline-flex items-center px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow transition">Explore Products</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  (function () {
+    const form = document.getElementById('razorpay-checkout-form');
+    if (!form) {
+      return;
+    }
+
+    const payButton = document.getElementById('razorpay-pay-button');
+    const csrfTokenInput = form.querySelector('input[name="csrfmiddlewaretoken"]');
+    const csrfToken = csrfTokenInput ? csrfTokenInput.value : null;
+    const callbackUrl = "{{ razorpay_callback_url }}";
+
+    if (!window.Razorpay) {
+      payButton.disabled = true;
+      payButton.textContent = 'Razorpay is unavailable';
+      return;
+    }
+
+    const options = {
+      key: "{{ razorpay_key_id }}",
+      amount: "{{ razorpay_order.amount }}",
+      currency: "{{ razorpay_currency }}",
+      name: "{{ request.get_host }}",
+      description: "Order {{ razorpay_order.id }}",
+      order_id: "{{ razorpay_order.id }}",
+      prefill: {
+        name: "{{ razorpay_prefill.name|escapejs }}",
+        email: "{{ razorpay_prefill.email|escapejs }}"
+      },
+      notes: {
+        cart_id: "{{ cart.id }}",
+        user_id: "{{ request.user.id }}"
+      },
+      theme: {
+        color: '#2563EB'
+      },
+      handler: function (response) {
+        payButton.disabled = true;
+        payButton.textContent = 'Processing payment...';
+        fetch(callbackUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+          },
+          body: JSON.stringify(response)
+        })
+          .then(function (res) {
+            if (!res.ok) {
+              throw res;
+            }
+            return res.json();
+          })
+          .then(function (data) {
+            if (data.redirect_url) {
+              window.location.href = data.redirect_url;
+            } else {
+              window.location.reload();
+            }
+          })
+          .catch(function () {
+            payButton.disabled = false;
+            payButton.textContent = payButton.dataset.originalText || 'Pay with Razorpay';
+            alert('Payment verification failed. Please contact support if the amount was deducted.');
+          });
+      }
+    };
+
+    payButton.dataset.originalText = payButton.textContent;
+
+    payButton.addEventListener('click', function (event) {
+      event.preventDefault();
+      const razorpayInstance = new Razorpay(options);
+      razorpayInstance.on('payment.failed', function (response) {
+        alert(response.error && response.error.description ? response.error.description : 'Payment failed. Please try again.');
+      });
+      razorpayInstance.open();
+    });
+  })();
+</script>
+{% endblock %}
