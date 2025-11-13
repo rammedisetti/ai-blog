@@ -15,6 +15,17 @@ from django.utils import timezone
 from ecommerce.models import Product
 from ecommerce.forms import ProductForm
 
+
+def _coerce_positive_int(value):
+    """Return a positive integer for valid inputs; otherwise None."""
+    if value in (None, "", "None"):
+        return None
+    try:
+        parsed = int(value)
+        return parsed if parsed >= 0 else None
+    except (TypeError, ValueError):
+        return None
+
 def home(request):
     """Render landing page with current year."""
     from datetime import datetime
@@ -422,8 +433,10 @@ def author_management(request):
             messages.error(request, "Comment not found.")
 
     query = request.GET.get("q", "")
-    category_id = request.GET.get("category")
-    tag_id = request.GET.get("tag")
+    category_raw = request.GET.get("category")
+    tag_raw = request.GET.get("tag")
+    category_id = _coerce_positive_int(category_raw)
+    tag_id = _coerce_positive_int(tag_raw)
 
     posts = (
         Post.objects.all()
@@ -432,9 +445,9 @@ def author_management(request):
     )
     if query:
         posts = posts.filter(title__icontains=query)
-    if category_id:
+    if category_id is not None:
         posts = posts.filter(categories__id=category_id)
-    if tag_id:
+    if tag_id is not None:
         posts = posts.filter(tags__id=tag_id)
     posts = posts.distinct()
 
@@ -462,8 +475,8 @@ def author_management(request):
         "category_stats": category_stats,
         "tag_stats": tag_stats,
         "query": query,
-        "selected_category": category_id,
-        "selected_tag": tag_id,
+        "selected_category": str(category_id) if category_id is not None else "",
+        "selected_tag": str(tag_id) if tag_id is not None else "",
         # Inventory management context:
         "products": Product.objects.all(),
         "product_form": ProductForm(),
@@ -476,8 +489,8 @@ def author_management(request):
 def admin_post_list(request):
     """Return the post list filtered by query parameters for HTMX."""
     query = request.GET.get("q", "")
-    category_id = request.GET.get("category")
-    tag_id = request.GET.get("tag")
+    category_id = _coerce_positive_int(request.GET.get("category"))
+    tag_id = _coerce_positive_int(request.GET.get("tag"))
 
     posts = (
         Post.objects.all()
@@ -486,9 +499,9 @@ def admin_post_list(request):
     )
     if query:
         posts = posts.filter(title__icontains=query)
-    if category_id:
+    if category_id is not None:
         posts = posts.filter(categories__id=category_id)
-    if tag_id:
+    if tag_id is not None:
         posts = posts.filter(tags__id=tag_id)
     posts = posts.distinct()
 

@@ -18,13 +18,20 @@
     <!-- Product Info -->
     <div class="flex flex-col">
       <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ product.name }}</h1>
-      <div class="flex items-center space-x-4 mb-2">
-        <span class="text-blue-600 font-bold text-2xl">₹{{ product.price }}</span>
-        {% if product.discount_price %}
-          <span class="text-gray-400 line-through text-lg">₹{{ product.discount_price }}</span>
-        {% endif %}
+      <div class="flex items-center gap-3 mb-2">
         {% if product.is_free %}
-          <span class="bg-green-500 text-white text-xs px-2 py-1 rounded">Free</span>
+          {% if product.price %}
+            <span class="text-gray-400 line-through text-lg">₹{{ product.price }}</span>
+          {% endif %}
+          <span class="text-green-600 font-bold text-2xl">Free</span>
+          <span class="bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded uppercase tracking-wide">Free Resource</span>
+        {% else %}
+          {% if product.discount_price %}
+            <span class="text-blue-600 font-bold text-2xl">₹{{ product.discount_price }}</span>
+            <span class="text-gray-400 line-through text-lg">₹{{ product.price }}</span>
+          {% else %}
+            <span class="text-blue-600 font-bold text-2xl">₹{{ product.price }}</span>
+          {% endif %}
         {% endif %}
       </div>
       <div class="mb-4">
@@ -39,7 +46,10 @@
           {% csrf_token %}
           <button type="submit" class="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">Add to Cart</button>
         </form>
-        <button class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Buy Now</button>
+        <form method="post" action="{% url 'ecommerce:buy_now' product.product_id %}">
+          {% csrf_token %}
+          <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Buy Now</button>
+        </form>
       </div>
       <ul class="text-gray-700 text-sm space-y-1 mb-6">
         <li><strong>Downloads:</strong> {{ product.downloads_count }}</li>

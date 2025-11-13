@@ -1,10 +1,106 @@
 {% extends 'blog/base.html' %}
+
 {% block content %}
-<h1>Your Cart</h1>
-<ul>
-  {% for item in items %}
-    <li>{{ item.product.name }} (x{{ item.quantity }}) - {{ item.product.price }}</li>
-  {% endfor %}
-</ul>
-<a href="{% url 'ecommerce:checkout' %}">Proceed to Checkout</a>
+<div class="bg-[#F8F9FB]">
+  <div class="max-w-6xl mx-auto px-4 py-10">
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">Shopping Cart</h1>
+      <a href="{% url 'ecommerce:product_list' %}" class="text-blue-600 hover:text-blue-700 text-sm font-semibold">Continue Shopping &rarr;</a>
+    </div>
+
+    {% if items %}
+    <div class="grid gap-8 lg:grid-cols-[2fr,1fr]">
+      <div class="space-y-6">
+        {% for item in items %}
+        <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-5 flex gap-5">
+          <div class="w-24 h-24 rounded-lg overflow-hidden border border-gray-100 flex-shrink-0">
+            <img src="{{ item.product.thumbnail.url }}" alt="{{ item.product.name }}" class="w-full h-full object-cover">
+          </div>
+          <div class="flex-1 flex flex-col justify-between">
+            <div>
+              <div class="flex items-start justify-between">
+                <div>
+                  <h2 class="text-lg font-semibold text-gray-900">{{ item.product.name }}</h2>
+                  <p class="text-sm text-gray-500 mt-1">{{ item.product.category }}</p>
+                </div>
+                <div class="flex items-center gap-3">
+                  <a href="{% url 'ecommerce:product_detail' item.product.slug %}" class="text-blue-600 text-sm hover:underline">View</a>
+                  <form method="post" action="{% url 'ecommerce:remove_from_cart' item.id %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="text-gray-400 hover:text-red-600 transition" title="Remove from cart">
+                      <i class="fas fa-trash"></i><span class="sr-only">Remove</span>
+                    </button>
+                  </form>
+                </div>
+              </div>
+              <p class="text-gray-600 text-sm mt-3 line-clamp-2">{{ item.product.description|truncatechars:110 }}</p>
+            </div>
+            <div class="flex items-end justify-between mt-4">
+              <div class="text-sm text-gray-500">
+                <p class="font-semibold text-gray-700">Digital License</p>
+                <p>
+                  {% if item.is_free %}
+                    <span class="font-semibold text-green-600">Free</span>
+                    {% if item.original_price %}
+                      <span class="ml-2 text-xs text-gray-400 line-through">₹{{ item.original_price|floatformat:2 }}</span>
+                    {% endif %}
+                  {% else %}
+                    <span class="font-semibold text-gray-900">₹{{ item.unit_price|floatformat:2 }}</span>
+                    {% if item.discount_price %}
+                      <span class="ml-2 text-xs text-gray-400 line-through">₹{{ item.original_price|floatformat:2 }}</span>
+                    {% endif %}
+                  {% endif %}
+                </p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs uppercase tracking-wide text-gray-400">Total</p>
+                {% if item.is_free %}
+                  <p class="text-xl font-semibold text-green-600">Free</p>
+                {% else %}
+                  <p class="text-xl font-semibold text-blue-600">₹{{ item.line_total|floatformat:2 }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <aside class="bg-white border border-gray-100 rounded-xl shadow-sm p-6 h-fit">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Order Summary</h2>
+        <dl class="space-y-3 text-sm">
+          <div class="flex justify-between">
+            <dt class="text-gray-500">Subtotal</dt>
+            <dd class="font-semibold text-gray-900">₹{{ subtotal|floatformat:2 }}</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-gray-500">Shipping</dt>
+            <dd class="text-green-600 font-semibold">Free</dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-gray-500">Items</dt>
+            <dd class="text-gray-900">{{ total_items }}</dd>
+          </div>
+          <div class="border-t border-gray-200 pt-4 flex justify-between">
+            <dt class="text-gray-500 uppercase tracking-wider">Grand Total</dt>
+            {% if grand_total|floatformat:2 == '0.00' %}
+              <dd class="text-2xl font-bold text-green-600">Free</dd>
+            {% else %}
+              <dd class="text-2xl font-bold text-blue-600">₹{{ grand_total|floatformat:2 }}</dd>
+            {% endif %}
+          </div>
+        </dl>
+        <a href="{% url 'ecommerce:checkout' %}" class="mt-6 block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow transition">Proceed to Checkout</a>
+        <p class="text-xs text-gray-400 text-center mt-3">Secure checkout • No additional fees</p>
+      </aside>
+    </div>
+    {% else %}
+    <div class="bg-white border border-dashed border-gray-200 rounded-xl p-10 text-center">
+      <h2 class="text-2xl font-semibold text-gray-900">Your cart is empty</h2>
+      <p class="text-gray-500 mt-2">Browse our curated AI resources and add something you love.</p>
+      <a href="{% url 'ecommerce:product_list' %}" class="mt-6 inline-flex items-center px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow transition">Explore Products</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}

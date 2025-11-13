@@ -76,6 +76,30 @@
 </div>
 </header>
 
+    {% if messages %}
+    <div class="max-w-5xl mx-auto px-4 mt-6 space-y-3">
+        {% for message in messages %}
+        {% with level=message.tags %}
+        <div class="flex items-start gap-3 rounded-lg border px-4 py-3 text-sm shadow-sm
+            {% if 'error' in level %}border-red-200 bg-red-50 text-red-700{% elif 'warning' in level %}border-yellow-200 bg-yellow-50 text-yellow-700{% elif 'success' in level %}border-green-200 bg-green-50 text-green-700{% else %}border-blue-200 bg-blue-50 text-blue-700{% endif %}">
+            <span class="mt-0.5">
+                {% if 'error' in level %}
+                &#9888;
+                {% elif 'warning' in level %}
+                &#9881;
+                {% elif 'success' in level %}
+                &#10003;
+                {% else %}
+                &#9432;
+                {% endif %}
+            </span>
+            <div>{{ message }}</div>
+        </div>
+        {% endwith %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
     {% block content %}{% endblock %}
 
     <footer class="bg-[#101522] text-gray-300 pt-12 pb-6 mt-auto">
