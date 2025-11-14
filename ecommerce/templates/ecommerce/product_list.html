@@ -1,62 +1,143 @@
 {% extends 'blog/base.html' %}
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold mb-8 text-gray-800">Products</h1>
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-    {% for product in products %}
-    <div class="bg-white rounded-xl shadow-md flex flex-col transition-all duration-200 transform {% if product.is_active %}hover:shadow-xl hover:-translate-y-1{% else %}opacity-60{% endif %}">
-      <div class="relative">
-        <img 
-          src="{{ product.thumbnail.url }}" 
-          alt="{{ product.name }}" 
-          class="w-full h-48 object-cover rounded-t-xl lazyload" 
-          loading="lazy"
-        >
-        {% if product.is_free %}
-        <span class="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded">Free</span>
-        {% endif %}
-        {% if not product.is_active %}
-        <span class="absolute top-2 right-2 bg-orange-100 text-orange-700 text-xs font-semibold px-2 py-1 rounded">Inactive</span>
-        {% endif %}
+<div class="relative isolate overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-900">
+  <div class="absolute inset-y-0 left-1/2 w-[900px] -translate-x-1/2 bg-[radial-gradient(circle_at_center,_rgba(99,102,241,0.25),_transparent_65%)] blur-3xl"></div>
+  <div class="relative max-w-7xl mx-auto px-4 py-10 space-y-8 text-slate-50">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p class="text-xs uppercase tracking-[0.4em] text-indigo-300">Curated marketplace</p>
+        <h1 class="text-3xl sm:text-4xl font-black">Discover premium drops</h1>
       </div>
-      <div class="flex-1 flex flex-col p-4">
-        <h2 class="text-lg font-semibold text-gray-900 mb-2">{{ product.name }}</h2>
-        <div class="flex items-center gap-2 mb-2">
-          {% if product.is_free %}
-            {% if product.price %}
-              <span class="text-sm text-gray-400 line-through">₹{{ product.price }}</span>
-            {% endif %}
-            <span class="text-green-600 font-bold text-xl">Free</span>
-          {% else %}
-            {% if product.discount_price %}
-              <span class="text-blue-600 font-bold text-xl">₹{{ product.discount_price }}</span>
-              <span class="text-gray-400 line-through ml-1">₹{{ product.price }}</span>
-            {% else %}
-              <span class="text-blue-600 font-bold text-xl">₹{{ product.price }}</span>
-            {% endif %}
-          {% endif %}
-        </div>
-        <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ product.description|truncatechars:80 }}</p>
-        <div class="mt-auto flex space-x-2">
-          {% if product.is_active %}
-            <a href="{% url 'ecommerce:product_detail' product.slug %}" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-center transition">View Details</a>
-            <form method="post" action="{% url 'ecommerce:add_to_cart' product.product_id %}">
-              {% csrf_token %}
-              <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">Add to Cart</button>
-            </form>
-          {% else %}
-            <span class="flex-1 px-4 py-2 bg-gray-200 text-gray-500 rounded text-center text-sm font-semibold cursor-not-allowed" aria-disabled="true">View Details</span>
-            <button type="button" class="px-4 py-2 bg-gray-200 text-gray-500 rounded cursor-not-allowed" disabled>Add to Cart</button>
-          {% endif %}
-        </div>
-      </div>
+      <a href="{{ clear_filters_url }}" class="inline-flex items-center gap-2 text-sm font-semibold text-indigo-200 hover:text-white">
+        <span class="hidden sm:inline">Clear all filters</span>
+        <span class="sm:hidden">Reset</span>
+      </a>
     </div>
-    {% endfor %}
+
+    <form
+      method="get"
+      action="{% url 'ecommerce:product_list' %}"
+      class="backdrop-blur bg-white/5 border border-white/10 rounded-3xl shadow-2xl p-5 sm:p-8 space-y-6"
+      hx-get="{% url 'ecommerce:product_list' %}"
+      hx-target="#catalog-results"
+      hx-trigger="change delay:400ms, submit"
+      hx-push-url="true"
+    >
+      <input type="hidden" name="page" value="1">
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <label class="flex flex-col text-sm font-semibold text-slate-200">
+        <span class="mb-2">Search</span>
+        <input
+          type="search"
+          name="q"
+          value="{{ filters.search }}"
+          placeholder="Search products"
+          class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white/10 focus:ring-2 focus:ring-indigo-300"
+        >
+      </label>
+
+        <label class="flex flex-col text-sm font-semibold text-slate-200">
+        <span class="mb-2">Category</span>
+        <select
+          name="category"
+          class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white focus:border-indigo-400 focus:bg-white/10 focus:ring-2 focus:ring-indigo-300"
+        >
+          <option value="" {% if not filters.categories %}selected{% endif %}>All categories</option>
+          {% for option in category_options %}
+            <option value="{{ option.slug }}" {% if option.slug in filters.categories %}selected{% endif %}>{{ option.label }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+        <label class="flex flex-col text-sm font-semibold text-slate-200">
+        <span class="mb-2">Pricing</span>
+        <select
+          name="is_free"
+          class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white focus:border-indigo-400 focus:bg-white/10 focus:ring-2 focus:ring-indigo-300"
+        >
+          <option value="" {% if filters.is_free == None %}selected{% endif %}>All</option>
+          <option value="true" {% if filters.is_free == True %}selected{% endif %}>Free only</option>
+          <option value="false" {% if filters.is_free == False %}selected{% endif %}>Paid only</option>
+        </select>
+      </label>
+
+        <div class="flex flex-col text-sm font-semibold text-slate-200">
+        <span class="mb-2">Price range (₹)</span>
+        <div class="grid grid-cols-2 gap-3">
+          <input
+            type="number"
+            name="price_min"
+            value="{{ filters.price_min }}"
+            min="0"
+            step="0.01"
+            placeholder="Min"
+            class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white/10 focus:ring-2 focus:ring-indigo-300"
+          >
+          <input
+            type="number"
+            name="price_max"
+            value="{{ filters.price_max }}"
+            min="0"
+            step="0.01"
+            placeholder="Max"
+            class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white/10 focus:ring-2 focus:ring-indigo-300"
+          >
+        </div>
+      </div>
+
+        <label class="flex flex-col text-sm font-semibold text-slate-200">
+        <span class="mb-2">Sort by</span>
+        <select
+          name="sort"
+          class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white focus:border-indigo-400 focus:bg-white/10 focus:ring-2 focus:ring-indigo-300"
+        >
+          <option value="newest" {% if filters.sort == 'newest' %}selected{% endif %}>Newest first</option>
+          <option value="oldest" {% if filters.sort == 'oldest' %}selected{% endif %}>Oldest first</option>
+          <option value="price_asc" {% if filters.sort == 'price_asc' %}selected{% endif %}>Price: low to high</option>
+          <option value="price_desc" {% if filters.sort == 'price_desc' %}selected{% endif %}>Price: high to low</option>
+          <option value="popular" {% if filters.sort == 'popular' %}selected{% endif %}>Most popular</option>
+        </select>
+      </label>
+
+        <label class="flex flex-col text-sm font-semibold text-slate-200">
+        <span class="mb-2">Items per page</span>
+        <select
+          name="per_page"
+          class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white focus:border-indigo-400 focus:bg-white/10 focus:ring-2 focus:ring-indigo-300"
+        >
+          {% for size in per_page_choices %}
+            <option value="{{ size }}" {% if filters.per_page == size %}selected{% endif %}>{{ size }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+
+      <div class="flex flex-wrap items-center justify-end gap-3 pt-2">
+        <a href="{{ clear_filters_url }}" class="inline-flex items-center rounded-2xl border border-white/20 px-4 py-2 text-sm font-semibold text-slate-200 hover:border-white/40">Reset</a>
+        <button type="submit" class="inline-flex items-center rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-900/40 hover:from-indigo-400 hover:to-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-400">
+          Apply filters
+        </button>
+      </div>
+    </form>
+
+    {% if applied_filters %}
+    <div class="flex flex-wrap items-center gap-2 text-sm">
+      <span class="text-slate-300">Applied filters:</span>
+      {% for pill in applied_filters %}
+        <span class="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-white font-medium">
+          {{ pill.label }}: {{ pill.value }}
+        </span>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div id="catalog-results" class="space-y-6" hx-target="this">
+      {% include 'ecommerce/partials/product_grid.html' %}
+    </div>
   </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-lazyload/17.8.3/lazyload.min.js"></script>
 <script>
-  // Initialize lazy loading for images
   var lazyLoadInstance = new LazyLoad({
     elements_selector: ".lazyload"
   });

@@ -2,6 +2,9 @@ import json
 import uuid
 from decimal import Decimal
 
+from django.core.paginator import Paginator
+from django.utils.text import slugify
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.conf import settings
@@ -13,6 +16,7 @@ from django.views.decorators.http import require_POST
 
 from .forms import ProductForm
 from .models import Cart, CartItem, Order, OrderItem, Payment, Product
+from .utils import normalize_product_filters
 
 try:
     import razorpay
@@ -206,8 +210,82 @@ def edit_product(request, product_id):
 # Product listing
 
 def product_list(request):
-    products = Product.objects.all().order_by('-created_at')
-    return render(request, 'ecommerce/product_list.html', {'products': products})
+    filters = normalize_product_filters(request.GET)
+
+    base_queryset = Product.objects.all().with_actual_downloads()
+    products_qs = base_queryset.apply_catalog_filters(filters)
+
+    paginator = Paginator(products_qs, filters['per_page'])
+    page_obj = paginator.get_page(filters['page'])
+    products = page_obj.object_list
+
+    category_values = (
+        base_queryset.filter(is_active=True)
+        .exclude(category__isnull=True)
+        .exclude(category__exact='')
+        .values_list('category', flat=True)
+        .order_by('category')
+        .distinct()
+    )
+
+    category_options = []
+    category_label_map = {}
+    for category in category_values:
+        slug = slugify(category)
+        category_options.append({'slug': slug, 'label': category})
+        category_label_map[slug] = category
+
+    applied_filters = []
+    if filters['search']:
+        applied_filters.append({'label': 'Search', 'value': filters['search']})
+
+    for slug in filters['categories']:
+        display = category_label_map.get(slug, slug.replace('-', ' ').title())
+        applied_filters.append({'label': 'Category', 'value': display})
+
+    if filters['is_free'] is True:
+        applied_filters.append({'label': 'Pricing', 'value': 'Free only'})
+    elif filters['is_free'] is False:
+        applied_filters.append({'label': 'Pricing', 'value': 'Paid only'})
+
+    if filters['price_min'] is not None:
+        applied_filters.append({'label': 'Min price', 'value': f"₹{filters['price_min']}"})
+
+    if filters['price_max'] is not None:
+        applied_filters.append({'label': 'Max price', 'value': f"₹{filters['price_max']}"})
+
+    if filters['sort'] != 'newest':
+        sort_labels = {
+            'oldest': 'Oldest first',
+            'price_asc': 'Price: low to high',
+            'price_desc': 'Price: high to low',
+            'popular': 'Most popular',
+        }
+        applied_filters.append({'label': 'Sort', 'value': sort_labels.get(filters['sort'], filters['sort'].title())})
+
+    query_without_page = request.GET.copy()
+    if 'page' in query_without_page:
+        query_without_page.pop('page')
+    base_querystring = query_without_page.urlencode()
+
+    context = {
+        'filters': filters,
+        'products': products,
+        'page_obj': page_obj,
+        'paginator': paginator,
+        'category_options': category_options,
+        'applied_filters': applied_filters,
+        'per_page_choices': [12, 24, 36, 48],
+        'base_querystring': base_querystring,
+        'clear_filters_url': request.path,
+        'request': request,
+    }
+
+    template_name = 'ecommerce/product_list.html'
+    if request.headers.get('HX-Request'):
+        template_name = 'ecommerce/partials/product_grid.html'
+
+    return render(request, template_name, context)
 
 # Product detail
 
