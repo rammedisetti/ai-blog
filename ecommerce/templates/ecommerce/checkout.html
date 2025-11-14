@@ -1,140 +1,166 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-<div class="bg-[#F8F9FB]">
-  <div class="max-w-6xl mx-auto px-4 py-10">
+<div class="relative isolate overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-900 min-h-screen">
+  <div class="absolute inset-y-0 left-1/2 w-[900px] -translate-x-1/2 bg-[radial-gradient(circle_at_center,_rgba(99,102,241,0.25),_transparent_65%)] blur-3xl"></div>
+  <div class="relative max-w-7xl mx-auto px-4 py-10">
     <div class="flex items-center justify-between mb-8">
       <div>
-        <p class="text-sm uppercase tracking-wider text-blue-600 font-semibold">Checkout</p>
-        <h1 class="text-3xl font-bold text-gray-900 mt-1">Complete Your Purchase</h1>
+        <p class="text-xs uppercase tracking-[0.4em] text-indigo-300">Final step</p>
+        <h1 class="text-4xl font-black text-white mt-1">Complete Your Purchase</h1>
       </div>
-      <a href="{% url 'ecommerce:cart_detail' %}" class="text-blue-600 hover:text-blue-700 text-sm font-semibold">&larr; Back to cart</a>
+      <a href="{% url 'ecommerce:cart_detail' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-indigo-300 hover:text-white transition">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Back to cart
+      </a>
     </div>
 
     {% if items %}
     <div class="grid gap-8 lg:grid-cols-[2fr,1fr]">
-      <section class="bg-white border border-gray-100 rounded-xl shadow-sm p-6">
-        <h2 class="text-xl font-semibold text-gray-900 mb-6">Billing Details</h2>
-        <form class="space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div>
-              <label class="block text-sm font-medium text-gray-600 mb-1" for="full_name">Full Name</label>
-              <input id="full_name" type="text" value="{{ request.user.get_full_name|default:request.user.username }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="John Doe">
+      <section class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-transparent p-1 shadow-2xl">
+        <div class="absolute inset-0">
+          <div class="h-full w-full bg-[radial-gradient(circle_at_left,_rgba(129,140,248,0.15),_transparent_50%)]"></div>
+        </div>
+        <div class="relative rounded-[26px] bg-slate-900/60 p-8 backdrop-blur">
+          <h2 class="text-2xl font-black text-white mb-6">Billing Details</h2>
+          <form class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label class="block text-sm font-semibold text-slate-300 mb-2" for="full_name">Full Name</label>
+                <input id="full_name" type="text" value="{{ request.user.get_full_name|default:request.user.username }}" class="w-full border border-white/10 rounded-2xl bg-white/5 px-4 py-3 text-white placeholder:text-slate-500 focus:border-indigo-400 focus:bg-white/10 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition" placeholder="John Doe">
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-300 mb-2" for="email">Email</label>
+                <input id="email" type="email" value="{{ request.user.email }}" class="w-full border border-white/10 rounded-2xl bg-white/5 px-4 py-3 text-white placeholder:text-slate-500 focus:border-indigo-400 focus:bg-white/10 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition" placeholder="you@example.com">
+              </div>
             </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-600 mb-1" for="email">Email</label>
-              <input id="email" type="email" value="{{ request.user.email }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="you@example.com">
-            </div>
-          </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label class="block text-sm font-semibold text-slate-300 mb-2" for="country">Country</label>
+                <input id="country" type="text" value="India" class="w-full border border-white/10 rounded-2xl bg-white/5 px-4 py-3 text-white placeholder:text-slate-500 focus:border-indigo-400 focus:bg-white/10 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition" placeholder="Country">
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-300 mb-2" for="city">City</label>
+                <input id="city" type="text" class="w-full border border-white/10 rounded-2xl bg-white/5 px-4 py-3 text-white placeholder:text-slate-500 focus:border-indigo-400 focus:bg-white/10 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition" placeholder="City">
+              </div>
+            </div>
+
             <div>
-              <label class="block text-sm font-medium text-gray-600 mb-1" for="country">Country</label>
-              <input id="country" type="text" value="India" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Country">
+              <label class="block text-sm font-semibold text-slate-300 mb-3">Payment Method</label>
+              <div class="space-y-3">
+                <label class="flex items-center justify-between border border-white/10 rounded-2xl bg-white/5 px-5 py-4 hover:border-indigo-400 hover:bg-white/10 transition cursor-pointer">
+                  <span class="flex items-center gap-3 text-white">
+                    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-sm font-black text-white shadow-lg">1</span>
+                    Credit / Debit Card
+                  </span>
+                  <input type="radio" name="payment_method" checked class="text-indigo-600 focus:ring-indigo-500 h-5 w-5">
+                </label>
+                <label class="flex items-center justify-between border border-white/10 rounded-2xl bg-white/5 px-5 py-4 hover:border-indigo-400 hover:bg-white/10 transition cursor-pointer">
+                  <span class="flex items-center gap-3 text-white">
+                    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-sm font-black text-white shadow-lg">2</span>
+                    UPI / Net Banking
+                  </span>
+                  <input type="radio" name="payment_method" class="text-indigo-600 focus:ring-indigo-500 h-5 w-5">
+                </label>
+                <label class="flex items-center justify-between border border-white/10 rounded-2xl bg-white/5 px-5 py-4 hover:border-indigo-400 hover:bg-white/10 transition cursor-pointer">
+                  <span class="flex items-center gap-3 text-white">
+                    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 to-rose-500 text-sm font-black text-white shadow-lg">3</span>
+                    Wallets / PayPal
+                  </span>
+                  <input type="radio" name="payment_method" class="text-indigo-600 focus:ring-indigo-500 h-5 w-5">
+                </label>
+              </div>
             </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-600 mb-1" for="city">City</label>
-              <input id="city" type="text" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="City">
+
+            <div class="rounded-2xl border border-indigo-400/30 bg-indigo-500/10 px-5 py-4 text-sm text-indigo-200 backdrop-blur">
+              <div class="flex items-start gap-3">
+                <svg class="h-5 w-5 text-indigo-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Payment gateway integration coming soon. Your details will be securely processed at checkout.</span>
+              </div>
             </div>
-          </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-600 mb-2">Payment Method</label>
-            <div class="space-y-3">
-              <label class="flex items-center justify-between border border-gray-200 rounded-lg px-4 py-3 hover:border-blue-500 transition">
-                <span class="flex items-center gap-3 text-gray-700">
-                  <span class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 font-semibold">1</span>
-                  Credit / Debit Card
-                </span>
-                <input type="radio" name="payment_method" checked class="text-blue-600 focus:ring-blue-500">
-              </label>
-              <label class="flex items-center justify-between border border-gray-200 rounded-lg px-4 py-3 hover:border-blue-500 transition">
-                <span class="flex items-center gap-3 text-gray-700">
-                  <span class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 font-semibold">2</span>
-                  UPI / Net Banking
-                </span>
-                <input type="radio" name="payment_method" class="text-blue-600 focus:ring-blue-500">
-              </label>
-              <label class="flex items-center justify-between border border-gray-200 rounded-lg px-4 py-3 hover:border-blue-500 transition">
-                <span class="flex items-center gap-3 text-gray-700">
-                  <span class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 font-semibold">3</span>
-                  Wallets / PayPal
-                </span>
-                <input type="radio" name="payment_method" class="text-blue-600 focus:ring-blue-500">
-              </label>
-            </div>
-          </div>
-
-          <div class="bg-blue-50 border border-blue-100 text-blue-800 px-4 py-3 rounded-lg text-sm">
-            Payment gateway integration coming soon. Your details will be securely processed at checkout.
-          </div>
-
-          <button type="button" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow transition">Complete Purchase</button>
-          <p class="text-xs text-gray-400">By completing your purchase you agree to our Terms of Service.</p>
-        </form>
+            <button type="button" class="w-full rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-6 py-4 text-base font-semibold text-white shadow-lg shadow-indigo-900/40 hover:from-indigo-400 hover:to-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-400 transition">Complete Purchase</button>
+            <p class="text-xs text-slate-400 text-center">By completing your purchase you agree to our Terms of Service.</p>
+          </form>
+        </div>
       </section>
 
-      <aside class="bg-white border border-gray-100 rounded-xl shadow-sm p-6 h-fit">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">Order Summary</h2>
-        <div class="space-y-4">
-          <ul class="divide-y divide-gray-100">
-            {% for item in items %}
-            <li class="py-3 flex justify-between items-start">
-              <div>
-                <p class="text-sm font-semibold text-gray-900">{{ item.product.name }}</p>
-                <p class="text-xs text-gray-500">Digital License</p>
-              </div>
-              <div class="text-right">
-                {% if item.is_free %}
-                  <p class="text-sm font-semibold text-green-600">Free</p>
-                  {% if item.original_price %}
-                    <p class="text-[11px] text-gray-400 line-through">₹{{ item.original_price|floatformat:2 }}</p>
-                  {% endif %}
-                {% else %}
-                  <p class="text-sm font-semibold text-gray-900">₹{{ item.line_total|floatformat:2 }}</p>
-                  <p class="text-[11px] text-gray-400">
-                    ₹{{ item.unit_price|floatformat:2 }} each
-                    {% if item.discount_price %}
-                      <span class="ml-1 line-through">₹{{ item.original_price|floatformat:2 }}</span>
+      <aside class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-transparent p-1 shadow-2xl h-fit">
+        <div class="absolute inset-0">
+          <div class="h-full w-full bg-[radial-gradient(circle_at_top_right,_rgba(168,85,247,0.2),_transparent_50%)]"></div>
+        </div>
+        <div class="relative rounded-[26px] bg-slate-900/60 p-6 backdrop-blur">
+          <h2 class="text-2xl font-black text-white mb-6">Order Summary</h2>
+          <div class="space-y-4">
+            <ul class="divide-y divide-white/10 mb-6">
+              {% for item in items %}
+              <li class="py-4 flex justify-between items-start gap-4">
+                <div>
+                  <p class="text-sm font-semibold text-white">{{ item.product.name }}</p>
+                  <p class="text-xs text-slate-400 mt-1">Digital License</p>
+                </div>
+                <div class="text-right">
+                  {% if item.is_free %}
+                    <p class="text-sm font-bold text-emerald-300">Free</p>
+                    {% if item.original_price %}
+                      <p class="text-[11px] text-slate-500 line-through">₹{{ item.original_price|floatformat:2 }}</p>
                     {% endif %}
-                  </p>
+                  {% else %}
+                    <p class="bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-sm font-bold text-transparent">₹{{ item.line_total|floatformat:2 }}</p>
+                    <p class="text-[11px] text-slate-400">
+                      ₹{{ item.unit_price|floatformat:2 }} each
+                    <p class="bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-sm font-bold text-transparent">₹{{ item.line_total|floatformat:2 }}</p>
+                    <p class="text-[11px] text-slate-400">
+                      ₹{{ item.unit_price|floatformat:2 }} each
+                      {% if item.discount_price %}
+                        <span class="ml-1 line-through">₹{{ item.original_price|floatformat:2 }}</span>
+                      {% endif %}
+                    </p>
+                  {% endif %}
+                </div>
+              </li>
+              {% endfor %}
+            </ul>
+
+            <dl class="space-y-4 text-sm">
+              <div class="flex justify-between text-slate-300">
+                <dt>Subtotal</dt>
+                <dd class="font-semibold text-white">₹{{ subtotal|floatformat:2 }}</dd>
+              </div>
+              <div class="flex justify-between text-slate-300">
+                <dt>Shipping</dt>
+                <dd class="font-semibold text-emerald-300">Free</dd>
+              </div>
+              <div class="flex justify-between text-slate-300">
+                <dt>Items</dt>
+                <dd class="text-white">{{ total_items }}</dd>
+              </div>
+              <div class="border-t border-white/10 pt-4 flex justify-between items-baseline">
+                <dt class="text-slate-400 uppercase tracking-wider text-xs">Total Due</dt>
+                {% if grand_total|floatformat:2 == '0.00' %}
+                  <dd class="text-3xl font-black text-emerald-300">Free</dd>
+                {% else %}
+                  <dd class="bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-3xl font-black text-transparent">₹{{ grand_total|floatformat:2 }}</dd>
                 {% endif %}
               </div>
-            </li>
-            {% endfor %}
-          </ul>
-
-          <dl class="space-y-3 text-sm">
-            <div class="flex justify-between">
-              <dt class="text-gray-500">Subtotal</dt>
-              <dd class="font-semibold text-gray-900">₹{{ subtotal|floatformat:2 }}</dd>
-            </div>
-            <div class="flex justify-between">
-              <dt class="text-gray-500">Shipping</dt>
-              <dd class="text-green-600 font-semibold">Free</dd>
-            </div>
-            <div class="flex justify-between">
-              <dt class="text-gray-500">Items</dt>
-              <dd class="text-gray-900">{{ total_items }}</dd>
-            </div>
-            <div class="border-t border-gray-200 pt-4 flex justify-between">
-              <dt class="text-gray-500 uppercase tracking-wider">Total Due</dt>
-              {% if grand_total|floatformat:2 == '0.00' %}
-                <dd class="text-2xl font-bold text-green-600">Free</dd>
-              {% else %}
-                <dd class="text-2xl font-bold text-blue-600">₹{{ grand_total|floatformat:2 }}</dd>
-              {% endif %}
-            </div>
-          </dl>
+            </dl>
+          </div>
+          <p class="text-xs text-slate-400 text-center mt-4">Transactions are encrypted and secure.</p>
         </div>
-        <p class="text-xs text-gray-400 text-center mt-4">Transactions are encrypted and secure.</p>
       </aside>
     </div>
     {% else %}
-    <div class="bg-white border border-dashed border-gray-200 rounded-xl p-10 text-center">
-      <h2 class="text-2xl font-semibold text-gray-900">No items to checkout</h2>
-      <p class="text-gray-500 mt-2">Add items to your cart to proceed with checkout.</p>
-      <a href="{% url 'ecommerce:product_list' %}" class="mt-6 inline-flex items-center px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow transition">Explore Products</a>
+    <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-transparent p-1 shadow-2xl">
+      <div class="relative rounded-[26px] bg-slate-900/60 p-12 backdrop-blur text-center">
+        <svg class="mx-auto h-24 w-24 text-slate-600 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        <h2 class="text-3xl font-black text-white mb-3">No items to checkout</h2>
+        <p class="text-slate-400 mb-6">Add items to your cart to proceed with checkout.</p>
+        <a href="{% url 'ecommerce:product_list' %}" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-indigo-900/40 hover:from-indigo-400 hover:to-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-400 transition">
+          Explore Products
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+        </a>
+      </div>
     </div>
     {% endif %}
   </div>
