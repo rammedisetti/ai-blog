@@ -1,106 +1,132 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-<div class="bg-[#F8F9FB]">
-  <div class="max-w-6xl mx-auto px-4 py-10">
+<div class="relative isolate overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-900 min-h-screen">
+  <div class="absolute inset-y-0 left-1/2 w-[900px] -translate-x-1/2 bg-[radial-gradient(circle_at_center,_rgba(99,102,241,0.25),_transparent_65%)] blur-3xl"></div>
+  <div class="relative max-w-7xl mx-auto px-4 py-10">
     <div class="flex items-center justify-between mb-8">
       <div>
-        <p class="text-sm uppercase tracking-wider text-blue-600 font-semibold">Checkout</p>
-        <h1 class="text-3xl font-bold text-gray-900 mt-1">Pay Securely with Razorpay</h1>
+        <p class="text-xs uppercase tracking-[0.4em] text-indigo-300">Secure payment</p>
+        <h1 class="text-4xl font-black text-white mt-1">Pay Securely with Razorpay</h1>
       </div>
-      <a href="{% url 'ecommerce:cart_detail' %}" class="text-blue-600 hover:text-blue-700 text-sm font-semibold">&larr; Back to cart</a>
+      <a href="{% url 'ecommerce:cart_detail' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-indigo-300 hover:text-white transition">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Back to cart
+      </a>
     </div>
 
     {% if items %}
     <div class="grid gap-8 lg:grid-cols-[2fr,1fr]">
-      <section class="bg-white border border-gray-100 rounded-xl shadow-sm p-6">
-        <h2 class="text-xl font-semibold text-gray-900 mb-6">Razorpay Checkout</h2>
-        <form id="razorpay-checkout-form" class="space-y-6">
-          {% csrf_token %}
-          <div class="bg-blue-50 border border-blue-100 text-blue-800 px-4 py-3 rounded-lg text-sm">
-            You will complete the payment using Razorpay. All major cards, UPI, net banking, and wallets are supported.
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div>
-              <label class="block text-sm font-medium text-gray-600 mb-1">Name</label>
-              <input type="text" value="{{ razorpay_prefill.name }}" readonly class="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 text-gray-700">
+      <section class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-transparent p-1 shadow-2xl">
+        <div class="absolute inset-0">
+          <div class="h-full w-full bg-[radial-gradient(circle_at_left,_rgba(129,140,248,0.15),_transparent_50%)]"></div>
+        </div>
+        <div class="relative rounded-[26px] bg-slate-900/60 p-8 backdrop-blur">
+          <h2 class="text-2xl font-black text-white mb-6">Razorpay Checkout</h2>
+          <form id="razorpay-checkout-form" class="space-y-6">
+            {% csrf_token %}
+            <div class="rounded-2xl border border-indigo-400/30 bg-indigo-500/10 px-5 py-4 text-sm text-indigo-200 backdrop-blur">
+              <div class="flex items-start gap-3">
+                <svg class="h-5 w-5 text-indigo-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                <span>You will complete the payment using Razorpay. All major cards, UPI, net banking, and wallets are supported.</span>
+              </div>
             </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-600 mb-1">Email</label>
-              <input type="email" value="{{ razorpay_prefill.email }}" readonly class="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 text-gray-700">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label class="block text-sm font-semibold text-slate-300 mb-2">Name</label>
+                <input type="text" value="{{ razorpay_prefill.name }}" readonly class="w-full border border-white/10 rounded-2xl bg-white/5 px-4 py-3 text-white cursor-not-allowed opacity-75">
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-300 mb-2">Email</label>
+                <input type="email" value="{{ razorpay_prefill.email }}" readonly class="w-full border border-white/10 rounded-2xl bg-white/5 px-4 py-3 text-white cursor-not-allowed opacity-75">
+              </div>
             </div>
-          </div>
 
-          <div>
-            <p class="text-sm text-gray-600">Total payable: <span class="text-lg font-semibold text-blue-600">₹{{ grand_total|floatformat:2 }}</span></p>
-          </div>
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <p class="text-sm text-slate-300">Total payable: <span class="bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-2xl font-black text-transparent ml-2">₹{{ grand_total|floatformat:2 }}</span></p>
+            </div>
 
-          <button type="button" id="razorpay-pay-button" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow transition" data-amount-display="₹{{ grand_total|floatformat:2 }}">
-            Pay ₹{{ grand_total|floatformat:2 }} with Razorpay
-          </button>
+            <button type="button" id="razorpay-pay-button" class="w-full rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-6 py-4 text-base font-semibold text-white shadow-lg shadow-indigo-900/40 hover:from-indigo-400 hover:to-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-400 transition" data-amount-display="₹{{ grand_total|floatformat:2 }}">
+              <span class="flex items-center justify-center gap-2">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                Pay ₹{{ grand_total|floatformat:2 }} with Razorpay
+              </span>
+            </button>
 
-          <p class="text-xs text-gray-400">You authorise Razorpay to process this transaction securely on our behalf.</p>
-        </form>
+            <p class="text-xs text-slate-400 text-center">You authorise Razorpay to process this transaction securely on our behalf.</p>
+          </form>
+        </div>
       </section>
 
-      <aside class="bg-white border border-gray-100 rounded-xl shadow-sm p-6 h-fit">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">Order Summary</h2>
-        <div class="space-y-4">
-          <ul class="divide-y divide-gray-100">
-            {% for item in items %}
-            <li class="py-3 flex justify-between items-start">
-              <div>
-                <p class="text-sm font-semibold text-gray-900">{{ item.product.name }}</p>
-                <p class="text-xs text-gray-500">Digital License</p>
-              </div>
-              <div class="text-right">
-                {% if item.is_free %}
-                  <p class="text-sm font-semibold text-green-600">Free</p>
-                  {% if item.original_price %}
-                    <p class="text-[11px] text-gray-400 line-through">₹{{ item.original_price|floatformat:2 }}</p>
-                  {% endif %}
-                {% else %}
-                  <p class="text-sm font-semibold text-gray-900">₹{{ item.line_total|floatformat:2 }}</p>
-                  <p class="text-[11px] text-gray-400">
-                    ₹{{ item.unit_price|floatformat:2 }} each
-                    {% if item.discount_price %}
-                      <span class="ml-1 line-through">₹{{ item.original_price|floatformat:2 }}</span>
-                    {% endif %}
-                  </p>
-                {% endif %}
-              </div>
-            </li>
-            {% endfor %}
-          </ul>
-
-          <dl class="space-y-3 text-sm">
-            <div class="flex justify-between">
-              <dt class="text-gray-500">Subtotal</dt>
-              <dd class="font-semibold text-gray-900">₹{{ subtotal|floatformat:2 }}</dd>
-            </div>
-            <div class="flex justify-between">
-              <dt class="text-gray-500">Shipping</dt>
-              <dd class="text-green-600 font-semibold">Free</dd>
-            </div>
-            <div class="flex justify-between">
-              <dt class="text-gray-500">Items</dt>
-              <dd class="text-gray-900">{{ total_items }}</dd>
-            </div>
-            <div class="border-t border-gray-200 pt-4 flex justify-between">
-              <dt class="text-gray-500 uppercase tracking-wider">Total Due</dt>
-              <dd class="text-2xl font-bold text-blue-600">₹{{ grand_total|floatformat:2 }}</dd>
-            </div>
-          </dl>
+      <aside class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-transparent p-1 shadow-2xl h-fit">
+        <div class="absolute inset-0">
+          <div class="h-full w-full bg-[radial-gradient(circle_at_top_right,_rgba(168,85,247,0.2),_transparent_50%)]"></div>
         </div>
-        <p class="text-xs text-gray-400 text-center mt-4">Razorpay handles secure payment processing and data encryption.</p>
+        <div class="relative rounded-[26px] bg-slate-900/60 p-6 backdrop-blur">
+          <h2 class="text-2xl font-black text-white mb-6">Order Summary</h2>
+          <div class="space-y-4">
+            <ul class="divide-y divide-white/10 mb-6">
+              {% for item in items %}
+              <li class="py-4 flex justify-between items-start gap-4">
+                <div>
+                  <p class="text-sm font-semibold text-white">{{ item.product.name }}</p>
+                  <p class="text-xs text-slate-400 mt-1">Digital License</p>
+                </div>
+                <div class="text-right">
+                  {% if item.is_free %}
+                    <p class="text-sm font-bold text-emerald-300">Free</p>
+                    {% if item.original_price %}
+                      <p class="text-[11px] text-slate-500 line-through">₹{{ item.original_price|floatformat:2 }}</p>
+                    {% endif %}
+                  {% else %}
+                    <p class="bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-sm font-bold text-transparent">₹{{ item.line_total|floatformat:2 }}</p>
+                    <p class="text-[11px] text-slate-400">
+                      ₹{{ item.unit_price|floatformat:2 }} each
+                      {% if item.discount_price %}
+                        <span class="ml-1 line-through">₹{{ item.original_price|floatformat:2 }}</span>
+                      {% endif %}
+                    </p>
+                  {% endif %}
+                </div>
+              </li>
+              {% endfor %}
+            </ul>
+
+            <dl class="space-y-4 text-sm">
+              <div class="flex justify-between text-slate-300">
+                <dt>Subtotal</dt>
+                <dd class="font-semibold text-white">₹{{ subtotal|floatformat:2 }}</dd>
+              </div>
+              <div class="flex justify-between text-slate-300">
+                <dt>Shipping</dt>
+                <dd class="font-semibold text-emerald-300">Free</dd>
+              </div>
+              <div class="flex justify-between text-slate-300">
+                <dt>Items</dt>
+                <dd class="text-white">{{ total_items }}</dd>
+              </div>
+              <div class="border-t border-white/10 pt-4 flex justify-between items-baseline">
+                <dt class="text-slate-400 uppercase tracking-wider text-xs">Total Due</dt>
+                <dd class="bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-3xl font-black text-transparent">₹{{ grand_total|floatformat:2 }}</dd>
+              </div>
+            </dl>
+          </div>
+          <p class="text-xs text-slate-400 text-center mt-4">Razorpay handles secure payment processing and data encryption.</p>
+        </div>
       </aside>
     </div>
     {% else %}
-    <div class="bg-white border border-dashed border-gray-200 rounded-xl p-10 text-center">
-      <h2 class="text-2xl font-semibold text-gray-900">No items to checkout</h2>
-      <p class="text-gray-500 mt-2">Add items to your cart to proceed with checkout.</p>
-      <a href="{% url 'ecommerce:product_list' %}" class="mt-6 inline-flex items-center px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow transition">Explore Products</a>
+    <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-transparent p-1 shadow-2xl">
+      <div class="relative rounded-[26px] bg-slate-900/60 p-12 backdrop-blur text-center">
+        <svg class="mx-auto h-24 w-24 text-slate-600 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        <h2 class="text-3xl font-black text-white mb-3">No items to checkout</h2>
+        <p class="text-slate-400 mb-6">Add items to your cart to proceed with checkout.</p>
+        <a href="{% url 'ecommerce:product_list' %}" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-indigo-900/40 hover:from-indigo-400 hover:to-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-400 transition">
+          Explore Products
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+        </a>
+      </div>
     </div>
     {% endif %}
   </div>
@@ -121,7 +147,7 @@
 
     if (!window.Razorpay) {
       payButton.disabled = true;
-      payButton.textContent = 'Razorpay is unavailable';
+      payButton.innerHTML = '<span class="flex items-center justify-center gap-2"><svg class="h-5 w-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>Razorpay is unavailable</span>';
       return;
     }
 
@@ -141,11 +167,11 @@
         user_id: "{{ request.user.id }}"
       },
       theme: {
-        color: '#2563EB'
+        color: '#6366F1'
       },
       handler: function (response) {
         payButton.disabled = true;
-        payButton.textContent = 'Processing payment...';
+        payButton.innerHTML = '<span class="flex items-center justify-center gap-2"><svg class="h-5 w-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Processing payment...</span>';
         fetch(callbackUrl, {
           method: 'POST',
           headers: {
@@ -169,13 +195,13 @@
           })
           .catch(function () {
             payButton.disabled = false;
-            payButton.textContent = payButton.dataset.originalText || 'Pay with Razorpay';
+            payButton.innerHTML = payButton.dataset.originalHtml || '<span class="flex items-center justify-center gap-2"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>Pay with Razorpay</span>';
             alert('Payment verification failed. Please contact support if the amount was deducted.');
           });
       }
     };
 
-    payButton.dataset.originalText = payButton.textContent;
+    payButton.dataset.originalHtml = payButton.innerHTML;
 
     payButton.addEventListener('click', function (event) {
       event.preventDefault();

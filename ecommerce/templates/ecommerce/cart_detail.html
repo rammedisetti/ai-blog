@@ -1,64 +1,81 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-<div class="bg-[#F8F9FB]">
-  <div class="max-w-6xl mx-auto px-4 py-10">
+<div class="relative isolate overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-900 min-h-screen">
+  <div class="absolute inset-y-0 left-1/2 w-[900px] -translate-x-1/2 bg-[radial-gradient(circle_at_center,_rgba(99,102,241,0.25),_transparent_65%)] blur-3xl"></div>
+  <div class="relative max-w-7xl mx-auto px-4 py-10">
     <div class="flex items-center justify-between mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Shopping Cart</h1>
-      <a href="{% url 'ecommerce:product_list' %}" class="text-blue-600 hover:text-blue-700 text-sm font-semibold">Continue Shopping &rarr;</a>
+      <div>
+        <p class="text-xs uppercase tracking-[0.4em] text-indigo-300">Your selection</p>
+        <h1 class="text-4xl font-black text-white mt-1">Shopping Cart</h1>
+      </div>
+      <a href="{% url 'ecommerce:product_list' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-indigo-300 hover:text-white transition">
+        Continue Shopping
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </a>
     </div>
 
     {% if items %}
     <div class="grid gap-8 lg:grid-cols-[2fr,1fr]">
       <div class="space-y-6">
         {% for item in items %}
-        <div class="bg-white border border-gray-100 rounded-xl shadow-sm p-5 flex gap-5">
-          <div class="w-24 h-24 rounded-lg overflow-hidden border border-gray-100 flex-shrink-0">
-            <img src="{{ item.product.thumbnail.url }}" alt="{{ item.product.name }}" class="w-full h-full object-cover">
+        <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-transparent p-1 shadow-2xl">
+          <div class="absolute inset-0">
+            <div class="h-full w-full bg-[radial-gradient(circle_at_left,_rgba(129,140,248,0.15),_transparent_50%)]"></div>
           </div>
-          <div class="flex-1 flex flex-col justify-between">
-            <div>
-              <div class="flex items-start justify-between">
+          <div class="relative rounded-[26px] bg-slate-900/60 p-6 backdrop-blur">
+            <div class="flex gap-6">
+              <div class="w-28 h-28 rounded-2xl overflow-hidden ring-1 ring-white/10 flex-shrink-0">
+                <img src="{{ item.product.thumbnail.url }}" alt="{{ item.product.name }}" class="w-full h-full object-cover">
+              </div>
+              <div class="flex-1 flex flex-col justify-between">
                 <div>
-                  <h2 class="text-lg font-semibold text-gray-900">{{ item.product.name }}</h2>
-                  <p class="text-sm text-gray-500 mt-1">{{ item.product.category }}</p>
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <h2 class="text-xl font-bold text-white">{{ item.product.name }}</h2>
+                      <span class="inline-flex items-center gap-2 mt-2 rounded-full bg-white/5 px-3 py-1 text-xs font-semibold text-slate-300 ring-1 ring-white/10">
+                        <span class="h-1.5 w-1.5 rounded-full bg-indigo-400"></span>
+                        {{ item.product.category }}
+                      </span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                      <a href="{% url 'ecommerce:product_detail' item.product.slug %}" class="text-indigo-400 text-sm hover:text-indigo-300 font-semibold transition">View</a>
+                      <form method="post" action="{% url 'ecommerce:remove_from_cart' item.id %}" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" class="text-slate-400 hover:text-red-400 transition" title="Remove from cart">
+                          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                  <p class="text-slate-300 text-sm mt-3 line-clamp-2">{{ item.product.description|truncatechars:110 }}</p>
                 </div>
-                <div class="flex items-center gap-3">
-                  <a href="{% url 'ecommerce:product_detail' item.product.slug %}" class="text-blue-600 text-sm hover:underline">View</a>
-                  <form method="post" action="{% url 'ecommerce:remove_from_cart' item.id %}" class="inline">
-                    {% csrf_token %}
-                    <button type="submit" class="text-gray-400 hover:text-red-600 transition" title="Remove from cart">
-                      <i class="fas fa-trash"></i><span class="sr-only">Remove</span>
-                    </button>
-                  </form>
+                <div class="flex items-end justify-between mt-4">
+                  <div class="text-sm">
+                    <p class="text-slate-400 font-semibold mb-1">Digital License</p>
+                    <div>
+                      {% if item.is_free %}
+                        <span class="text-lg font-bold text-emerald-300">Free</span>
+                        {% if item.original_price %}
+                          <span class="ml-2 text-xs text-slate-500 line-through">₹{{ item.original_price|floatformat:2 }}</span>
+                        {% endif %}
+                      {% else %}
+                        <span class="bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-lg font-bold text-transparent">₹{{ item.unit_price|floatformat:2 }}</span>
+                        {% if item.discount_price %}
+                          <span class="ml-2 text-xs text-slate-500 line-through">₹{{ item.original_price|floatformat:2 }}</span>
+                        {% endif %}
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-xs uppercase tracking-wide text-slate-400 mb-1">Total</p>
+                    {% if item.is_free %}
+                      <p class="text-2xl font-black text-emerald-300">Free</p>
+                    {% else %}
+                      <p class="bg-gradient-to-r from-sky-400 to-violet-400 bg-clip-text text-2xl font-black text-transparent">₹{{ item.line_total|floatformat:2 }}</p>
+                    {% endif %}
+                  </div>
                 </div>
-              </div>
-              <p class="text-gray-600 text-sm mt-3 line-clamp-2">{{ item.product.description|truncatechars:110 }}</p>
-            </div>
-            <div class="flex items-end justify-between mt-4">
-              <div class="text-sm text-gray-500">
-                <p class="font-semibold text-gray-700">Digital License</p>
-                <p>
-                  {% if item.is_free %}
-                    <span class="font-semibold text-green-600">Free</span>
-                    {% if item.original_price %}
-                      <span class="ml-2 text-xs text-gray-400 line-through">₹{{ item.original_price|floatformat:2 }}</span>
-                    {% endif %}
-                  {% else %}
-                    <span class="font-semibold text-gray-900">₹{{ item.unit_price|floatformat:2 }}</span>
-                    {% if item.discount_price %}
-                      <span class="ml-2 text-xs text-gray-400 line-through">₹{{ item.original_price|floatformat:2 }}</span>
-                    {% endif %}
-                  {% endif %}
-                </p>
-              </div>
-              <div class="text-right">
-                <p class="text-xs uppercase tracking-wide text-gray-400">Total</p>
-                {% if item.is_free %}
-                  <p class="text-xl font-semibold text-green-600">Free</p>
-                {% else %}
-                  <p class="text-xl font-semibold text-blue-600">₹{{ item.line_total|floatformat:2 }}</p>
-                {% endif %}
               </div>
             </div>
           </div>
@@ -66,39 +83,52 @@
         {% endfor %}
       </div>
 
-      <aside class="bg-white border border-gray-100 rounded-xl shadow-sm p-6 h-fit">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">Order Summary</h2>
-        <dl class="space-y-3 text-sm">
-          <div class="flex justify-between">
-            <dt class="text-gray-500">Subtotal</dt>
-            <dd class="font-semibold text-gray-900">₹{{ subtotal|floatformat:2 }}</dd>
-          </div>
-          <div class="flex justify-between">
-            <dt class="text-gray-500">Shipping</dt>
-            <dd class="text-green-600 font-semibold">Free</dd>
-          </div>
-          <div class="flex justify-between">
-            <dt class="text-gray-500">Items</dt>
-            <dd class="text-gray-900">{{ total_items }}</dd>
-          </div>
-          <div class="border-t border-gray-200 pt-4 flex justify-between">
-            <dt class="text-gray-500 uppercase tracking-wider">Grand Total</dt>
-            {% if grand_total|floatformat:2 == '0.00' %}
-              <dd class="text-2xl font-bold text-green-600">Free</dd>
-            {% else %}
-              <dd class="text-2xl font-bold text-blue-600">₹{{ grand_total|floatformat:2 }}</dd>
-            {% endif %}
-          </div>
-        </dl>
-        <a href="{% url 'ecommerce:checkout' %}" class="mt-6 block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow transition">Proceed to Checkout</a>
-        <p class="text-xs text-gray-400 text-center mt-3">Secure checkout • No additional fees</p>
+      <aside class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-transparent p-1 shadow-2xl h-fit">
+        <div class="absolute inset-0">
+          <div class="h-full w-full bg-[radial-gradient(circle_at_top_right,_rgba(168,85,247,0.2),_transparent_50%)]"></div>
+        </div>
+        <div class="relative rounded-[26px] bg-slate-900/60 p-6 backdrop-blur">
+          <h2 class="text-2xl font-black text-white mb-6">Order Summary</h2>
+          <dl class="space-y-4 text-sm">
+            <div class="flex justify-between text-slate-300">
+              <dt>Subtotal</dt>
+              <dd class="font-semibold text-white">₹{{ subtotal|floatformat:2 }}</dd>
+            </div>
+            <div class="flex justify-between text-slate-300">
+              <dt>Shipping</dt>
+              <dd class="font-semibold text-emerald-300">Free</dd>
+            </div>
+            <div class="flex justify-between text-slate-300">
+              <dt>Items</dt>
+              <dd class="text-white">{{ total_items }}</dd>
+            </div>
+            <div class="border-t border-white/10 pt-4 flex justify-between items-baseline">
+              <dt class="text-slate-400 uppercase tracking-wider text-xs">Grand Total</dt>
+              {% if grand_total|floatformat:2 == '0.00' %}
+                <dd class="text-3xl font-black text-emerald-300">Free</dd>
+              {% else %}
+                <dd class="bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-3xl font-black text-transparent">₹{{ grand_total|floatformat:2 }}</dd>
+              {% endif %}
+            </div>
+          </dl>
+          <a href="{% url 'ecommerce:checkout' %}" class="mt-6 block w-full text-center rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-indigo-900/40 hover:from-indigo-400 hover:to-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-400 transition">Proceed to Checkout</a>
+          <p class="text-xs text-slate-400 text-center mt-3">Secure checkout • No hidden fees</p>
+        </div>
       </aside>
     </div>
     {% else %}
-    <div class="bg-white border border-dashed border-gray-200 rounded-xl p-10 text-center">
-      <h2 class="text-2xl font-semibold text-gray-900">Your cart is empty</h2>
-      <p class="text-gray-500 mt-2">Browse our curated AI resources and add something you love.</p>
-      <a href="{% url 'ecommerce:product_list' %}" class="mt-6 inline-flex items-center px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow transition">Explore Products</a>
+    <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-transparent p-1 shadow-2xl">
+      <div class="relative rounded-[26px] bg-slate-900/60 p-12 backdrop-blur text-center">
+        <svg class="mx-auto h-24 w-24 text-slate-600 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        <h2 class="text-3xl font-black text-white mb-3">Your cart is empty</h2>
+        <p class="text-slate-400 mb-6">Browse our curated AI resources and add something you love.</p>
+        <h2 class="text-3xl font-black text-white mb-3">Your cart is empty</h2>
+        <p class="text-slate-400 mb-6">Browse our curated AI resources and add something you love.</p>
+        <a href="{% url 'ecommerce:product_list' %}" class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-indigo-900/40 hover:from-indigo-400 hover:to-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-400 transition">
+          Explore Products
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+        </a>
+      </div>
     </div>
     {% endif %}
   </div>
